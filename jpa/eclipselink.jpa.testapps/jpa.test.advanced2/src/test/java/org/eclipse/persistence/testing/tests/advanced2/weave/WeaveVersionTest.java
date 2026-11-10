@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -174,7 +175,7 @@ public class WeaveVersionTest extends JUnitTestCase {
 
     public void cleanup() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.createQuery("delete from IsolatedEntity s").executeUpdate();
             em.createQuery("delete from Order t").executeUpdate();
@@ -191,7 +192,7 @@ public class WeaveVersionTest extends JUnitTestCase {
     @Override
     public void tearDown() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.createQuery("delete from Location l").executeUpdate();
             em.createQuery("delete from Order t").executeUpdate();

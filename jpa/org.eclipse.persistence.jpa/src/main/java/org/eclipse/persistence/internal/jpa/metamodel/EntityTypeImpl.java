@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,18 +24,23 @@
 //         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_47:_20090715:_Implement_IdentifiableType.getIdType.28.29_for_composite_keys
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Type;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 import java.io.Serial;
+import java.util.Map;
+import java.util.HashMap;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.jpa.EntityGraphImpl;
+import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
  * <p>
  * <b>Purpose</b>: Provides the implementation for the EntityType interface
- *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *  of the Jakarta Persistence Metamodel API.
  * <br>EntityTypeImpl implements the IdentifiableType interface via EntityType
  * <p>
  * <b>Description</b>:
@@ -115,6 +120,27 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
     @Override
     public boolean isMappedSuperclass() {
         return !isEntity();
+    }
+
+    @Override
+    public boolean hasId() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public EntityGraph<X> createEntityGraph() {
+        return new EntityGraphImpl<>(new AttributeGroup(null, getJavaType(), true), getDescriptor(), getMetamodel());
+    }
+
+    @Override
+    public Map<String, EntityGraph<X>> getNamedEntityGraphs() {
+        Map<String, EntityGraph<X>> graphs = new HashMap<>();
+        getMetamodel().getSession().getAttributeGroups().forEach((name, group) -> {
+            if (getJavaType().equals(group.getType())) {
+                graphs.put(name, new EntityGraphImpl<>(group.clone(), getDescriptor(), getMetamodel()));
+            }
+        });
+        return graphs;
     }
 
 }

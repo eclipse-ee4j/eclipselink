@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,10 @@ package org.eclipse.persistence.internal.jpa.metadata;
  * @since EclipseLink 1.1
  */
 public final class MetadataConstants {
+    /** Jakarta Annotations */
+    public static final String JAKARTA_NONNULL = "jakarta.annotation.Nonnull";
+    public static final String JAKARTA_NONNULL_DESCRIPTOR = "Ljakarta/annotation/Nonnull;";
+
     /** JPA Annotations */
     public static final String JPA_ACCESS = "jakarta.persistence.Access";
     public static final String JPA_ASSOCIATION_OVERRIDE = "jakarta.persistence.AssociationOverride";
@@ -55,6 +59,9 @@ public final class MetadataConstants {
     public static final String JPA_COLLECTION_TABLE = "jakarta.persistence.CollectionTable";
     public static final String JPA_COLUMN = "jakarta.persistence.Column";
     public static final String JPA_COLUMN_RESULT = "jakarta.persistence.ColumnResult";
+    public static final String JPA_COLUMN_RESULTS = "jakarta.persistence.ColumnResult$ColumnResults";
+    public static final String JPA_CONSTRUCTOR_RESULT = "jakarta.persistence.ConstructorResult";
+    public static final String JPA_CONSTRUCTOR_RESULTS = "jakarta.persistence.ConstructorResult$ConstructorResults";
     public static final String JPA_CONVERT = "jakarta.persistence.Convert";
     public static final String JPA_CONVERTS = "jakarta.persistence.Converts";
     public static final String JPA_CONVERTER = "jakarta.persistence.Converter";
@@ -69,10 +76,13 @@ public final class MetadataConstants {
     public static final String JPA_ENTITY_GRAPHS = "jakarta.persistence.NamedEntityGraphs";
     public static final String JPA_ENTITY_LISTENERS = "jakarta.persistence.EntityListeners";
     public static final String JPA_ENTITY_RESULT = "jakarta.persistence.EntityResult";
+    public static final String JPA_ENTITY_RESULTS = "jakarta.persistence.EntityResult$EntityResults";
     public static final String JPA_ENUMERATED = "jakarta.persistence.Enumerated";
     public static final String JPA_ENUMERATED_VALUE = "jakarta.persistence.EnumeratedValue";
     public static final String JPA_EXCLUDE_DEFAULT_LISTENERS = "jakarta.persistence.ExcludeDefaultListeners";
     public static final String JPA_EXCLUDE_SUPERCLASS_LISTENERS = "jakarta.persistence.ExcludeSuperclassListeners";
+    public static final String JPA_FETCH = "jakarta.persistence.Fetch";
+    public static final String JPA_FETCHES = "jakarta.persistence.Fetch$Fetches";
     public static final String JPA_FIELD_RESULT = "jakarta.persistence.FieldResult";
     public static final String JPA_GENERATED_VALUE = "jakarta.persistence.GeneratedValue";
     public static final String JPA_ID = "jakarta.persistence.Id";
@@ -95,6 +105,12 @@ public final class MetadataConstants {
     public static final String JPA_MAPS_ID = "jakarta.persistence.MapsId";
     public static final String JPA_NAMED_NATIVE_QUERY = "jakarta.persistence.NamedNativeQuery";
     public static final String JPA_NAMED_NATIVE_QUERIES = "jakarta.persistence.NamedNativeQueries";
+    public static final String JPA_NAMED_NATIVE_STATEMENT = "jakarta.persistence.NamedNativeStatement";
+    public static final String JPA_NAMED_NATIVE_STATEMENTS = "jakarta.persistence.NamedNativeStatements";
+    public static final String JPA_NATIVE_QUERY = "jakarta.persistence.query.NativeQuery";
+    public static final String JPA_QUERY_OPTIONS = "jakarta.persistence.query.QueryOptions";
+    public static final String JPA_NAMED_STATEMENT = "jakarta.persistence.NamedStatement";
+    public static final String JPA_NAMED_STATEMENTS = "jakarta.persistence.NamedStatements";
     public static final String JPA_NAMED_QUERY = "jakarta.persistence.NamedQuery";
     public static final String JPA_NAMED_QUERIES = "jakarta.persistence.NamedQueries";
     public static final String JPA_NAMED_STORED_PROCEDURE_QUERY = "jakarta.persistence.NamedStoredProcedureQuery";
@@ -104,10 +120,18 @@ public final class MetadataConstants {
     public static final String JPA_ORDER_BY = "jakarta.persistence.OrderBy";
     public static final String JPA_ORDER_COLUMN = "jakarta.persistence.OrderColumn";
     public static final String JPA_PARAMETER = "jakarta.persistence.Parameter";
+    public static final String JPA_POST_DELETE = "jakarta.persistence.PostDelete";
+    public static final String JPA_POST_UPSERT = "jakarta.persistence.PostUpsert";
+    public static final String JPA_PRE_DELETE = "jakarta.persistence.PreDelete";
+    public static final String JPA_PRE_MERGE = "jakarta.persistence.PreMerge";
+    public static final String JPA_PRE_UPSERT = "jakarta.persistence.PreUpsert";
+    public static final String JPA_EXCLUDED_FROM_VERSIONING = "jakarta.persistence.ExcludedFromVersioning";
+    public static final String JPA_POST_INSERT = "jakarta.persistence.PostInsert";
     public static final String JPA_POST_LOAD = "jakarta.persistence.PostLoad";
     public static final String JPA_POST_PERSIST = "jakarta.persistence.PostPersist";
     public static final String JPA_POST_REMOVE = "jakarta.persistence.PostRemove";
     public static final String JPA_POST_UPDATE = "jakarta.persistence.PostUpdate";
+    public static final String JPA_PRE_INSERT = "jakarta.persistence.PreInsert";
     public static final String JPA_PRE_PERSIST = "jakarta.persistence.PrePersist";
     public static final String JPA_PRE_REMOVE = "jakarta.persistence.PreRemove";
     public static final String JPA_PRE_UPDATE = "jakarta.persistence.PreUpdate";

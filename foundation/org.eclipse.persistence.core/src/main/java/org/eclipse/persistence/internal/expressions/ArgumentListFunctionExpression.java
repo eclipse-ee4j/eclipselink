@@ -17,6 +17,7 @@
 package org.eclipse.persistence.internal.expressions;
 
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.expressions.ListExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -141,12 +142,17 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         if (temporalMapping != null) {
             for (int index = 0; index < this.children.size(); index++) {
                 Expression child = this.children.get(index);
-                if (child.isConstantExpression() && ((ConstantExpression) child).getValue() instanceof Date) {
+                if (child.isConstantExpression() && ((ConstantExpression) child).getValue() instanceof Date date) {
+                    Expression localBase = ((ConstantExpression) child).getLocalBase();
+                    // Preserve explicit conversion contexts, including custom builder subclasses.
+                    if (localBase != null && localBase.getClass() != ExpressionBuilder.class) {
+                        continue;
+                    }
                     if (arguments == this.children) {
                         arguments = new ArrayList<>(this.children);
                     }
                     ConstantExpression constant = (ConstantExpression) child.clone();
-                    constant.setValue(temporalMapping.getFieldValue(constant.getValue(), printer.getSession()));
+                    constant.setValue(temporalMapping.getFieldValue(date.clone(), printer.getSession()));
                     constant.setLocalBase(null);
                     arguments.set(index, constant);
                 }

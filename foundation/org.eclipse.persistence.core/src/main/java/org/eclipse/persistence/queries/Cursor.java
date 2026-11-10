@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 /**
  * <p><b>Purpose</b>:
@@ -121,6 +123,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
         RuntimeException exception = null;
         try {
             if (isClosed()) {
+                notifyResourceReleased();
                 return;
             }
             try {
@@ -147,8 +150,22 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
             this.statement = null;
             this.resultSet = null;
             this.nextRow = null;
+            notifyResourceReleased();
         } catch (SQLException sqlException) {
             throw DatabaseException.sqlException(sqlException, getAccessor(), getSession(), false);
+        }
+    }
+
+    /** Notify the query owner only after all JDBC resources have been released. */
+    private void notifyResourceReleased() {
+        if (this.query != null) {
+            this.query.removeProperty("eclipselink.cursor.row-materializer");
+            String key = "eclipselink.cursor.resource-release";
+            Object callback = this.query.getProperty(key);
+            if (callback instanceof Runnable notification) {
+                notification.run();
+                this.query.removeProperty(key);
+            }
         }
     }
 
@@ -301,7 +318,17 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * Behavior is different from the query version in that refreshing is not
      * supported.
      */
+    @SuppressWarnings("unchecked")
     protected Object buildAndRegisterObject(AbstractRecord row) {
+        Object materializer = this.query.getProperty("eclipselink.cursor.row-materializer");
+        if (materializer instanceof BiFunction<?, ?, ?>) {
+            return ((BiFunction<DatabaseQuery, Supplier<Object>, Object>) materializer)
+                    .apply(this.query, () -> buildAndRegisterObjectDirect(row));
+        }
+        return buildAndRegisterObjectDirect(row);
+    }
+
+    private Object buildAndRegisterObjectDirect(AbstractRecord row) {
         ReadQuery query = this.query;
         if (query.isObjectLevelReadQuery()) {
             ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)query;

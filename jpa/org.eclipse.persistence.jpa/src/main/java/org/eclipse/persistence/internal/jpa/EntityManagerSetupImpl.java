@@ -90,37 +90,22 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_THEN_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_VERIFY_ACTION;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.generateDefaultTables;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigProperty;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyLogDebug;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.hasConfigProperty;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.login;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.mergeMaps;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.translateOldProperties;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.warnOldProperties;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.SchemaValidationException;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.ValidationMode;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -139,15 +124,15 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -156,38 +141,19 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.persistence.OptimisticLockException;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.SchemaValidationException;
-import jakarta.persistence.SharedCacheMode;
-import jakarta.persistence.ValidationMode;
-import jakarta.persistence.metamodel.Attribute;
-import jakarta.persistence.metamodel.CollectionAttribute;
-import jakarta.persistence.metamodel.ListAttribute;
-import jakarta.persistence.metamodel.ManagedType;
-import jakarta.persistence.metamodel.MapAttribute;
-import jakarta.persistence.metamodel.Metamodel;
-import jakarta.persistence.metamodel.SetAttribute;
-import jakarta.persistence.metamodel.SingularAttribute;
-import jakarta.persistence.spi.ClassTransformer;
-import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
-
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.CacheCoordinationProtocol;
-import org.eclipse.persistence.annotations.CacheIsolationType;
-import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
 import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.RemoteProtocol;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
@@ -200,11 +166,10 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.jpa.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.exceptions.IntegrityException;
-import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -223,6 +188,7 @@ import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListener;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -240,16 +206,14 @@ import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
-import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
+import org.eclipse.persistence.jpa.exceptions.EntityManagerSetupException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.jpa.metadata.FileBasedProjectCache;
 import org.eclipse.persistence.jpa.metadata.MetadataSource;
 import org.eclipse.persistence.jpa.metadata.ProjectCache;
@@ -273,6 +237,7 @@ import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
@@ -303,6 +268,44 @@ import org.eclipse.persistence.tools.tuning.SafeModeTuner;
 import org.eclipse.persistence.tools.tuning.SessionTuner;
 import org.eclipse.persistence.tools.tuning.StandardTuner;
 
+import static java.util.Locale.ROOT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_THEN_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_POPULATE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_VALIDATE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_VERIFY_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.generateDefaultTables;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigProperty;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyLogDebug;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.hasConfigProperty;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.login;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.mergeMaps;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.translateOldProperties;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.warnOldProperties;
+
 /**
  * INTERNAL:
  * This class handles deployment of a persistence unit.
@@ -324,11 +327,19 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected String sessionName;
 
     private MetadataProcessor processor = null;
+    // Definition snapshots survive processor disposal; instances belong to each public factory.
+    private List<PersistenceUnitListener> persistenceUnitListeners = List.of();
     /** Holds a reference to the weaver class transformer so it can be cleared after login. */
     private PersistenceWeaver weaver = null;
+    // Supplied-connection schema requests own a disposable setup rather than an ordinary factory setup.
+    private boolean isDisposableSchemaGeneration;
     protected PersistenceUnitInfo persistenceUnitInfo = null;
     // count a number of open factories that use this object.
     protected int factoryCount = 0;
+    // true if PersistenceProvider.getClassTransformer has predeployed this object ahead of the factory the
+    // container creates for the same persistence unit later, and that factory has not taken it over yet.
+    // That predeploy already counted the factory, see takeOverClassTransformerPredeploy.
+    private boolean predeployedForClassTransformer = false;
     protected AbstractSession session = null;
     // true if predeploy called by createContainerEntityManagerFactory; false - createEntityManagerFactory
     protected boolean isInContainerMode = false;
@@ -410,6 +421,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public static final String ERROR_LOADING_XML_FILE = "error_loading_xml_file";
     public static final String EXCEPTION_LOADING_ENTITY_CLASS = "exception_loading_entity_class";
 
+    /**
+     * Name of the canonical metamodel field holding the managed type itself. Standardised by Jakarta
+     * Persistence and emitted by EclipseLink's own canonical model generator.
+     */
+    private static final String CANONICAL_MODEL_TYPE_FIELD = "class_";
+
     /*
      * Properties used to generate sessionName if none is provided.
      */
@@ -422,7 +439,16 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         PersistenceUnitProperties.NOSQL_CONNECTION_SPEC,
         PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY,
         PersistenceUnitProperties.NOSQL_USER,
-        PersistenceUnitProperties.JDBC_CONNECTOR
+        PersistenceUnitProperties.JDBC_CONNECTOR,
+        PersistenceUnitProperties.VALIDATION_MODE,
+        "jakarta.persistence.validation.factory",
+        PersistenceUnitProperties.VALIDATION_GROUP_PRE_PERSIST,
+        PersistenceUnitProperties.VALIDATION_GROUP_PRE_UPDATE,
+        PersistenceUnitProperties.VALIDATION_GROUP_PRE_REMOVE,
+        "jakarta.persistence.validation.group.pre-merge",
+        "jakarta.persistence.validation.group.pre-insert",
+        "jakarta.persistence.validation.group.pre-delete",
+        "jakarta.persistence.validation.group.pre-upsert"
     };
 
     /*
@@ -577,8 +603,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         strValue = Integer.toString(System.identityHashCode(value));
                     }
                 }
-                // don't set an empty String
-                if (!strValue.isEmpty()) {
+                // Empty validation groups disable an event, while absence selects its default.
+                // Keep the existing empty-value handling for connection properties.
+                if (!strValue.isEmpty() || name.startsWith("jakarta.persistence.validation.group.")) {
                     suffix.append("_").append(Helper.getShortClassName(name)).append("=").append(strValue);
                 }
             }
@@ -758,6 +785,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             throw persistenceException;
                         }
                         this.session.setProperties(deployProperties);
+                        this.session.setProperty(PersistenceUnitListener.DEFINITIONS_PROPERTY, persistenceUnitListeners);
+                        this.session.setProperty(PersistenceUnitListener.NAME_PROPERTY, persistenceUnitInfo.getPersistenceUnitName());
                         updateSession(deployProperties, classLoaderToUse);
                         if (isValidationOnly(deployProperties, false)) {
                             /*
@@ -777,7 +806,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 updateTunerDeploy(deployProperties, classLoaderToUse);
                                 updateFreeMemory(deployProperties);
                                 if (this.isSessionLoadedFromSessionsXML) {
-                                    getDatabaseSession().login();
+                                    Object schemaConnection = getConfigProperty(PersistenceUnitProperties.SCHEMA_GENERATION_CONNECTION, deployProperties);
+                                    if (!requiresConnection && schemaConnection != null) {
+                                        getDatabaseSession().setDatasourceAndInitialize((Connection) schemaConnection, true);
+                                    } else {
+                                        getDatabaseSession().login();
+                                    }
                                 } else {
                                     login(getDatabaseSession(), deployProperties, requiresConnection);
                                 }
@@ -824,7 +858,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             }
 
                             // Generate the DDL using the correct connection.
-                            writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
+                            writeDDL(deployProperties, classLoaderToUse);
                         }
                     }
                     // Initialize platform specific identity sequences plus connect accessor to DB (in case of remote disconnected session).
@@ -834,6 +868,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
                     this.deployLock.release();
                     isLockAcquired = false;
+                } else if (this.session.isDatabaseSession() && !isValidationOnly(deployProperties, false)) {
+
+                    // The persistence unit is already deployed and logged in, which is what happens
+                    // whenever an EntityManagerFactory is created for a unit that another, still open,
+                    // factory already deployed. The branch above never runs in that case, so without
+                    // this one the schema generation properties passed to this particular
+                    // createEntityManagerFactory or Persistence.generateSchema call would be silently
+                    // ignored.
+                    //
+                    // Nothing in Jakarta Persistence exempts an already deployed unit, and Hibernate
+                    // performs both the script and the database action on every factory it builds.
+                    // This was never tested for before, but in the 4.0 TCK
+                    // ee.jakarta.tck.persistence.se.schemaGeneration.annotations.discriminatorColumn.Client now
+                    // implicitly tests for this.
+
+                    writeDDL(deployProperties, classLoaderToUse);
                 }
                 // 266912: Initialize the Metamodel, a login should have already occurred.
                 try {
@@ -843,10 +893,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
             // Clear the weaver's reference to meta-data information, as it is held by the class loader and will never gc.
-            if (this.weaver != null) {
-                this.weaver.clear();
-                this.weaver = null;
-            }
+            clearWeaver();
 
             return this.session;
         } catch (Throwable exception) {
@@ -876,6 +923,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             throw persistenceEx;
         } finally {
             this.session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), this.session.getName(), this.state, this.factoryCount});
+        }
+    }
+
+    private void clearWeaver() {
+        if (this.weaver != null) {
+            this.weaver.clear();
+            this.weaver = null;
         }
     }
 
@@ -1368,11 +1422,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
 
     protected static Class<?> findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, loader));
-        } else {
-            return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, loader);
-        }
+        return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, loader);
     }
 
     protected static <T> Class<T> findClassForProperty(String className, String propertyName, ClassLoader loader) {
@@ -1470,27 +1520,66 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // A connection was provided. Build a database session using that
             // connection and use the same log level set on the original
             // database session.
-            DatabaseSessionImpl newDatabaseSession = new DatabaseSessionImpl();
-            newDatabaseSession.setAccessor(new DatabaseAccessor(connection));
-            newDatabaseSession.setLogLevel(databaseSession.getLogLevel());
-            newDatabaseSession.setProject(databaseSession.getProject().clone());
-            return newDatabaseSession;
+            return new SchemaGenerationSession(databaseSession, connection);
+        }
+    }
+
+    /** A borrowed SQL accessor with the sequence metadata already prepared for schema generation. */
+    private static final class SchemaGenerationSession extends DatabaseSessionImpl {
+        private final Sequencing schemaSequencing;
+
+        private SchemaGenerationSession(DatabaseSessionImpl source, Object connection) {
+            schemaSequencing = source.getSequencing();
+            setLogLevel(source.getLogLevel());
+            setProject(source.getProject().clone());
+            setAccessor(new SchemaGenerationAccessor(connection, this));
+        }
+
+        @Override
+        public Sequencing getSequencing() {
+            // SchemaManager reads the acquisition policy; do not reconnect shared Sequence objects.
+            return schemaSequencing;
+        }
+    }
+
+    /** The schema request owns statements, but never the supplied connection or its transaction. */
+    private static final class SchemaGenerationAccessor extends DatabaseAccessor implements AutoCloseable {
+        private final DatabaseSessionImpl schemaSession;
+
+        private SchemaGenerationAccessor(Object connection, DatabaseSessionImpl schemaSession) {
+            super(connection);
+            this.schemaSession = schemaSession;
+            this.login = schemaSession.getDatasourceLogin();
+            setDatasourcePlatform((DatasourcePlatform) this.login.getDatasourcePlatform());
+            // A pooled caller connection must not be released by decrementCallCount().
+            this.usesExternalConnectionPooling = false;
+        }
+
+        @Override
+        public void closeDatasourceConnection() {
+            // Only the caller may close this connection.
+        }
+
+        @Override
+        protected void reconnect(AbstractSession session) {
+            throw DatabaseException.databaseAccessorNotConnected();
+        }
+
+        @Override
+        public void close() {
+            disconnect(schemaSession);
         }
     }
 
     /**
      * This method will be used to validate the specified class and return it's instance.
      */
-    protected static Object buildObjectForClass(Class<?> clazz, Class<?> mustBeImplementedInterface) throws IllegalAccessException, PrivilegedActionException,InstantiationException {
-        if(clazz!=null && Helper.classImplementsInterface(clazz,mustBeImplementedInterface)){
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(clazz));
-            } else {
-                return PrivilegedAccessHelper.newInstanceFromClass(clazz);
-            }
-        } else {
-            return null;
+    protected static Object buildObjectForClass(Class<?> clazz, Class<?> mustBeImplementedInterface) throws IllegalAccessException, PrivilegedActionException, InstantiationException {
+        if (clazz != null && Helper.classImplementsInterface(clazz, mustBeImplementedInterface)) {
+            return PrivilegedAccessHelper.newInstanceFromClass(clazz);
         }
+
+        return null;
     }
 
     protected void updateDescriptorCacheSettings(Map m, ClassLoader loader) {
@@ -2051,18 +2140,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     updateSharedCacheMode(predeployProperties);
 
                     // Process the Object/relational metadata from XML and annotations.
-                    // If Java Security is enabled, surround this call with a doPrivileged block.
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                        AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                            @Override
-                            public Void run() {
-                                PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
-                                return null;
-                            }
-                        });
-                    } else {
-                        PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
-                    }
+                    PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
 
                     if (mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
                         mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE;
@@ -2093,9 +2171,28 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     //moved from deployment:
                     processor.addNamedQueries();
                     processor.addStructConverterNames();
+                    persistenceUnitListeners = processor.getPersistenceUnitListeners();
                 }
             } else {
                 //This means this session is from sessions.xml or a cached project
+
+                if (!shouldBuildProject && !isSessionLoadedFromSessionsXML) {
+                    // The serialized project has no persistence-unit listener metadata.
+                    // Read only the original discovery/XML sources, not descriptor state.
+                    if (isComposite) {
+                        Set<SEPersistenceUnitInfo> members = getCompositeMemberPuInfoSet(persistenceUnitInfo, predeployProperties);
+                        updateCompositeMembersProperties(members, predeployProperties);
+                        Map memberProperties = (Map) getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, predeployProperties);
+                        Set<PersistenceUnitListener> memberListeners = new LinkedHashSet<>();
+                        for (SEPersistenceUnitInfo member : members) {
+                            memberListeners.addAll(loadPersistenceUnitListeners(member,
+                                    (Map) memberProperties.get(member.getPersistenceUnitName()), classLoaderToUse));
+                        }
+                        persistenceUnitListeners = List.copyOf(memberListeners);
+                    } else {
+                        persistenceUnitListeners = loadPersistenceUnitListeners(persistenceUnitInfo, predeployProperties, classLoaderToUse);
+                    }
+                }
 
                 // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
                 // be returned if we we are meant to process these mappings.
@@ -2117,6 +2214,16 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest, weaveMappedSuperClass);
                 }
             }
+
+            if (compositeMemberEmSetupImpls != null) {
+                Set<PersistenceUnitListener> memberListeners = new LinkedHashSet<>();
+                for (EntityManagerSetupImpl member : compositeMemberEmSetupImpls) {
+                    memberListeners.addAll(member.getPersistenceUnitListeners());
+                }
+                persistenceUnitListeners = List.copyOf(memberListeners);
+            }
+            session.setProperty(PersistenceUnitListener.DEFINITIONS_PROPERTY, persistenceUnitListeners);
+            session.setProperty(PersistenceUnitListener.NAME_PROPERTY, persistenceUnitInfo.getPersistenceUnitName());
 
             // composite member never has a factory - it is predeployed by the composite.
             if (!isCompositeMember()) {
@@ -2181,6 +2288,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     public PersistenceUnitInfo getPersistenceUnitInfo(){
         return persistenceUnitInfo;
+    }
+
+    private List<PersistenceUnitListener> loadPersistenceUnitListeners(PersistenceUnitInfo info, Map properties, ClassLoader loader) {
+        MetadataProcessor previous = processor;
+        processor = new MetadataProcessor(info, session, loader, false, false, false, false, false, properties, null);
+        try {
+            updateMetadataRepository(properties, loader);
+            return processor.loadPersistenceUnitListeners(throwExceptionOnFail);
+        } finally {
+            processor = previous;
+        }
+    }
+
+    /** INTERNAL: Definitions are available before deployment without loading callback classes. */
+    public List<PersistenceUnitListener> getPersistenceUnitListeners() {
+        return persistenceUnitListeners;
     }
 
     public boolean isValidationOnly(Map m) {
@@ -3108,6 +3231,27 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         return state == STATE_UNDEPLOYED;
     }
 
+    /**
+     * Records that {@link #predeploy} was called by
+     * {@link org.eclipse.persistence.jpa.PersistenceProvider#getClassTransformer}, on behalf of a factory
+     * the container has yet to create.
+     */
+    public synchronized void setPredeployedForClassTransformer() {
+        this.predeployedForClassTransformer = true;
+    }
+
+    /**
+     * Called by the factory the container creates after
+     * {@link org.eclipse.persistence.jpa.PersistenceProvider#getClassTransformer}: returns {@code true}
+     * only once, when that earlier predeploy was made for this factory, which then must not predeploy
+     * (and so count itself) again.
+     */
+    public synchronized boolean takeOverClassTransformerPredeploy() {
+        boolean predeployed = this.predeployedForClassTransformer;
+        this.predeployedForClassTransformer = false;
+        return predeployed;
+    }
+
     public boolean isPredeployFailed() {
         return state == STATE_PREDEPLOY_FAILED;
     }
@@ -3179,11 +3323,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
         } finally {
-            session.log(SessionLog.FINEST, SessionLog.JPA, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
-            if(state == STATE_UNDEPLOYED) {
-                session = null;
+            try {
+                session.log(SessionLog.FINEST, SessionLog.JPA, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            } finally {
+                if (state == STATE_UNDEPLOYED) {
+                    if (isDisposableSchemaGeneration) {
+                        clearWeaver();
+                    }
+                    session = null;
+                }
             }
         }
+    }
+
+    /** Mark a fresh setup whose lifetime belongs only to one supplied-connection schema request. */
+    public void setIsDisposableSchemaGeneration(boolean disposableSchemaGeneration) {
+        this.isDisposableSchemaGeneration = disposableSchemaGeneration;
     }
 
     /**
@@ -4034,30 +4189,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String helperClassName = "org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper$BeanValidationInitializationHelperImpl";
             Class<?> helperClass;
             try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    try {
-                        helperClass = AccessController.doPrivileged(
-                                new PrivilegedClassForName<>(helperClassName, true, appClassLoader));
-                    } catch (Throwable t) {
-                        // Try the ClassLoader that loaded Eclipselink classes
-                        ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
-                        helperClass = AccessController.doPrivileged(new PrivilegedClassForName<>(helperClassName, true, eclipseLinkClassLoader));
-                    }
-                } else {
-                    try {
-                        helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
-                    } catch (Throwable t) {
-                        // Try the ClassLoader that loaded Eclipselink classes
-                        ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
-                        helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
-                    }
+                try {
+                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
+                } catch (Throwable t) {
+                    // Try the ClassLoader that loaded Eclipselink classes
+                    ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
+                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
                 }
                 BeanValidationInitializationHelper beanValidationInitializationHelper = (BeanValidationInitializationHelper)helperClass.getConstructor().newInstance();
                 beanValidationInitializationHelper.bootstrapBeanValidation(puProperties, session, appClassLoader);
             } catch (Throwable e) {  //Catching Throwable to catch any linkage errors on vms that resolve eagerly
                 if (validationMode == ValidationMode.CALLBACK) {
                     throw PersistenceUnitLoadingException.exceptionObtainingRequiredBeanValidatorFactory(e);
-                } // else validationMode == ValidationMode.AUTO. Log a message, Ignore the exception
+                }
+
+                // else validationMode == ValidationMode.AUTO. Log a message, Ignore the exception
                 this.session.log(SessionLog.FINEST, SessionLog.JPA, "validation_factory_not_initialized", new Object[]{ e.getMessage() });
             }
         }
@@ -4125,24 +4271,43 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 String fieldName = "";
-                for(Object attribute : manType.getDeclaredAttributes()) {
+
+                // The canonical metamodel holds the managed type itself in "class_", alongside one
+                // field per attribute. Only the attribute fields were being set, so class_ stayed
+                // null - including in the models EclipseLink's own generator produces, which do
+                // declare it. Missing fields are tolerated the same way the attribute loop below
+                // tolerates them, for hand-written or older canonical classes that lack it.
+                try {
+                    PrivilegedAccessHelper.getDeclaredField(clazz, CANONICAL_MODEL_TYPE_FIELD, false).set(clazz, manType);
+                } catch (NoSuchFieldException nsfe) {
+                    // Canonical class without a class_ field; nothing to populate.
+                } catch (Exception e) {
+                    ValidationException v = ValidationException.invalidFieldForClass(CANONICAL_MODEL_TYPE_FIELD, clazz);
+                    v.setInternalException(e);
+                    throw v;
+                }
+
+                for (Object attribute : manType.getDeclaredAttributes()) {
                     try {
-                        fieldName = ((Attribute)attribute).getName();
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, false)).set(clazz, attribute);
-                        } else {
-                            PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
+                        fieldName = ((Attribute) attribute).getName();
+                        Field field = PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false);
+                        Object previous = field.get(null);
+                        field.set(clazz, attribute);
+                        if (previous instanceof AttributeProxyImpl proxy) {
+                            // A caller may retain the lazy proxy that triggered this deployment.
+                            proxy.setAttribute((Attribute) attribute);
                         }
                     } catch (NoSuchFieldException nsfe) {
                         // Ignore fields missing in canonical model (dclarke bug 346106)
                     } catch (Exception e) {
-                       ValidationException v = ValidationException.invalidFieldForClass(fieldName, clazz);
-                       v.setInternalException(e);
-                       throw v;
+                        ValidationException v = ValidationException.invalidFieldForClass(fieldName, clazz);
+                        v.setInternalException(e);
+                        throw v;
                     }
                 }
             } catch (ConversionException exception){
             }
+
             if (!classInitialized) {
                 getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_not_found", className);
             }
@@ -4316,23 +4481,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 Field[] fields = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
-                } else {
-                    fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
-                }
+
+                fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
+
                 for(Field attribute : fields) {
                     if (Attribute.class.isAssignableFrom(attribute.getType())){
-                        Object assignedAttribute = null;
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            assignedAttribute = AccessController.doPrivileged(new PrivilegedGetValueFromField(attribute, null));
-                        } else {
-                            assignedAttribute =PrivilegedAccessHelper.getValueFromField(attribute, null);
-                        }
+                        Object assignedAttribute = PrivilegedAccessHelper.getValueFromField(attribute, null);
+
                         AttributeProxyImpl proxy = null;
                         if (assignedAttribute == null){
                             if (SingularAttribute.class.isAssignableFrom(attribute.getType())){
-                                proxy = new SingularAttributeProxyImpl();
+                                proxy = SingularAttributeProxyImpl.create(attribute.getType());
                             } else if (MapAttribute.class.isAssignableFrom(attribute.getType())){
                                 proxy = new MapAttributeProxyImpl();
                             } else if (SetAttribute.class.isAssignableFrom(attribute.getType())){
@@ -4354,7 +4513,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         }
                     }
                 }
-            } catch (PrivilegedActionException | IllegalAccessException pae){
+            } catch (IllegalAccessException pae){
                 getSession().logThrowable(SessionLog.FINEST,  SessionLog.METAMODEL, pae);
             } catch (ConversionException ce){
             }
@@ -4556,6 +4715,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * INTERNAL:
      * Generate the DDL per the properties specified.
      */
+    private void writeDDL(Map<String, ?> props, ClassLoader classLoader) {
+        DatabaseSessionImpl schemaSession = getDatabaseSession(props);
+        try (SchemaGenerationAccessor accessor = schemaSession != getDatabaseSession()
+                && schemaSession.getAccessor() instanceof SchemaGenerationAccessor borrowed ? borrowed : null) {
+            writeDDL(props, schemaSession, classLoader);
+        }
+    }
+
     public void writeDDL(Map<String, ?> props, DatabaseSessionImpl session, ClassLoader classLoader) {
         if (this.compositeMemberEmSetupImpls == null) {
             // Generate the DDL if we find either EclipseLink or JPA DDL generation properties.
@@ -4572,12 +4739,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             } else {
                 // Look for JPA schema generation properties.
+                boolean loadScript = true;
 
                 // Schema generation for the database.
                 if (hasConfigProperty(SCHEMA_GENERATION_DATABASE_ACTION, props)) {
                     String databaseGenerationAction = getConfigPropertyAsString(SCHEMA_GENERATION_DATABASE_ACTION, props).toLowerCase(Locale.ROOT);
                     switch (databaseGenerationAction) {
                         case SCHEMA_GENERATION_NONE_ACTION:
+                            loadScript = false;
                             break;
                         case SCHEMA_GENERATION_CREATE_ACTION:
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.CREATE, props, session, classLoader);
@@ -4586,17 +4755,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.EXTEND, props, session, classLoader);
                             break;
                         case SCHEMA_GENERATION_DROP_ACTION:
+                            loadScript = false;
                             writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);
                             break;
                         case SCHEMA_GENERATION_DROP_AND_CREATE_ACTION:
                             writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.CREATE, props, session, classLoader);
                             break;
+                        case SCHEMA_GENERATION_VALIDATE_ACTION:
+                            loadScript = false;
+                            verifySchema(session, props);
+                            break;
                         case SCHEMA_GENERATION_VERIFY_ACTION:
                             verifySchema(session, props);
                             break;
+                        case SCHEMA_GENERATION_POPULATE_ACTION:
+                            break;
                         default:
-                            String validOptions = SCHEMA_GENERATION_CREATE_ACTION + ", " + SCHEMA_GENERATION_DROP_ACTION + ", " +  SCHEMA_GENERATION_DROP_AND_CREATE_ACTION + ", " + PersistenceUnitProperties.CREATE_OR_EXTEND;
+                            String validOptions = SCHEMA_GENERATION_NONE_ACTION + ", " + SCHEMA_GENERATION_CREATE_ACTION + ", " + SCHEMA_GENERATION_DROP_ACTION + ", " + SCHEMA_GENERATION_DROP_AND_CREATE_ACTION + ", " + SCHEMA_GENERATION_VALIDATE_ACTION + ", " + SCHEMA_GENERATION_POPULATE_ACTION + ", " + SCHEMA_GENERATION_VERIFY_ACTION + ", " + PersistenceUnitProperties.CREATE_OR_EXTEND;
                             session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {SCHEMA_GENERATION_DATABASE_ACTION, databaseGenerationAction, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
                     }
                 }
@@ -4625,8 +4801,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     }
                 }
 
-                // Once we've generated any and all DDL, check for load scripts.
-                writeSourceScriptToDatabase(getConfigProperty(SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE, props), session, classLoader);
+                // Load only after eligible database actions and independent script generation.
+                if (loadScript) {
+                    writeSourceScriptToDatabase(getConfigProperty(SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE, props), session, classLoader);
+                }
             }
         } else {
             // composite
@@ -4847,23 +5025,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Verify database schema against the persistence unit metadata.
      *
      * @param session current database session
-     * @param props persistence unit properties
+     * @param properties persistence unit properties
      * @throws PersistenceException when validation fails. {@link SchemaValidationException}
      *         with failures description is stored as a cause.
      */
-    private void verifySchema(DatabaseSessionImpl session, Map<String, ?> props) {
+    private void verifySchema(DatabaseSessionImpl session, Map<String, ?> properties) {
         SchemaManager schemaManager = new SchemaManager(session);
         ValidationFailure failures = new ValidationFailure();
-        String mode = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_VALIDATION_MODE,
-                                                                    props,
-                                                                    PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE)
-                .toLowerCase(Locale.ROOT);
-        boolean full = PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+
+        String mode =
+            getConfigPropertyAsString(SCHEMA_VALIDATION_MODE, properties, SCHEMA_VALIDATION_MODE_SIMPLE)
+            .toLowerCase(ROOT);
+
+        boolean full = SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+
         if (!schemaManager.validateDefaultTables(failures, true, full)) {
-            throw new PersistenceException(
-                    ExceptionLocalization.buildMessage("schema_validation"),
-                    new SchemaValidationException(
-                            ExceptionLocalization.buildMessage("schema_validation_failed"),
+            throw new PersistenceException(ExceptionLocalization.buildMessage("schema_validation"),
+                    new SchemaValidationException(ExceptionLocalization.buildMessage("schema_validation_failed"),
                             failures.result().toArray(new TableValidationException[0])));
         }
     }
@@ -4874,6 +5052,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * not careful.
      */
     protected void writeSourceScriptToDatabase(Object source, DatabaseSessionImpl session, ClassLoader loader) {
+        executeSourceScript(source, session, loader);
+    }
+
+    static void executeSourceScript(Object source, DatabaseSessionImpl session, ClassLoader loader) {
         if (source != null) {
             Reader reader = null;
 

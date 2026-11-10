@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,6 +39,8 @@ import java.security.PrivilegedActionException;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -47,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.FetchType;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -123,6 +127,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 public class QueryHintsHandler {
 
     public static final String QUERY_HINT_PROPERTY = "eclipselink.query.hints";
+    private static final String CACHE_STORE_REFRESH_PREVIOUS = "eclipselink.query.cache-store-refresh-previous";
 
     private QueryHintsHandler() {
     }
@@ -163,6 +168,47 @@ public class QueryHintsHandler {
     @SuppressWarnings("unchecked")
     static Map<String, Object> get(DatabaseQuery query) {
         return (Map<String, Object>) query.getProperty(QUERY_HINT_PROPERTY);
+    }
+
+    /** Cache hint history is retained for callers, but only accepted state may be transferred. */
+    static Map<String, Object> getNonCacheHints(DatabaseQuery query) {
+        Map<String, Object> hints = get(query);
+        if (hints == null) {
+            return null;
+        }
+        hints = new HashMap<>(hints);
+        hints.remove(QueryHints.CACHE_RETRIEVE_MODE);
+        hints.remove(QueryHints.CACHE_STORE_MODE);
+        hints.remove("jakarta.persistence.cacheRetrieveMode");
+        hints.remove("jakarta.persistence.cacheStoreMode");
+        return hints;
+    }
+
+    /** Copy query settings and complete cache semantics which depend on the target's shape. */
+    static void copyQueryState(DatabaseQuery source, DatabaseQuery target) {
+        target.copyFromQuery(source);
+        completeCacheState(source, target);
+    }
+
+    /** Complete accepted cache modes and independent refresh after the existing query copy. */
+    static void completeCacheState(DatabaseQuery source, DatabaseQuery target) {
+        target.setProperties(new HashMap<>(target.getProperties()));
+        Boolean independent = source.getProperty(CACHE_STORE_REFRESH_PREVIOUS) instanceof Boolean previous ? previous
+                : source instanceof ObjectBuildingQuery building ? building.shouldRefreshIdentityMapResult() : null;
+        if (target instanceof ObjectBuildingQuery building) {
+            if (independent != null) {
+                building.setShouldRefreshIdentityMapResult(independent);
+            }
+            target.removeProperty(CACHE_STORE_REFRESH_PREVIOUS);
+        } else if (independent != null) {
+            target.setProperty(CACHE_STORE_REFRESH_PREVIOUS, independent);
+        }
+        if (source.getProperty(QueryHints.CACHE_RETRIEVE_MODE) instanceof CacheRetrieveMode retrieve) {
+            Hint.mainMap.get(QueryHints.CACHE_RETRIEVE_MODE).applyToDatabaseQuery(retrieve, target, null, null);
+        }
+        if (source.getProperty(QueryHints.CACHE_STORE_MODE) instanceof CacheStoreMode store) {
+            Hint.mainMap.get(QueryHints.CACHE_STORE_MODE).applyToDatabaseQuery(store, target, null, null);
+        }
     }
 
     /**
@@ -368,10 +414,11 @@ public class QueryHintsHandler {
             }
 
             Map<String, Object> existingHints = (Map<String, Object>)query.getProperty(QUERY_HINT_PROPERTY);
-            if (existingHints == null){
-                existingHints = new HashMap<>();
-                query.setProperty(QUERY_HINT_PROPERTY, existingHints);
-            }
+            // DatabaseQuery clones its property map, whose values may still be
+            // shared with a named-query template. Replace the nested hint map
+            // before modifying it so per-query overrides remain independent.
+            existingHints = existingHints == null ? new HashMap<>() : new HashMap<>(existingHints);
+            query.setProperty(QUERY_HINT_PROPERTY, existingHints);
             existingHints.put(hintName, hintValue);
 
             return hint.apply(hintValue, shouldUseDefault, query, loader, activeSession);
@@ -571,19 +618,18 @@ public class QueryHintsHandler {
 
         CacheRetrieveModeHint(String name, String defaultValue) {
             super(name, defaultValue);
+            defaultValueToApply = CacheRetrieveMode.USE;
         }
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            if (query.isObjectLevelReadQuery()) {
-                if (valueToApply.equals(CacheRetrieveMode.BYPASS) || valueToApply.equals(CacheRetrieveMode.BYPASS.name())) {
-                    query.retrieveBypassCache();
-                } else if (valueToApply.equals(CacheRetrieveMode.USE) || valueToApply.equals(CacheRetrieveMode.USE.name())) {
-                    // Explicitly clear the bypass cache flag to allow Query-level USE to override EntityManager-level BYPASS
-                    query.setShouldRetrieveBypassCache(false);
-                }
-            } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            if (valueToApply.equals(CacheRetrieveMode.BYPASS) || valueToApply.equals(CacheRetrieveMode.BYPASS.name())) {
+                query.retrieveBypassCache();
+                query.setProperty(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+            } else if (valueToApply.equals(CacheRetrieveMode.USE) || valueToApply.equals(CacheRetrieveMode.USE.name())) {
+                // Explicitly clear the bypass cache flag to allow Query-level USE to override EntityManager-level BYPASS
+                query.setShouldRetrieveBypassCache(false);
+                query.setProperty(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
             }
 
             return query;
@@ -612,26 +658,42 @@ public class QueryHintsHandler {
 
         CacheStoreModeHint(String name, String defaultValue) {
             super(name, defaultValue);
+            defaultValueToApply = CacheStoreMode.USE;
         }
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (valueToApply.equals(CacheStoreMode.BYPASS) || valueToApply.equals(CacheStoreMode.BYPASS.name())) {
                 query.storeBypassCache();
+                restoreIndependentRefresh(query);
+                query.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
             } else if (valueToApply.equals(CacheStoreMode.REFRESH) || valueToApply.equals(CacheStoreMode.REFRESH.name())) {
-                if (query.isObjectLevelReadQuery()) {
-                    ((ObjectLevelReadQuery) query).refreshIdentityMapResult();
-                    // Explicitly clear the bypass cache flag to allow Query-level REFRESH to override EntityManager-level BYPASS
-                    query.setShouldStoreBypassCache(false);
-                } else {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+                if (query instanceof ObjectBuildingQuery building) {
+                    if (query.getProperty(CACHE_STORE_REFRESH_PREVIOUS) == null) {
+                        query.setProperty(CACHE_STORE_REFRESH_PREVIOUS, building.shouldRefreshIdentityMapResult());
+                    }
+                    building.refreshIdentityMapResult();
                 }
+                // Scalar and modifying queries have no entity cache results to refresh.
+                // Explicitly clear the bypass cache flag to allow Query-level REFRESH to override EntityManager-level BYPASS
+                query.setShouldStoreBypassCache(false);
+                query.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
             } else if (valueToApply.equals(CacheStoreMode.USE) || valueToApply.equals(CacheStoreMode.USE.name())) {
                 // Explicitly clear the bypass cache flag to allow Query-level USE to override EntityManager-level BYPASS
                 query.setShouldStoreBypassCache(false);
+                restoreIndependentRefresh(query);
+                query.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.USE);
             }
 
             return query;
+        }
+
+        private static void restoreIndependentRefresh(DatabaseQuery query) {
+            if (query instanceof ObjectBuildingQuery building
+                    && query.getProperty(CACHE_STORE_REFRESH_PREVIOUS) instanceof Boolean previous) {
+                building.setShouldRefreshIdentityMapResult(previous);
+                query.removeProperty(CACHE_STORE_REFRESH_PREVIOUS);
+            }
         }
     }
 
@@ -709,7 +771,7 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isDataReadQuery()) {
                 DataModifyQuery newQuery = new DataModifyQuery();
-                newQuery.copyFromQuery(query);
+                copyQueryState(query, newQuery);
                 newQuery.setIsBatchExecutionSupported((Boolean) valueToApply);
                 return newQuery;
             } else if (query.isModifyQuery()) {
@@ -781,7 +843,7 @@ public class QueryHintsHandler {
                 Class<?> queryClass = loadClass((String)valueToApply, query, loader);
                 newQuery = (DatabaseQuery)newInstance(queryClass, query, QueryHints.QUERY_TYPE);
             }
-            newQuery.copyFromQuery(query);
+            copyQueryState(query, newQuery);
             return newQuery;
         }
     }
@@ -812,7 +874,8 @@ public class QueryHintsHandler {
             super(QueryHints.PESSIMISTIC_LOCK_SCOPE, jakarta.persistence.PessimisticLockScope.NORMAL.name());
             valueArray = new Object[] {
                 jakarta.persistence.PessimisticLockScope.NORMAL.name(),
-                jakarta.persistence.PessimisticLockScope.EXTENDED.name()
+                jakarta.persistence.PessimisticLockScope.EXTENDED.name(),
+                jakarta.persistence.PessimisticLockScope.FETCHED.name()
             };
         }
 
@@ -822,6 +885,7 @@ public class QueryHintsHandler {
                 boolean shouldExtend = valueToApply.equals(jakarta.persistence.PessimisticLockScope.EXTENDED.name());
                 ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)query;
                 olrQuery.setShouldExtendPessimisticLockScope(shouldExtend);
+                olrQuery.setShouldLockFetchedRelationships(valueToApply.equals(jakarta.persistence.PessimisticLockScope.FETCHED.name()));
                 if(shouldExtend) {
                     olrQuery.extendPessimisticLockScope();
                 }
@@ -912,7 +976,12 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectBuildingQuery()) {
-                ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult((Boolean) valueToApply);
+                if (query.getProperty(CACHE_STORE_REFRESH_PREVIOUS) != null) {
+                    // Preserve this independent request when the cache REFRESH mode is later replaced.
+                    query.setProperty(CACHE_STORE_REFRESH_PREVIOUS, valueToApply);
+                } else {
+                    ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult((Boolean) valueToApply);
+                }
                 // Set default cascade to be by mapping.
                 if (!query.shouldCascadeParts()) {
                     query.cascadeByMapping();
@@ -1144,6 +1213,37 @@ public class QueryHintsHandler {
         }
     }
 
+    private static AttributeGroup namedGraph(Object name, AbstractSession session) {
+        AttributeGroup graph = session.getAttributeGroups().get(name);
+        // Named queries are prepared before the Project's graphs are copied
+        // into the session registry during descriptor initialization.
+        return graph != null ? graph : session.getProject().getAttributeGroups().get(name);
+    }
+
+    private static FetchGroup graphFetchGroup(AttributeGroup graph, boolean includeDefaults) {
+        Map<AttributeGroup, FetchGroup> groups = new IdentityHashMap<>();
+        FetchGroup fetchGroup = graph.toFetchGroup(groups);
+        boolean hasExclusions = false;
+        for (Map.Entry<AttributeGroup, FetchGroup> entry : groups.entrySet()) {
+            Set<String> exclusions = new HashSet<>();
+            entry.getKey().getAttributeOptions().forEach((attribute, options) -> {
+                if (options.get(FetchType.class) == FetchType.LAZY) {
+                    exclusions.add(attribute);
+                }
+            });
+            entry.getValue().setShouldIncludeDefaultAttributes(includeDefaults);
+            entry.getValue().setExcludedAttributes(exclusions);
+            hasExclusions |= !exclusions.isEmpty();
+        }
+        return includeDefaults && !hasExclusions ? null : fetchGroup;
+    }
+
+    private static void applyLoadGraph(AttributeGroup graph, ObjectLevelReadQuery query) {
+        // A normal LoadGroup is additive. The optional fetch-group overlay
+        // suppresses explicitly excluded mappings before eager construction.
+        query.setEntityGraphLoadGroup(graph.toLoadGroup(new IdentityHashMap<>(), false), graphFetchGroup(graph, true));
+    }
+
     protected static class FetchGraphHint extends Hint {
         FetchGraphHint() {
             super(QueryHints.JPA_FETCH_GRAPH, "");
@@ -1154,23 +1254,23 @@ public class QueryHintsHandler {
             if (query.isObjectLevelReadQuery()) {
                 if(valueToApply != null) {
                     if (valueToApply instanceof String){
-                        AttributeGroup eg = activeSession.getAttributeGroups().get(valueToApply);
+                        AttributeGroup eg = namedGraph(valueToApply, activeSession);
                         if (eg != null){
-                            FetchGroup fg = eg.toFetchGroup();
+                            FetchGroup fg = graphFetchGroup(eg, false);
                             fg.setShouldLoadAll(true);
-                            ((ObjectLevelReadQuery)query).setFetchGroup(fg);
+                            ((ObjectLevelReadQuery)query).setEntityGraphFetchGroup(fg);
                         }else{
                             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{valueToApply}));
                         }
                     }else if (valueToApply instanceof EntityGraphImpl){
-                        FetchGroup fg = ((EntityGraphImpl)valueToApply).getAttributeGroup().toFetchGroup();
+                        FetchGroup fg = graphFetchGroup(((EntityGraphImpl)valueToApply).getAttributeGroup(), false);
                         fg.setShouldLoadAll(true);
-                        ((ObjectLevelReadQuery)query).setFetchGroup(fg);
+                        ((ObjectLevelReadQuery)query).setEntityGraphFetchGroup(fg);
                     }else{
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GRAPH, valueToApply}));
                     }
                 } else {
-                    ((ObjectLevelReadQuery)query).setFetchGroup(null);
+                    ((ObjectLevelReadQuery)query).setEntityGraphFetchGroup(null);
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
@@ -1255,19 +1355,19 @@ public class QueryHintsHandler {
             if (query.isObjectLevelReadQuery()) {
                 if(valueToApply != null) {
                     if (valueToApply instanceof String){
-                        AttributeGroup eg = activeSession.getAttributeGroups().get(valueToApply);
+                        AttributeGroup eg = namedGraph(valueToApply, activeSession);
                         if (eg != null){
-                            ((ObjectLevelReadQuery)query).setLoadGroup(eg.toLoadGroup());
+                            applyLoadGraph(eg, (ObjectLevelReadQuery)query);
                         }else{
                             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{valueToApply}));
                         }
                     }else if (valueToApply instanceof EntityGraphImpl){
-                        ((ObjectLevelReadQuery)query).setLoadGroup(((EntityGraphImpl)valueToApply).getAttributeGroup().toLoadGroup());
+                        applyLoadGraph(((EntityGraphImpl)valueToApply).getAttributeGroup(), (ObjectLevelReadQuery)query);
                     }else{
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_LOAD_GRAPH, valueToApply}));
                     }
                 } else {
-                    ((ObjectLevelReadQuery)query).setFetchGroup(null);
+                    ((ObjectLevelReadQuery)query).setEntityGraphLoadGroup(null, null);
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));

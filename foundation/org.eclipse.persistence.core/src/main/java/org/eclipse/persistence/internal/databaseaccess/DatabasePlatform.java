@@ -59,18 +59,21 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Types;
+import java.util.ArrayDeque;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
-import javax.xml.transform.dom.DOMResult;
 
-import org.w3c.dom.Document;
+import javax.xml.transform.dom.DOMResult;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -93,12 +96,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.platform.database.AccessPlatform;
 import org.eclipse.persistence.platform.database.DB2Platform;
-import org.eclipse.persistence.platform.database.DBasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
-import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
@@ -117,6 +117,7 @@ import org.eclipse.persistence.tools.schemaframework.DDLPlatform;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.SequenceDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+import org.w3c.dom.Document;
 
 /**
  * DatabasePlatform is private to EclipseLink. It encapsulates behavior specific to a database platform
@@ -1073,6 +1074,47 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
+     * Return whether the primary database failure represents a unique constraint
+     * violation on this platform. Causes and JDBC next-exception chains are
+     * inspected with identity-based cycle protection. Suppressed exceptions are
+     * deliberately excluded because cleanup failures do not describe the write.
+     */
+    public boolean isUniqueConstraintViolation(DatabaseException exception) {
+        Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        ArrayDeque<Throwable> pending = new ArrayDeque<>();
+        if (exception.getInternalException() != null) {
+            pending.add(exception.getInternalException());
+        }
+        while (!pending.isEmpty()) {
+            Throwable failure = pending.removeFirst();
+            if (!visited.add(failure)) {
+                continue;
+            }
+            if (failure instanceof SQLException sql) {
+                if (isUniqueConstraintViolation(sql)) {
+                    return true;
+                }
+                if (sql.getNextException() != null) {
+                    pending.addLast(sql.getNextException());
+                }
+            }
+            if (failure.getCause() != null) {
+                pending.addLast(failure.getCause());
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Classify one SQL exception. Subclasses may add their own vendor codes;
+     * the default recognizes only the precise unique-violation SQLState.
+     */
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        return "23505".equals(exception.getSQLState());
+    }
+
+
+    /**
      * INTERNAL:
      * Indicates whether SELECT DISTINCT ... FOR UPDATE is allowed by the platform (Oracle doesn't allow this).
      */
@@ -1719,6 +1761,11 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         return true;
     }
 
+    /** Whether subquery-containing sort keys may be printed directly in ORDER BY. */
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return true;
+    }
+
     /**
      * Internal: This gets called on each batch statement execution
      * Needs to be implemented so that it returns the number of rows successfully modified
@@ -1824,9 +1871,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      * This support a wide range of different parameter types,
      * and is heavily optimized for common types.
      */
-    public void setParameterValueInDatabaseCall(Object parameter,
-                PreparedStatement statement, int index, AbstractSession session)
-                throws SQLException {
+    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
         // Process common types first.
         if (parameter instanceof String) {
             // Check for stream binding of large strings.
@@ -1861,7 +1906,10 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             } else {
                 statement.setObject(index, parameter);
             }
-        }  else if (parameter instanceof java.sql.Date){
+        }
+
+        // SQL time/dates
+        else if (parameter instanceof java.sql.Date){
             statement.setDate(index,(java.sql.Date)parameter);
         }  else if (parameter instanceof java.time.LocalDate){
             statement.setDate(index, java.sql.Date.valueOf((java.time.LocalDate) parameter));
@@ -1887,7 +1935,10 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof Boolean) {
             statement.setBoolean(index, (Boolean) parameter);
-        } else if (parameter == null) {
+        }
+
+        // Null handling
+        else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             statement.setNull(index, getJDBCType((Class<?>)null));
         } else if (parameter instanceof DatabaseField) {
@@ -1900,6 +1951,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
                 statement.setBytes(index, (byte[])parameter);
             }
         }
+
         // Next process types that need conversion.
         else if (parameter instanceof Calendar) {
             statement.setTimestamp(index, Helper.timestampFromDate(((Calendar)parameter).getTime()));
@@ -2100,6 +2152,12 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         int nBoundParameters = 0;
         DatabaseCall databaseCall = (DatabaseCall)call;
         try {
+            // A field represents a typed null when binding. Literal translation must
+            // retain that meaning instead of printing the field's identifier.
+            if (parameter instanceof DatabaseField field) {
+                appendNullParameter(writer, field);
+                return nBoundParameters;
+            }
             // PERF: Print Calendars directly avoiding timestamp conversion,
             // Must be before conversion as you cannot bind calendars.
             if (parameter instanceof Calendar) {
@@ -2181,6 +2239,67 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         }
 
         return nBoundParameters;
+    }
+
+    /** INTERNAL: SQL context required by specialized scalar Criteria expressions. */
+    public enum ExpressionTypeContext {
+        TEMPORAL_VALUE, TEMPORAL_RESULT, CASE_VALUE
+    }
+
+    /**
+     * INTERNAL: Supply parser context for standalone temporal values. Ordinary CASE
+     * values retain their existing binding context; platforms may require a native
+     * result representation for a particular context.
+     */
+    public void printExpressionTypeContext(Expression value, Class<?> type,
+            ExpressionTypeContext context, ExpressionSQLPrinter printer) {
+        if (context != ExpressionTypeContext.TEMPORAL_RESULT && value.isValueExpression()
+                && (type == java.time.LocalDate.class || type == java.time.LocalTime.class
+                || type == java.time.LocalDateTime.class) && !hasRelationalTemporalContext(value, type)) {
+            printTemporalTypeContext(value, type, printer);
+        } else {
+            value.printSQL(printer);
+        }
+    }
+
+    /** Preserve the original mapped conversion when a temporal value represents another SQL type. */
+    protected boolean hasRelationalTemporalContext(Expression value, Class<?> type) {
+        Expression base = value instanceof org.eclipse.persistence.internal.expressions.ParameterExpression parameter
+                ? parameter.getLocalBase() : value instanceof org.eclipse.persistence.internal.expressions.ConstantExpression constant
+                ? constant.getLocalBase() : null;
+        if (base instanceof org.eclipse.persistence.internal.expressions.QueryKeyExpression queryKey
+                && queryKey.getMapping() instanceof org.eclipse.persistence.mappings.foundation.AbstractDirectMapping mapping) {
+            if (mapping.hasConverter()) {
+                return true;
+            }
+            FieldDefinition.DatabaseType mappedType = getDatabaseType(mapping.getFieldClassification(queryKey.getField()));
+            FieldDefinition.DatabaseType temporalType = getDatabaseType(type);
+            return mappedType == null || temporalType == null || !mappedType.name().equals(temporalType.name());
+        }
+        return false;
+    }
+
+    /** INTERNAL: Only the three standard local temporal types use this CAST path. */
+    protected void printTemporalTypeContext(Expression value, Class<?> type, ExpressionSQLPrinter printer) {
+        FieldDefinition.DatabaseType nativeType = getDatabaseType(type);
+        String sqlType = nativeType.name();
+        // Native fractional temporal types (for example DATETIME(6)) require their precision.
+        if (nativeType.requireSize()) {
+            sqlType += "(" + nativeType.defaultSize() + ")";
+        }
+        printExpressionCast(value, sqlType, printer);
+    }
+
+    /** INTERNAL: Render an expression with a platform-selected scalar SQL type. */
+    protected void printExpressionCast(Expression value, String sqlType, ExpressionSQLPrinter printer) {
+        printer.printString("CAST(");
+        value.printSQL(printer);
+        printer.printString(" AS " + sqlType + ")");
+    }
+
+    /** INTERNAL: Render a null parameter when this occurrence cannot use binding. */
+    public void appendNullParameter(Writer writer, DatabaseField field) throws IOException {
+        writer.write("NULL");
     }
 
     /**
@@ -2939,6 +3058,13 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
         call.setFields(statement.printSQL(printer));
+    }
+
+    /**
+     * INTERNAL:
+     * Print platform syntax following the semantic ORDER BY terms, before locking and union clauses.
+     */
+    public void printSQLOrderByClauseTail(ExpressionSQLPrinter printer, SQLSelectStatement statement) throws IOException {
     }
 
     /**

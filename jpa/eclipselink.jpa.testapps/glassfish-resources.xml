@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+<!DOCTYPE resources PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN" "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<!-- The datasources the server-side persistence.xml files expect, added to the domain by the glassfish
+     profile of this pom with asadmin add-resources (filtered first, for ${glassfish.db.port}).
+
+     They use the same in-memory Derby databases as the Java SE tests, but on GlassFish's own Derby
+     server, which the profile starts on ${glassfish.db.port} rather than Derby's default 1527: that one
+     is used by the Java SE test runs, so both can run in one build.
+
+     All but the first are XA datasources, as in the WildFly setup: the members of a composite
+     persistence unit each use a different one within a single JTA transaction, and GlassFish rejects
+     more than one non-XA resource in a transaction. -->
+<resources>
+    <jdbc-connection-pool name="EclipseLinkPool" res-type="javax.sql.DataSource"
+                          datasource-classname="org.apache.derby.jdbc.ClientDataSource">
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+        <property name="serverName" value="localhost"/>
+        <property name="portNumber" value="${glassfish.db.port}"/>
+        <property name="databaseName" value="memory:ecltests"/>
+        <property name="connectionAttributes" value=";create=true"/>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="EclipseLinkPool" jndi-name="jdbc/EclipseLinkDS"/>
+
+    <jdbc-connection-pool name="EclipseLinkPool2" res-type="javax.sql.XADataSource"
+                          datasource-classname="org.apache.derby.jdbc.ClientXADataSource">
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+        <property name="serverName" value="localhost"/>
+        <property name="portNumber" value="${glassfish.db.port}"/>
+        <property name="databaseName" value="memory:ecltests2"/>
+        <property name="connectionAttributes" value=";create=true"/>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="EclipseLinkPool2" jndi-name="jdbc/EclipseLinkDS2"/>
+
+    <jdbc-connection-pool name="EclipseLinkPool3" res-type="javax.sql.XADataSource"
+                          datasource-classname="org.apache.derby.jdbc.ClientXADataSource">
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+        <property name="serverName" value="localhost"/>
+        <property name="portNumber" value="${glassfish.db.port}"/>
+        <property name="databaseName" value="memory:ecltests3"/>
+        <property name="connectionAttributes" value=";create=true"/>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="EclipseLinkPool3" jndi-name="jdbc/EclipseLinkDS3"/>
+
+    <jdbc-connection-pool name="EclipseLinkXAPool" res-type="javax.sql.XADataSource"
+                          datasource-classname="org.apache.derby.jdbc.ClientXADataSource">
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+        <property name="serverName" value="localhost"/>
+        <property name="portNumber" value="${glassfish.db.port}"/>
+        <property name="databaseName" value="memory:ecltestsxa"/>
+        <property name="connectionAttributes" value=";create=true"/>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="EclipseLinkXAPool" jndi-name="jdbc/EclipseLinkXADS"/>
+</resources>

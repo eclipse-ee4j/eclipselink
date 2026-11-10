@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,8 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -55,6 +57,13 @@ import java.util.Set;
  * @since TOPLink/Java 1.1
  */
 public class MergeManager {
+
+    /** Supplied only by the exact-query registration merge, never by legacy merges. */
+    private UnitOfWorkImpl.RefreshOperation refreshOperation;
+
+    void setRefreshOperation(UnitOfWorkImpl.RefreshOperation operation) {
+        this.refreshOperation = operation;
+    }
 
     /** The unit of work merging for. */
     protected AbstractSession session;
@@ -559,6 +568,19 @@ public class MergeManager {
      */
     protected Object mergeChangesOfCloneIntoWorkingCopy(Object rmiClone) {
 
+        if (!isForRefresh && this.session instanceof UnitOfWorkImpl unitOfWork
+                && !unitOfWork.getCloneMapping().containsKey(rmiClone)) {
+            ClassDescriptor sourceDescriptor = this.session.getDescriptor(rmiClone);
+            if (!sourceDescriptor.isDescriptorTypeAggregate() && sourceDescriptor.getEventManager().hasAnyEventListeners()) {
+                // The outer merge recursion gate has already recorded the source.
+                // Notify before registration copies a new source and calls PrePersist.
+                DescriptorEvent event = new DescriptorEvent(rmiClone);
+                event.setEventCode(DescriptorEventManager.PreMergeEvent);
+                event.setSession(this.session);
+                sourceDescriptor.getEventManager().executeEvent(event);
+            }
+        }
+
         Object registeredObject = null;
         if (isForRefresh){
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
@@ -566,10 +588,10 @@ public class MergeManager {
             ClassDescriptor descriptor = unitOfWork.getDescriptor(rmiClone.getClass());
             Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(rmiClone, unitOfWork, true);
             if (primaryKey != null) {
-                registeredObject = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, null, descriptor.getJavaClass(), false, descriptor);
+                registeredObject = unitOfWork.getRefreshTarget(primaryKey, descriptor, this.refreshOperation);
             }
             if (registeredObject == null){
-                return unitOfWork.internalRegisterObject(rmiClone, descriptor, false);
+                return unitOfWork.internalRegisterObject(rmiClone, descriptor, false, this.refreshOperation);
             }
         }else{
             registeredObject = registerObjectForMergeCloneIntoWorkingCopy(rmiClone, shouldForceCascade());
@@ -626,6 +648,9 @@ public class MergeManager {
 
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
+        }
+        if (this.refreshOperation != null && isForRefresh && shouldMergeCloneIntoWorkingCopy()) {
+            this.refreshOperation.recordRefresh(registeredObject, rmiClone, descriptor);
         }
 
         return registeredObject;

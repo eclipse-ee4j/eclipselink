@@ -11,3 +11,4 @@ test_*.properties
 *~
 .polyglot*
 *.tycho
+/tck/eclipselink-tck-run/bin/

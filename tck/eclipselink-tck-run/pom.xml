@@ -16,23 +16,23 @@
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>eclipselink-tck</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>eclipselink-tck-run</artifactId>
     <packaging>jar</packaging>
-    <name>EclipseLink TCK: run the Jakarta Persistence 3.2 TCK</name>
+    <name>EclipseLink TCK: run the Jakarta Persistence TCK</name>
 
     <properties>
         <!--
             The EclipseLink under test. Override to run the TCK against a released
             build instead of the local snapshot.
         -->
-        <eclipselink.version>5.0.0-SNAPSHOT</eclipselink.version>
+        <eclipselink.version>6.0.0-SNAPSHOT</eclipselink.version>
 
         <!--TCK properties-->
-        <persistence.tck.version>3.2.0</persistence.tck.version>
-        <persistence.api.version>3.2.0</persistence.api.version>
+        <persistence.tck.version>4.0.0-SNAPSHOT</persistence.tck.version>
+        <persistence.api.version>4.0.0-SNAPSHOT</persistence.api.version>
 
         <!--
             Everything the tests need is resolved from Maven and therefore already on
@@ -42,75 +42,42 @@
         <jakarta.persistence.provider>org.eclipse.persistence.jpa.PersistenceProvider</jakarta.persistence.provider>
 
         <!--
-            The database under test. Derby is the default because that is what Jakarta
-            Persistence 3.2 was certified against; -Ppostgres-start swaps in PostgreSQL,
-            overriding the four properties that differ.
-
-            Derby is started by the derby-start profile and PostgreSQL by postgres-start.
-            To point at a server you run yourself, override these on the command line and
-            name neither profile.
+            PostgreSQL runs outside this build. Override any of these on the command
+            line to point elsewhere; the role and database named here have to exist
+            before the run, or use -Ppostgres-start to have one started for you.
         -->
-        <derby.version>10.16.1.1</derby.version>
-        <derby.port>1527</derby.port>
-        <derby.db.name>derbyDB</derby.db.name>
-
         <postgres.port>5432</postgres.port>
         <postgres.db.name>jpatck</postgres.db.name>
-
-        <!--
-            Derby 10.15 split into modules and dropped org.apache.derby.jdbc.ClientDriver;
-            the client driver class has been org.apache.derby.client.ClientAutoloadedDriver
-            since. The GlassFish runner still names the old one, because the Derby inside
-            the distribution it used predates the split.
-        -->
-        <jakarta.persistence.jdbc.driver>org.apache.derby.client.ClientAutoloadedDriver</jakarta.persistence.jdbc.driver>
-        <jakarta.persistence.jdbc.url>jdbc:derby://localhost:${derby.port}/${derby.db.name};create=true</jakarta.persistence.jdbc.url>
+        <jakarta.persistence.jdbc.driver>org.postgresql.Driver</jakarta.persistence.jdbc.driver>
+        <jakarta.persistence.jdbc.url>jdbc:postgresql://localhost:${postgres.port}/${postgres.db.name}</jakarta.persistence.jdbc.url>
         <jakarta.persistence.jdbc.user>cts1</jakarta.persistence.jdbc.user>
         <jakarta.persistence.jdbc.password>cts1</jakarta.persistence.jdbc.password>
-        <jdbc.db>derby</jdbc.db>
+        <jdbc.db>postgresql</jdbc.db>
 
-        <jpa.provider.implementation.specific.properties>eclipselink.logging.level=OFF${jpa.provider.implementation.specific.additional.properties}</jpa.provider.implementation.specific.properties>
+        <jpa.provider.implementation.specific.properties>eclipselink.logging.level=OFF:eclipselink.weaving=static${jpa.provider.implementation.specific.additional.properties}</jpa.provider.implementation.specific.properties>
         <jpa.provider.implementation.specific.additional.properties/>
         <db.supports.sequence>true</db.supports.sequence>
         <persistence.second.level.caching.supported>true</persistence.second.level.caching.supported>
 
         <!--Dependency versions-->
-        <junit.jupiter.version>5.10.2</junit.jupiter.version>
-        <postgresql.jdbc.version>42.7.12</postgresql.jdbc.version>
-        <!--
-            Jakarta Persistence 3.2 belongs to Jakarta EE 11, so the Bean Validation
-            stack is the EE 11 one: Validation 3.1 with Hibernate Validator 9.0 and
-            Expressly 5. The 6.0 branch runs the EE 12 versions of the same three.
-        -->
-        <hibernate.validator.version>9.0.1.Final</hibernate.validator.version>
-        <jakarta.validation.version>3.1.1</jakarta.validation.version>
-        <expressly.version>5.0.0</expressly.version>
+        <junit.jupiter.version>6.0.1</junit.jupiter.version>
+        <postgresql.jdbc.version>42.7.13</postgresql.jdbc.version>
+        <hibernate.validator.version>9.1.4.Final</hibernate.validator.version>
+        <jakarta.validation.version>4.0.0-M1</jakarta.validation.version>
+        <expressly.version>6.0.0</expressly.version>
 
         <!--
             The forked Ant process that loads the DDL builds its own classpath and
             cannot see Maven's, so the driver is also copied to a fixed path for it.
         -->
-        <jdbc.driver.jar>${project.build.directory}/derbyclient.jar${path.separator}${project.build.directory}/derbyshared.jar</jdbc.driver.jar>
+        <jdbc.driver.jar>${project.build.directory}/postgresql.jar</jdbc.driver.jar>
         <sql.directory>./sql</sql.directory>
         <db.delimiter>;</db.delimiter>
 
         <!--
             Default value for the failsafe "test" parameter of the persistence-tests-1
-            execution, and the only place a class can actually be kept out of the run:
-            a "test" parameter overrides <includes> entirely, so while this property has
-            a value the include list below decides nothing. Both exclusions therefore
-            live here.
-
-            Client2#createEntityManagerFactoryNoBeanValidatorTest needs a classpath
-            without the Bean Validation provider, so it runs separately in
-            persistence-tests-2.
-
-            JPASigTest checks that the jakarta.persistence API artifact matches the
-            specification's signature file. That says nothing about the provider under
-            test, and it needs a sigTestClasspath built from an extracted JDK image that
-            this runner does not produce, so here it can only fail. A conformance
-            submission does have to run it - drop this negation and build that classpath
-            first.
+            execution. The five tests of bootstrap without a Bean Validation provider
+            run separately in persistence-tests-2.
 
             This is a property rather than a <test> element in the execution because an
             explicit <test> would win over the it.test user property, which stops
@@ -118,7 +85,9 @@
             method-level <excludes> is not an option either: failsafe rejects those with
             "Method filter prohibited in includes|excludes parameter".
         -->
-        <it.test>!**/JPASigTest, !**/ee/jakarta/tck/persistence/se/entityManagerFactory/Client2#createEntityManagerFactoryNoBeanValidatorTest</it.test>
+        <tck.no.validator.emf.test>**/ee/jakarta/tck/persistence/se/entityManagerFactory/SeEntityManagerFactoryCreateEntityManagerFactoryClient#createEntityManagerFactoryNoBeanValidatorTest</tck.no.validator.emf.test>
+        <tck.no.validator.validation.tests>**/ee/jakarta/tck/persistence/validation/ValidationAutoValidationModeWithSpecifiedValidationClient#autoValidationModeWithNoValidationFactory+autoValidationModeWithNoValidationFactoryEntityAgent+callbackValidationModeWithNoValidationFactory+callbackValidationModeWithNoValidationFactoryEntityAgent</tck.no.validator.validation.tests>
+        <it.test>!${tck.no.validator.emf.test},!${tck.no.validator.validation.tests}</it.test>
     </properties>
 
     <dependencyManagement>
@@ -156,8 +125,8 @@
         </dependency>
 
         <!--
-            The specification API, pinned rather than inherited, so the TCK version and
-            the API version cannot drift apart.
+            The specification API is selected explicitly alongside the TCK, so a
+            provider's transitive milestone dependency cannot replace the snapshot.
         -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
@@ -206,17 +175,7 @@
             <version>${expressly.version}</version>
         </dependency>
 
-        <!--
-            Both databases' JDBC drivers, so that a run can be pointed at either without
-            touching the dependency list. The tests load whichever
-            jakarta.persistence.jdbc.driver names, and the server itself is started by the
-            derby-start or postgres-start profile.
-        -->
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbyclient</artifactId>
-            <version>${derby.version}</version>
-        </dependency>
+        <!-- PostgreSQL is the database under test; the server runs outside this build. -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -224,7 +183,7 @@
         </dependency>
 
         <dependency>
-            <groupId>jakarta.tck</groupId>
+            <groupId>jakarta.persistence</groupId>
             <artifactId>persistence-tck-common</artifactId>
             <version>${persistence.tck.version}</version>
             <scope>test</scope>
@@ -237,7 +196,7 @@
         </dependency>
 
         <dependency>
-            <groupId>jakarta.tck</groupId>
+            <groupId>jakarta.persistence</groupId>
             <artifactId>persistence-tck-spec-tests</artifactId>
             <version>${persistence.tck.version}</version>
             <scope>test</scope>
@@ -248,7 +207,7 @@
                 </exclusion>
                 <!--
                     The spec-tests pom carries the reference implementation's own runtime
-                    (Hibernate and its dependencies) and a JDBC driver per supported database.
+                    (Hibernate, H2, ShrinkWrap) and a JDBC driver per supported database.
                     None of it is referenced by the TCK test classes themselves, and the
                     Hibernate artifacts are declared without a version, so they only
                     resolve when the Hibernate BOM is imported. Exclude them: EclipseLink
@@ -274,6 +233,14 @@
                 <exclusion>
                     <groupId>net.bytebuddy</groupId>
                     <artifactId>byte-buddy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.ibm.db2</groupId>
@@ -302,20 +269,14 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>jakarta.tck</groupId>
-            <artifactId>common</artifactId>
-            <version>11.0.3</version>
-            <scope>test</scope>
-        </dependency>
-
         <!--
             PMClientBase builds deployment archives with ShrinkWrap. shrinkwrap-api
             arrives via jakarta.tck:common, but the implementation does not: it is
             located reflectively at runtime (ConfigurationBuilder ->
             ServiceExtensionLoader), so nothing declares a compile dependency on it and
             its absence only shows up as "Could not find extension loader impl class"
-            once a test runs.
+            once a test runs. It used to be pulled in transitively by
+            shrinkwrap-resolver-depchain, which the spec-tests exclusions drop.
         -->
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>
@@ -329,15 +290,27 @@
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.tck</groupId>
+            <artifactId>sigtest-maven-plugin</artifactId>
+            <version>2.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <!--
-            No test resources are needed: PMClientBase.createDeploymentJar builds the
-            persistence unit at runtime from the TCK's own template, writes it into a
-            ShrinkWrap jar as META-INF/persistence.xml and pushes that jar onto the
-            thread context classloader. A persistence.xml placed here would be visible
-            on the parent classloader at the same time and would compete with it.
+            PMClientBase.createDeploymentJar builds each persistence unit at runtime
+            from the TCK's own template, writes it into a ShrinkWrap jar as
+            META-INF/persistence.xml and pushes that jar onto the thread context
+            classloader. A classpath-root META-INF/persistence.xml in test resources
+            would be visible on the parent classloader at the same time and would
+            compete with it. The build-only descriptor is nested under weaving.
         -->
         <pluginManagement>
             <plugins>
@@ -371,13 +344,25 @@
 
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.16.0</version>
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>resolve-signature-classpath</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
                     <!--
-                        Only the JDBC drivers need copying, and only because the forked
-                        Ant process that loads the DDL cannot see Maven's classpath. Both
-                        databases' drivers are copied unconditionally; jdbc.driver.jar names
-                        the ones actually handed to the fork.
+                        Only the JDBC driver needs copying, and only because the forked
+                        Ant process that loads the DDL cannot see Maven's classpath.
                     -->
                     <execution>
                         <id>copy-jdbc-driver</id>
@@ -387,23 +372,6 @@
                         </goals>
                         <configuration>
                             <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.derby</groupId>
-                                    <artifactId>derbyclient</artifactId>
-                                    <version>${derby.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <destFileName>derbyclient.jar</destFileName>
-                                </artifactItem>
-                                <!-- the client driver has needed this alongside it since Derby 10.15 -->
-                                <artifactItem>
-                                    <groupId>org.apache.derby</groupId>
-                                    <artifactId>derbyshared</artifactId>
-                                    <version>${derby.version}</version>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <destFileName>derbyshared.jar</destFileName>
-                                </artifactItem>
                                 <artifactItem>
                                     <groupId>org.postgresql</groupId>
                                     <artifactId>postgresql</artifactId>
@@ -462,65 +430,124 @@
                 </configuration>
             </plugin>
 
-
-            <!--
-                Starts the database the tests need, and the default one. Declared here,
-                like the docker plugin above and for the same reason: derby:start and
-                initdb are both bound to pre-integration-test, and executions in the same
-                phase run in the order their plugins are declared. Left inside the
-                derby-start profile, this plugin would be appended after antrun and initdb
-                would find nothing listening.
-
-                Derby runs inside this JVM, so the dependencies listed here are the
-                server's classpath. The TCK's stored procedures are declared with
-                "language java external name ee.jakarta.tck.persistence.storedprocedures.CS_Procs.*"
-                and are resolved against it, which is why dbprocedures is here rather than
-                installed into the database with SQLJ.
-            -->
-            <plugin>
-                <groupId>org.carlspring.maven</groupId>
-                <artifactId>derby-maven-plugin</artifactId>
-                <version>1.10</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.derby</groupId>
-                        <artifactId>derby</artifactId>
-                        <version>${derby.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.derby</groupId>
-                        <artifactId>derbyclient</artifactId>
-                        <version>${derby.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.derby</groupId>
-                        <artifactId>derbynet</artifactId>
-                        <version>${derby.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.derby</groupId>
-                        <artifactId>derbytools</artifactId>
-                        <version>${derby.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>jakarta.tck</groupId>
-                        <artifactId>dbprocedures</artifactId>
-                        <version>${persistence.tck.version}</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <derbyHome>${project.build.directory}/derby</derbyHome>
-                    <port>${derby.port}</port>
-                    <username>${jakarta.persistence.jdbc.user}</username>
-                    <password>${jakarta.persistence.jdbc.password}</password>
-                    <driver>${jakarta.persistence.jdbc.driver}</driver>
-                    <connectionURL>${jakarta.persistence.jdbc.url}</connectionURL>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>weave-tck-fetch-fixtures</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!--
+                                    These fixtures exercise runtime fetch policies. Other TCK
+                                    models include intentionally invalid metadata and cannot be
+                                    combined into a single weaving persistence unit.
+                                -->
+                                <patternset id="tck.weaving.classes">
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchdefaults/DefaultFetchBook.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchdefaults/DefaultFetchCover.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchdefaults/DefaultFetchPublisher.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/GraphRoot.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/GraphChild.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/SpecialGraphChild.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/GraphDetail.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/SameNameGraphRoot.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/SameNameGraphChild.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/SameNameGraphDetail.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchoption/FetchOptionBook.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchoption/FetchOptionPublisher.class"/>
+                                </patternset>
+                                <property name="tck.weaving.directory" location="${project.build.directory}/tck-weaving"/>
+                                <delete dir="${tck.weaving.directory}"/>
+                                <delete>
+                                    <fileset dir="${project.build.testOutputDirectory}" erroronmissingdir="false">
+                                        <patternset refid="tck.weaving.classes"/>
+                                    </fileset>
+                                </delete>
+                                <mkdir dir="${tck.weaving.directory}/unwoven"/>
+                                <mkdir dir="${tck.weaving.directory}/woven"/>
+                                <unzip src="${jakarta.persistence:persistence-tck-spec-tests:jar}"
+                                       dest="${tck.weaving.directory}/unwoven">
+                                    <patternset refid="tck.weaving.classes"/>
+                                </unzip>
+                                <fail message="The selected TCK artifact must contain all 12 fetch fixtures listed in this runner. Rebuild the current API/TCK snapshot.">
+                                    <condition>
+                                        <not>
+                                            <resourcecount count="12">
+                                                <fileset dir="${tck.weaving.directory}/unwoven" includes="**/*.class"/>
+                                            </resourcecount>
+                                        </not>
+                                    </condition>
+                                </fail>
+                                <!--
+                                    Start with fresh input even without clean. Raw staging must
+                                    precede the test classpath because the weaver loads classes
+                                    parent-first. Read the build-only descriptor from source so
+                                    weaving also works when test-resource processing is skipped.
+                                    Its nested resource copy is outside runtime META-INF discovery.
+                                -->
+                                <java classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeave"
+                                      fork="true" failonerror="true">
+                                    <classpath>
+                                        <pathelement location="${tck.weaving.directory}/unwoven"/>
+                                        <path refid="maven.test.classpath"/>
+                                    </classpath>
+                                    <arg value="-persistenceinfo"/>
+                                    <arg value="${project.basedir}/src/test/resources/weaving"/>
+                                    <arg value="${tck.weaving.directory}/unwoven"/>
+                                    <arg value="${tck.weaving.directory}/woven"/>
+                                </java>
+                                <fail message="Static weaving did not produce all 12 TCK fetch fixtures.">
+                                    <condition>
+                                        <not>
+                                            <resourcecount count="12">
+                                                <fileset dir="${tck.weaving.directory}/woven" includes="**/*.class"/>
+                                            </resourcecount>
+                                        </not>
+                                    </condition>
+                                </fail>
+                                <!--
+                                    Failsafe loads test output before dependency artifacts. Keep
+                                    the original TCK JAR intact and scan it for the unchanged
+                                    tests; only the enhanced fixtures come from this overlay.
+                                    TckWeavingPreflight verifies them in each actual test JVM.
+                                -->
+                                <copy todir="${project.build.testOutputDirectory}">
+                                    <fileset dir="${tck.weaving.directory}/woven">
+                                        <patternset refid="tck.weaving.classes"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>prepare-signature-jdk-classes</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete dir="${project.build.directory}/sigtest-jdk-classes"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>remove-signature-jdk-classes</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete dir="${project.build.directory}/sigtest-jdk-classes"/>
+                            </target>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>initdb</id>
                         <phase>pre-integration-test</phase>
@@ -587,15 +614,15 @@
                                 <fail if="initdb.unreachable">
 initdb could not reach a database at ${jakarta.persistence.jdbc.url} - connection refused.
 
-Nothing is listening there. Each database is started by its own profile - Derby by
-derby-start, PostgreSQL by postgres-start - and naming any profile switches off every
-activeByDefault one, so the usual cause is naming some but not all of them:
+Nothing is listening there. The PostgreSQL container is started by the postgres-start
+profile, which is not active by default, so the usual cause is leaving it out:
 
-    mvn clean verify                                     full suite on Derby
-    mvn clean verify -Pderby-start,test1                 one test on Derby
-    mvn clean verify -Ppostgres-start,test1,test2        full suite on PostgreSQL
+    mvn clean verify -Ppostgres-start,test1
 
-On macOS the PostgreSQL profile also needs Maven to be able to see the Docker socket:
+All three profiles have to be named together. test1 and test2 are activeByDefault, and
+activating any profile explicitly would otherwise switch them off.
+
+On macOS Maven also needs to be able to see the Docker socket:
 
     export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock
 
@@ -632,11 +659,10 @@ Full log: ${initdb.log}
                                 </fail>
 
                                 <!--
-                                    Both databases report each object the drops look for - table,
+                                    PostgreSQL reports each object the drops look for - table,
                                     sequence, procedure, type, constraint - with a message ending
-                                    in "does not exist", though they word the rest of it quite
-                                    differently, so that phrase alone is what is matched. Every
-                                    other failure is genuine and is echoed below.
+                                    in "does not exist". Every other failure is genuine and is
+                                    echoed below.
                                 -->
                                 <loadfile property="initdb.real.errors" srcFile="${initdb.log}" quiet="true">
                                     <filterchain>
@@ -644,7 +670,7 @@ Full log: ${initdb.log}
                                             <regexp pattern="\[sql\].*(Exception|Error)"/>
                                         </linecontainsregexp>
                                         <linecontainsregexp negate="true">
-                                            <regexp pattern="does not exist"/>
+                                            <regexp pattern="PSQLException: ERROR: .* does not exist"/>
                                         </linecontainsregexp>
                                         <tokenfilter>
                                             <replaceregex pattern="^\s*\[sql\]\s*" replace=""/>
@@ -671,7 +697,7 @@ Full log: ${initdb.log}
                                             <fileset file="${initdb.log}"/>
                                             <filterchain>
                                                 <linecontainsregexp>
-                                                    <regexp pattern="does not exist"/>
+                                                    <regexp pattern="PSQLException: ERROR: .* does not exist"/>
                                                 </linecontainsregexp>
                                             </filterchain>
                                         </concat>
@@ -708,7 +734,7 @@ Full log: ${initdb.log}
                     into it.
                 -->
                 <configuration>
-                    <dependenciesToScan>jakarta.tck:persistence-tck-spec-tests</dependenciesToScan>
+                    <dependenciesToScan>jakarta.persistence:persistence-tck-spec-tests</dependenciesToScan>
                     <systemPropertyVariables>
                         <platform.mode>standalone</platform.mode>
                         <vehicle>standalone</vehicle>
@@ -730,6 +756,8 @@ Full log: ${initdb.log}
                         <Insert_Jpa_Purchase_Order>INSERT INTO PURCHASE_ORDER(ID, TOTAL, DESCRIPTION) VALUES(?, ?, null)</Insert_Jpa_Purchase_Order>
                         <Select_Jpa_Purchase_Order>SELECT ID, TOTAL FROM PURCHASE_ORDER WHERE ID=?</Select_Jpa_Purchase_Order>
                         <jdbc.db>${jdbc.db}</jdbc.db>
+                        <sigTestClasspath>${jakarta.persistence:jakarta.persistence-api:jar}${path.separator}${jakarta.annotation:jakarta.annotation-api:jar}${path.separator}${project.build.directory}/sigtest-jdk-classes/java.base${path.separator}${project.build.directory}/sigtest-jdk-classes/java.rmi${path.separator}${project.build.directory}/sigtest-jdk-classes/java.sql${path.separator}${project.build.directory}/sigtest-jdk-classes/java.naming</sigTestClasspath>
+                        <jimage.dir>${project.build.directory}/sigtest-jdk-classes</jimage.dir>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -737,6 +765,12 @@ Full log: ${initdb.log}
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
+                <configuration>
+                    <reportsDirectories>
+                        <reportsDirectory>${project.build.directory}/failsafe-reports/main</reportsDirectory>
+                        <reportsDirectory>${project.build.directory}/failsafe-reports/no-validator</reportsDirectory>
+                    </reportsDirectories>
+                </configuration>
                 <executions>
                     <execution>
                         <id>generate-failsafe-html-report</id>
@@ -756,70 +790,20 @@ Full log: ${initdb.log}
         as a side effect deactivates test2 and stops the full suite from running after
         it. Both are active by default, so a plain "mvn verify" still runs everything.
 
-        The same applies to the two database profiles, derby-start and postgres-start:
-        derby-start is activeByDefault like the two above, postgres-start is not, and
-        naming either one switches off everything that is - see their own comments.
+        postgres-start is the only other profile, and activating it deactivates these
+        two, so it has to be named alongside them - see its own comment.
     -->
     <profiles>
-
         <!--
-            Runs the database the tests need, and the default: Jakarta Persistence 3.2 was
-            certified against EclipseLink on Derby, so this is the configuration the
-            published results came from. PostgreSQL is available with -Ppostgres-start,
-            and shows up rather more of both the provider and the TCK - see that profile.
-
-            Only the executions live here; the plugin itself is declared in the build
-            above so that it keeps its place in the pre-integration-test ordering.
-
-            Like every activeByDefault profile it switches off as soon as any profile is
-            named explicitly, so it has to be listed alongside the others when it is:
-
-                mvn clean install                                    full suite, Derby
-                mvn clean install -Pderby-start,test1 -Dit.test=...  one test, Derby
-        -->
-        <profile>
-            <id>derby-start</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.carlspring.maven</groupId>
-                        <artifactId>derby-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>start-derby</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-derby</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <!--
-            Runs the TCK against PostgreSQL instead of the default Derby, starting a
-            container to hold it. Jakarta Persistence 3.2 was certified on Derby, and
-            PostgreSQL folds unquoted identifiers to lower case where Derby folds them
-            up, so this profile surfaces failures the certified configuration cannot -
-            some of them the TCK's, not the provider's.
+            Runs the database the tests need, for anyone who does not already have one.
+            Without it the build expects a server to be reachable at
+            jakarta.persistence.jdbc.url already.
 
             Maven deactivates every activeByDefault profile as soon as any other profile
             in this pom becomes active, and that is where the two test executions live,
             so this has to be listed together with them or the build runs no tests at all:
 
-                mvn clean install -Ppostgres-start,test1,test2             full suite
+                mvn clean install -Ppostgres-start,test1,test2        full suite
                 mvn clean install -Ppostgres-start,test1 -Dit.test=...     one test
 
             The container is removed again at post-integration-test, so every run starts
@@ -833,16 +817,6 @@ Full log: ${initdb.log}
         -->
         <profile>
             <id>postgres-start</id>
-            <properties>
-                <!--
-                    Everything that differs from the Derby default. The database itself is
-                    started by this profile's docker executions below.
-                -->
-                <jakarta.persistence.jdbc.driver>org.postgresql.Driver</jakarta.persistence.jdbc.driver>
-                <jakarta.persistence.jdbc.url>jdbc:postgresql://localhost:${postgres.port}/${postgres.db.name}</jakarta.persistence.jdbc.url>
-                <jdbc.db>postgresql</jdbc.db>
-                <jdbc.driver.jar>${project.build.directory}/postgresql.jar</jdbc.driver.jar>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -886,12 +860,11 @@ Full log: ${initdb.log}
                                     <goal>verify</goal>
                                 </goals>
                                 <configuration>
-                                    <!--
-                                        JPASigTest is deliberately absent; see the it.test property,
-                                        which is what actually keeps it out of the run.
-                                    -->
+                                    <reportsDirectory>${project.build.directory}/failsafe-reports/main</reportsDirectory>
+                                    <summaryFile>${project.build.directory}/failsafe-reports/main/failsafe-summary.xml</summaryFile>
                                     <includes>
                                         <include>**/*Client*.*</include>
+                                        <include>**/*JPASigTest*.*</include>
                                     </includes>
                                 </configuration>
                             </execution>
@@ -918,9 +891,11 @@ Full log: ${initdb.log}
                                     <goal>verify</goal>
                                 </goals>
                                 <configuration>
-                                    <test>**/ee/jakarta/tck/persistence/se/entityManagerFactory/Client2#createEntityManagerFactoryNoBeanValidatorTest</test>
+                                    <reportsDirectory>${project.build.directory}/failsafe-reports/no-validator</reportsDirectory>
+                                    <summaryFile>${project.build.directory}/failsafe-reports/no-validator/failsafe-summary.xml</summaryFile>
+                                    <test>${tck.no.validator.emf.test},${tck.no.validator.validation.tests}</test>
                                     <!--
-                                        This test asserts the behaviour when no Bean Validation
+                                        These tests assert the behaviour when no Bean Validation
                                         provider is present, so the provider is taken off the
                                         classpath for this execution only. The GlassFish runner
                                         achieved the same by listing jars by hand.

@@ -125,7 +125,7 @@ public class CriteriaQueryTest extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join<Object, Object> address = root.join("address");
+        Join<Employee, Object> address = root.join("address");
         address.on(qb.equal(address.get("city"), "Ottawa"));
         List<Employee> testResult = em.createQuery(cq).getResultList();
 
@@ -146,7 +146,7 @@ public class CriteriaQueryTest extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join<Object, Object> phoneNumber = root.join("phoneNumbers");
+        Join<Employee, Object> phoneNumber = root.join("phoneNumbers");
         phoneNumber.on(qb.equal(phoneNumber.get("areaCode"), "613"));
         List<Employee> testResult = em.createQuery(cq).getResultList();
 
@@ -168,7 +168,7 @@ public class CriteriaQueryTest extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee>cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join<Object, Object> address = root.join("address", JoinType.LEFT);
+        Join<Employee, Object> address = root.join("address", JoinType.LEFT);
         address.on(qb.equal(address.get("city"), "Ottawa"));
         cq.where(qb.isNotNull(address.get("postalCode")));
         List<Employee> testResult = em.createQuery(cq).getResultList();
@@ -388,7 +388,8 @@ public class CriteriaQueryTest extends JUnitTestCase {
         Root<Employee> root = cq.from(Employee.class);
         cq.set(root.get("firstName"), "CHANGED");
         cq.where(qb.isNotNull(root.get("firstName")));
-        EJBQueryImpl<?> testQuery = (EJBQueryImpl<?>)jpaEM.createQuery(cq);
+        // createQuery(CriteriaStatement) returns a Statement in Jakarta Persistence 4.0.
+        EJBQueryImpl<?> testQuery = jpaEM.createQuery(cq).unwrap(EJBQueryImpl.class);
 
         String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
@@ -549,8 +550,9 @@ public class CriteriaQueryTest extends JUnitTestCase {
         CriteriaDelete<PhoneNumber> cq = qb.createCriteriaDelete(PhoneNumber.class);
         Root<PhoneNumber> root = cq.from(PhoneNumber.class);
         cq.where(qb.isNotNull(root.get("owner").get("firstName")));
+        // createQuery(CriteriaStatement) returns a Statement in Jakarta Persistence 4.0.
         @SuppressWarnings({"unchecked"})
-        EJBQueryImpl<PhoneNumber> testQuery = (EJBQueryImpl<PhoneNumber>) jpaEM.createQuery(cq);
+        EJBQueryImpl<PhoneNumber> testQuery = jpaEM.createQuery(cq).unwrap(EJBQueryImpl.class);
 
         String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());

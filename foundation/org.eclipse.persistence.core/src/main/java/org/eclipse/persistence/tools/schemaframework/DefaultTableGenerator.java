@@ -32,6 +32,16 @@
 //       - 388564: Generated DDL does not match annotation
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -71,16 +81,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * DefaultTableGenerator is a utility class used to generate a default table schema for a EclipseLink project object.
  * <p>
@@ -115,8 +115,9 @@ import java.util.Map;
  * @since Oracle TopLink 10.1.3
  */
 public class DefaultTableGenerator {
+
     /** The project object used to generate the default data schema. */
-    Project project = null;
+    Project project;
 
     /** the target database platform. */
     protected DatabasePlatform databasePlatform;
@@ -125,13 +126,13 @@ public class DefaultTableGenerator {
      * Used to track the table definition: keyed by the table name, and valued
      * by the table definition object.
      */
-    protected Map<String, TableDefinition> tableMap = null;
+    protected Map<String, TableDefinition> tableMap;
 
     /**
      * Used to track the field definition: keyed by the database field object, and
      * valued by the field definition.
      */
-    protected Map<DatabaseField, FieldDefinition> fieldMap = null;
+    protected Map<DatabaseField, FieldDefinition> fieldMap;
 
     /** DatabaseField pool (synchronized with above 'fieldMap') */
     protected Map<DatabaseField, DatabaseField> databaseFields;
@@ -371,6 +372,7 @@ public class DefaultTableGenerator {
                     addForeignKeyFieldToSourceTargetTable((OneToManyMapping) mapping);
                     TableDefinition targTblDef = getTableDefFromDBTable(mapping.getReferenceDescriptor().getDefaultTable());
                     addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targTblDef);
+                    allowNullForMapKeyWrittenAfterInsert(mapping.getContainerPolicy());
                 }
             } else if (mapping.isTransformationMapping()) {
                 resetTransformedFieldType((TransformationMapping) mapping);
@@ -407,6 +409,45 @@ public class DefaultTableGenerator {
     }
 
     /**
+     * Let the key column of a Map mapped by a one to many hold null, whatever the mapping says.
+     *
+     * <p>
+     * Such a key lives in the target's own table. There is nothing writing that table that knows about 
+     * it:
+     * 
+     * The target's row is inserted by the target's descriptor, which has no mapping for the key,
+     * and the key is filled in afterwards by the update
+     * {@link org.eclipse.persistence.mappings.OneToManyMapping#updateTargetRowPostInsertSource}
+     * issues. A column filled in after the insert cannot be NOT NULL. The insert comes first and
+     * would fail. So, {@code @MapKeyColumn(nullable = false)} cannot be honoured here and is
+     * dropped rather than generating a schema the provider itself cannot write to. Other
+     * implementations seem to make the same choice.
+     *
+     * <p>
+     * Only the null constraint is relaxed. A unique constraint is left in place, and remains
+     * satisfiable: the databases that enforce it treat nulls as distinct.
+     *
+     * <p>
+     * The key columns of the other two kinds of map - a relation table and a collection table -
+     * are written by the insert that creates the row, so they keep whatever the mapping asks for.
+     */
+    protected void allowNullForMapKeyWrittenAfterInsert(ContainerPolicy containerPolicy) {
+        if (!containerPolicy.isMappedKeyMapPolicy()) {
+            return;
+        }
+
+        List<DatabaseField> mapKeyFields = containerPolicy.getIdentityFieldsForMapKey();
+
+        if (mapKeyFields == null) {
+            return;
+        }
+
+        for (DatabaseField mapKeyField : mapKeyFields) {
+            getFieldDefFromDBField(mapKeyField).setShouldAllowNull(true);
+        }
+    }
+
+    /**
      * Build relation table definitions for all many-to-many relationships in a EclipseLink descriptor.
      */
     protected void buildRelationTableDefinition(ForeignReferenceMapping mapping, RelationTableMechanism relationTableMechanism, DatabaseField listOrderField, ContainerPolicy cp) {
@@ -427,6 +468,7 @@ public class DefaultTableGenerator {
 
         if (cp != null){
             addFieldsForMappedKeyMapContainerPolicy(cp, table);
+            useMapKeyAsRelationTablePrimaryKey(relationTableMechanism.getRelationTable(), targFkFields, cp, table);
         }
 
         if (listOrderField != null) {
@@ -434,6 +476,60 @@ public class DefaultTableGenerator {
             if (!table.getFields().contains(fieldDef)) {
                 table.addField(fieldDef);
             }
+        }
+    }
+
+    /**
+     * Make the map key, rather than the target foreign key, the part of a relation table's primary
+     * key that tells one entry from another.
+     * <p>
+     * A relation table for a collection is keyed by the source and target foreign keys together,
+     * because what it records is that the two are related and the pair occurs at most once. A
+     * {@link java.util.Map} is not like that: it holds one entry per key, and the key is what may
+     * not repeat. A {@code Map<Course, Semester>} keyed by a map key join column is free to relate
+     * one student to the same semester several times over - once per course - and keying the table
+     * by the target would refuse the second of them with a duplicate key.
+     * <p>
+     * So the target foreign key gives up its place in the primary key to the map key, which is the
+     * same choice the reference implementation makes. The target keeps its foreign key constraint;
+     * only its part in the primary key changes.
+     * <p>
+     * A map key that is an attribute of the target entity - {@code @MapKey(name = "...")} rather
+     * than a map key column - has no column in the relation table to key it by, and there the
+     * target foreign key remains the right choice. Such a key is recognised by its field belonging
+     * to a table other than the relation table.
+     *
+     * @param relationTable the relation table being built
+     * @param targetFkFields the foreign key to the target of the mapping
+     * @param cp the container policy of the mapping, which holds the map key when there is one
+     * @param table the definition of {@code relationTable}
+     */
+    protected void useMapKeyAsRelationTablePrimaryKey(DatabaseTable relationTable, List<DatabaseField> targetFkFields, ContainerPolicy cp, TableDefinition table) {
+        if (!cp.isMappedKeyMapPolicy()) {
+            return;
+        }
+
+        List<DatabaseField> mapKeyFields = cp.getIdentityFieldsForMapKey();
+
+        if ((mapKeyFields == null) || mapKeyFields.isEmpty()) {
+            return;
+        }
+
+        for (DatabaseField mapKeyField : mapKeyFields) {
+            if (!relationTable.equals(mapKeyField.getTable())) {
+                return;
+            }
+        }
+
+        for (DatabaseField targetFkField : targetFkFields) {
+            getFieldDefFromDBField(targetFkField).setIsPrimaryKey(false);
+        }
+
+        for (DatabaseField mapKeyField : mapKeyFields) {
+            FieldDefinition mapKeyFieldDef = getFieldDefFromDBField(mapKeyField);
+            mapKeyFieldDef.setIsPrimaryKey(true);
+            // A map key is never absent, and a primary key column cannot be null in any case
+            mapKeyFieldDef.setShouldAllowNull(false);
         }
     }
 

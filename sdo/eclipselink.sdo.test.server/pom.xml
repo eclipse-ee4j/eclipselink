@@ -14,21 +14,20 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <name>EclipseLink SDO Test Server</name>
-    <artifactId>org.eclipse.persistence.sdo.server.test</artifactId>
-    <packaging>jar</packaging>
 
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.test.server.parent</artifactId>
-        <version>5.0.3-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
         <relativePath>../../testing/server/pom.xml</relativePath>
     </parent>
+
+    <artifactId>org.eclipse.persistence.sdo.server.test</artifactId>
+    <packaging>jar</packaging>
+
+    <name>EclipseLink SDO Test Server</name>
 
     <properties>
         <comp.xlint>-Xlint:all</comp.xlint>
@@ -66,6 +65,13 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.sdo</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--SDO declares MOXy optional, so it is named here to make dependency:properties resolve the
+            path that src/it/resources/wildfly/elResources.xml puts into the server's module.xml-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -308,7 +314,11 @@
             <id>glassfish</id>
             <properties>
                 <ejb-jndi-name>DeptServiceBean#org.eclipse.persistence.testing.sdo.server.DeptService</ejb-jndi-name>
-                <skip-server-test-sdo>false</skip-server-test-sdo>
+                <!--skipped until this module deploys with asadmin like jpa/eclipselink.jpa.testapps does:
+                    cargo-maven3-plugin's glassfish9x container looks for the admin CLI at
+                    glassfish/modules/admin-cli.jar, which GlassFish 9 moved to glassfish/admin-cli.jar,
+                    so it cannot deploy at all-->
+                <skip-server-test-sdo>true</skip-server-test-sdo>
             </properties>
         </profile>
         <profile>

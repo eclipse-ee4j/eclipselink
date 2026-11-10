@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -91,6 +92,8 @@ public class NativeAPITests extends JUnitTestCase {
     "EmployeeService#org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
     // WAS
     "org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
+    // portable global JNDI name (GlassFish, and any other Jakarta EE server)
+    "java:global/org.eclipse.persistence.jpa.testapps.nativeapi/org.eclipse.persistence.jpa.testapps.nativeapi_ejb/EmployeeServiceBean!org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
     // jboss
     "org.eclipse.persistence.jpa.testapps.nativeapi/EmployeeServiceBean/remote-org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
     // wildfly

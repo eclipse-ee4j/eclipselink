@@ -21,10 +21,12 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
 
+import java.io.Serial;
+
 /**
- * <p>
- * <b>Purpose</b>: Contains the implementation of the Root interface of the JPA
+ * <b>Purpose</b>: Contains the implementation of the Root interface of the Jakarta Persistence
  * criteria API.
+ *
  * <p>
  * <b>Description</b>: This class represents root of a path. All paths are
  * created from roots and they correspond to ExpressionBuilders.
@@ -35,6 +37,9 @@ import jakarta.persistence.metamodel.Metamodel;
  * @since EclipseLink 1.2
  */
 public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public <T> RootImpl(ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable modelArtifact) {
         super(null, managedType, metamodel, javaClass, expressionNode, modelArtifact);
@@ -51,17 +56,35 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
      */
     @Override
     public EntityType<X> getModel() {
-        return (EntityType<X>) this.modelArtifact;
+        return (EntityType<X>) modelArtifact;
     }
 
     @Override
-    public void findRootAndParameters(CommonAbstractCriteriaImpl query) {
+    public void findRootAndParameters(CommonAbstractCriteriaImpl<?> query) {
         query.integrateRoot(this);
     }
 
     @Override
     public boolean isRoot() {
         return true;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends X> Root<T> treat(Class<T> type) {
+        if (type == null || type.equals(javaType)) {
+            return (Root<T>) this;
+        }
+
+        EntityType<T> entityType = metamodel.entity(type);
+
+        return new RootImpl<>(
+                entityType,
+                metamodel,
+                type,
+                currentNode.treat(type),
+                entityType,
+                correlatedParent);
     }
 
 }

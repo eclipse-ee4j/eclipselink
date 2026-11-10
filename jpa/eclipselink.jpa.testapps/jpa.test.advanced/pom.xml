@@ -14,19 +14,23 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
         <groupId>org.eclipse.persistence</groupId>
-        <version>5.0.3-SNAPSHOT</version>
+        <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
+        <version>6.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>org.eclipse.persistence.jpa.testapps.advanced</artifactId>
 
     <name>Test - advanced</name>
+
+    <properties>
+        <argLine/>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -35,10 +39,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <properties>
-        <argLine/>
-    </properties>
 
     <build>
         <plugins>
@@ -92,8 +92,31 @@
                             <includes>
                                 <include>**/JPAAdvancedTestModel</include>
                                 <include>**/advanced/*Test</include>
+                                <include>**/advanced/concurrency/*Test</include>
                                 <include>**/advanced/EntityManagerJUnitTestSuite</include>
                             </includes>
+                        </configuration>
+                    </execution>
+                    <!-- The same as for the Java SE run, minus JPAAdvancedTestModel: the testmodel tests
+                         log in to the database over JDBC from the test JVM, which a server run does not
+                         configure, so only that suite can run them. Without these includes surefire's
+                         defaults picked each testmodel test up on its own, and missed
+                         EntityManagerJUnitTestSuite. -->
+                    <execution>
+                        <id>server-test</id>
+                        <configuration>
+                            <includes>
+                                <include>**/advanced/*Test</include>
+                                <include>**/advanced/concurrency/*Test</include>
+                                <include>**/advanced/EntityManagerJUnitTestSuite</include>
+                            </includes>
+                            <excludes>
+                                <!-- Java SE only, as it always has been: its tables are created by a JUnit
+                                     TestSetup decorator, which the JUnit runner calls in the test JVM
+                                     rather than delegating it to the server like a test method, so there
+                                     it has no database to connect to and none of its tests run. -->
+                                <exclude>**/advanced/UpdateAllQueryAdvancedJunitTest</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>

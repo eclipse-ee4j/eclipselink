@@ -21,9 +21,9 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * <div><b>BNF:</b> <code>general_case_expression ::= CASE when_clause {when_clause}* ELSE scalar_expression END</code></div>
+ * <div><b>BNF:</b> <code>general_case_expression ::= CASE when_clause {when_clause}* [ELSE scalar_expression] END</code></div>
  * or
- * <div><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code></div>
+ * <div><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* [ELSE scalar_expression] END</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -407,15 +407,15 @@ public final class CaseExpression extends AbstractExpression {
         hasSpaceAfterWhenClauses = wordParser.skipLeadingWhitespace() > 0;
 
         // Parse 'ELSE'
-        if (!tolerant || wordParser.startsWithIdentifier(ELSE)) {
+        if (wordParser.startsWithIdentifier(ELSE)) {
             elseIdentifier = wordParser.moveForward(ELSE);
             hasSpaceAfterElse = wordParser.skipLeadingWhitespace() > 0;
-        }
 
-        // Parse the ELSE expression
-        parsingType = ParsingType.ELSE;
-        elseExpression = parse(wordParser, ElseExpressionBNF.ID, tolerant);
-        hasSpaceAfterElseExpression = wordParser.skipLeadingWhitespace() > 0;
+            // Parse the ELSE expression
+            parsingType = ParsingType.ELSE;
+            elseExpression = parse(wordParser, ElseExpressionBNF.ID, tolerant);
+            hasSpaceAfterElseExpression = wordParser.skipLeadingWhitespace() > 0;
+        }
 
         // Parse 'END'
         if (!tolerant || wordParser.startsWithIdentifier(END)) {

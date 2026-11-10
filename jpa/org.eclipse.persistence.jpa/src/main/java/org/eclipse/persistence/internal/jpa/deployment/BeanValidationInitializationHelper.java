@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,8 +61,19 @@ public interface BeanValidationInitializationHelper {
                 Class<?>[] groupPreRemove = translateValidationGroups(
                         (String) puProperties.get(PersistenceUnitProperties.VALIDATION_GROUP_PRE_REMOVE), appClassLoader);
 
-                BeanValidationListener validationListener =
-                        new BeanValidationListener(beanValidatorFactory, groupPrePersit, groupPreUpdate, groupPreRemove);
+                Class<?>[] groupPreMerge = translateValidationGroups(
+                        (String) puProperties.get("jakarta.persistence.validation.group.pre-merge"), appClassLoader);
+                Class<?>[] groupPreInsert = translateValidationGroups(
+                        (String) puProperties.get("jakarta.persistence.validation.group.pre-insert"), appClassLoader);
+                Class<?>[] groupPreUpsert = translateValidationGroups(
+                        (String) puProperties.get("jakarta.persistence.validation.group.pre-upsert"), appClassLoader);
+                Class<?>[] groupPreDelete = translateValidationGroups(
+                        (String) puProperties.get("jakarta.persistence.validation.group.pre-delete"), appClassLoader);
+
+                BeanValidationListener validationListener = new BeanValidationListener(beanValidatorFactory,
+                        groupPrePersit, groupPreMerge, groupPreRemove, groupPreInsert,
+                        groupPreUpdate, groupPreUpsert, groupPreDelete,
+                        puProperties.get(PersistenceUnitProperties.VALIDATOR_FACTORY) != null);
                 //Install BeanValidationListener on the desc
                 for (ClassDescriptor descriptor : session.getProject().getOrderedDescriptors()) {
                     if (descriptor.isDescriptorTypeNormal()) {
@@ -117,15 +128,18 @@ public interface BeanValidationInitializationHelper {
          * @param validationGroups Array of "," deliminated fully qualified class names
          * @param appClassLoader The classloader for application
          * @return Array of classes corresponding to classnames in given <code>validationGroups</code>.
-         *         <code>null</code> if given <code>validationGroups</code> is null or empty
+         *         <code>null</code> if unspecified, or an empty array if explicitly empty
          */
         private Class<?>[] translateValidationGroups(String validationGroups, ClassLoader appClassLoader) {
-            Class<?>[] validationGroupsClasses = null;
-            if(validationGroups != null && !validationGroups.isEmpty()) {
-                String[] validationGroupClassNames = validationGroups.split(",");
+            if (validationGroups == null) {
+                return null;
+            }
+            Class<?>[] validationGroupsClasses = new Class<?>[0];
+            if (!validationGroups.isBlank()) {
+                String[] validationGroupClassNames = validationGroups.split(",", -1);
                 validationGroupsClasses = new Class<?>[validationGroupClassNames.length];
                 for(int i = 0; i < validationGroupClassNames.length; i++) {
-                    String validationGroupClassName = validationGroupClassNames[i];
+                    String validationGroupClassName = validationGroupClassNames[i].trim();
                     try {
                         validationGroupsClasses[i] = loadClass(validationGroupClassName, appClassLoader);
                     } catch (Exception e) {

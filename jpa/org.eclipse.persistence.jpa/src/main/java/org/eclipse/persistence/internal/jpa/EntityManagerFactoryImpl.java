@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,16 +25,13 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import jakarta.persistence.Cache;
+import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityHandler;
+import jakarta.persistence.EntityListenerRegistration;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManager.CreationOption;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.PersistenceException;
@@ -41,22 +39,37 @@ import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
 import jakarta.persistence.SchemaManager;
+import jakarta.persistence.Statement;
+import jakarta.persistence.StatementReference;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.sql.ResultSetMapping;
+
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerRegistry;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListener;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListenerRegistry;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
@@ -73,6 +86,9 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
+import static java.util.Collections.emptyMap;
+import static org.eclipse.persistence.internal.jpa.OptionUtils.parseCreateOptions;
+
 /**
  * Wraps our implementation of EntityManagerFactory
  * Most operations are forwarded to the delegate.  This wrapper is used to enable
@@ -83,7 +99,65 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  */
 public class EntityManagerFactoryImpl implements EntityManagerFactory, PersistenceUnitUtil, JpaEntityManagerFactory {
 
-    protected EntityManagerFactoryDelegate delegate;
+    protected volatile EntityManagerFactoryDelegate delegate;
+
+    /** Registrations belong to this factory, including all metadata generations. */
+    private final EntityListenerRegistry entityListenerRegistry = new EntityListenerRegistry();
+
+    private volatile PersistenceUnitListenerRegistry persistenceUnitListeners;
+    private boolean lifecycleCompleted;
+    private boolean lifecycleClosing;
+    private boolean lifecycleCloseNotified;
+
+    PersistenceUnitListenerRegistry getPersistenceUnitListeners() {
+        return persistenceUnitListeners;
+    }
+
+    void releasePersistenceUnitListeners() {
+        if (persistenceUnitListeners != null) {
+            persistenceUnitListeners.releaseFactory();
+        }
+    }
+
+    /**
+     * INTERNAL: Complete only a public factory, after its delegate is available.
+     * Empty listener metadata leaves the normal lazy deployment path unchanged.
+     */
+    @SuppressWarnings("unchecked")
+    public EntityManagerFactoryImpl completeCreation() {
+        if (lifecycleCompleted) {
+            return this;
+        }
+        lifecycleCompleted = true;
+        try {
+            EntityManagerSetupImpl setup = delegate.getSetupImpl();
+            List<PersistenceUnitListener> definitions;
+            if (setup != null) {
+                definitions = setup.getPersistenceUnitListeners();
+            } else {
+                Object retained = delegate.getAbstractSession().getProperty(PersistenceUnitListener.DEFINITIONS_PROPERTY);
+                definitions = retained instanceof List<?> ? (List<PersistenceUnitListener>) retained : List.of();
+            }
+            if (!definitions.isEmpty()) {
+                persistenceUnitListeners = new PersistenceUnitListenerRegistry(definitions, delegate.getAbstractSession());
+                persistenceUnitListeners.postCreate(EntityManagerFactory.class, this);
+            }
+            return this;
+        } catch (RuntimeException | Error failure) {
+            if (isOpen()) {
+                PersistenceUnitListenerRegistry.cleanup(failure, this::close);
+            }
+            throw failure;
+        }
+    }
+
+    EntityListenerRegistry getEntityListenerRegistry() {
+        return entityListenerRegistry;
+    }
+
+    boolean isCurrentDelegate(EntityManagerFactoryDelegate candidate) {
+        return delegate == candidate;
+    }
 
     /**
      * Returns the id of the entity. A generated id is not guaranteed to be
@@ -100,12 +174,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "jpa_persistence_util_non_persistent_class", new Object[] { entity }));
         }
-        if (descriptor.getCMPPolicy() != null) {
-            return descriptor.getCMPPolicy().createPrimaryKeyInstance(entity, session);
-        } else {
-            // 308950: Alternatively, CacheImpl.getId(entity) handles a null CMPPolicy case for weaved and unweaved domain object
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class", new Object[] { entity }));
+
+        if (descriptor.getCMPPolicy() == null) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_non_persistent_class", new Object[] { entity }));
         }
+
+        return descriptor.getCMPPolicy().createPrimaryKeyInstance(entity, session);
     }
 
     /**
@@ -122,12 +197,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "jpa_persistence_util_get_version_non_persistent_class", new Object[] { entity }));
         }
-        OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
-        if (lockingPolicy instanceof VersionLockingPolicy versionLockingPolicy) {
-            return versionLockingPolicy.getVersion(entity);
+
+        if (!(descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy versionLockingPolicy)) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_get_version_no_version_in_class", new Object[] { entity }));
         }
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "jpa_persistence_util_get_version_no_version_in_class", new Object[] { entity }));
+
+        return versionLockingPolicy.getVersion(entity);
     }
 
     /**
@@ -263,9 +339,9 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /**
      * Check whether a named attribute on a given entity with a given mapping
      * has been loaded.
-     * This method will check the value holder or indirect collection for LAZY
-     * ForeignReferenceMappings to see if has been instantiated and otherwise
-     * check the fetch group.
+     * Check indirection even for an EAGER mapping, since an entity graph may
+     * suppress its default eager loading. An agent identity reference remains
+     * unfetched until explicitly resolved.
      *
      * @param entity entity instance containing the attribute
      * @param attributeName name of attribute whose load state is to be determined
@@ -274,11 +350,20 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      *         or {@code false} otherwise.
      */
     public static boolean isLoaded(Object entity, String attributeName, DatabaseMapping mapping) {
-        if (mapping.isForeignReferenceMapping()) {
-            if (mapping.isLazy()) {
-                Object value = mapping.getAttributeValueFromObject(entity);
-                IndirectionPolicy policy = ((ForeignReferenceMapping) mapping).getIndirectionPolicy();
-                return policy.objectIsInstantiated(value);
+        // The woven accessor may fetch a missing attribute, including its
+        // value holder. Inspect the partial-object state before invoking it.
+        if (entity instanceof FetchGroupTracker tracker && !tracker._persistence_isAttributeFetched(attributeName)) {
+            return false;
+        }
+        if (mapping instanceof ForeignReferenceMapping reference && reference.usesIndirection()) {
+            Object value = mapping.getAttributeValueFromObject(entity);
+            IndirectionPolicy policy = reference.getIndirectionPolicy();
+            if (!policy.objectIsInstantiated(value)) {
+                return false;
+            }
+            if (mapping.isObjectReferenceMapping()
+                    && EntityAgentImpl.isUnfetchedReference(policy.getRealAttributeValueFromObject(entity, value))) {
+                return false;
             }
         }
 
@@ -364,7 +449,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * EntityMangers will continue to function with the old metadata, but new factories will use the new metadata.
      */
     @Override
-    public void refreshMetadata(Map<String, Object> properties){
+    public synchronized void refreshMetadata(Map<String, Object> properties){
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
         if (setupImpl == null){
             throw PersistenceUnitLoadingException.cannotRefreshEntityManagerFactoryCreatedFromSession(delegate.getServerSession().getName());
@@ -392,7 +477,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             }
         } catch (RuntimeException ex) {
             if(delegate != null) {
-                delegate.close();
+                delegate.closeForMetadataRefresh();
             } else {
                 newSetupImpl.undeploy();
             }
@@ -438,7 +523,42 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      */
     @Override
     public synchronized void close() {
-        delegate.close();
+        if (lifecycleClosing) {
+            // Only same-thread callback reentry can reach this branch.
+            return;
+        }
+        EntityManagerFactoryDelegate closingDelegate = delegate;
+        closingDelegate.verifyOpen();
+        lifecycleClosing = true;
+        Throwable failure = null;
+        try {
+            if (persistenceUnitListeners != null && !lifecycleCloseNotified) {
+                lifecycleCloseNotified = true;
+                failure = persistenceUnitListeners.preClose(EntityManagerFactory.class, this);
+            }
+            EntityManagerFactoryDelegate currentDelegate = delegate;
+            failure = PersistenceUnitListenerRegistry.cleanup(failure, currentDelegate::closeFromFactory);
+            // A callback may adopt or explicitly refresh metadata. Dispose the
+            // requested delegate as well, unless the callback already closed it.
+            if (closingDelegate != currentDelegate && closingDelegate.isOpen()) {
+                failure = PersistenceUnitListenerRegistry.cleanup(failure, closingDelegate::closeForMetadataRefresh);
+            }
+            if (persistenceUnitListeners != null) {
+                failure = PersistenceUnitListenerRegistry.cleanup(failure, persistenceUnitListeners::releaseFactory);
+            }
+        } finally {
+            lifecycleClosing = false;
+        }
+        PersistenceUnitListenerRegistry.rethrow(failure);
+    }
+
+    /** Serialize the native delegate's current/retired decision with metadata refresh. */
+    synchronized void close(EntityManagerFactoryDelegate caller) {
+        if (isCurrentDelegate(caller)) {
+            close();
+        } else {
+            caller.closeForMetadataRefresh();
+        }
     }
 
     /**
@@ -453,7 +573,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
-    @Override
     public EntityManager createEntityManager() {
         return createEntityManagerImpl(null, null);
     }
@@ -466,7 +585,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return createEntityManagerImpl(properties, null);
     }
 
-    @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
         return createEntityManagerImpl(null, synchronizationType);
     }
@@ -477,22 +595,27 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType) {
-        EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
+        EntityManagerFactoryDelegate currentDelegate;
+        synchronized (this) {
+            delegate.verifyOpen();
+            EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
 
-        if (setupImpl != null) {
-            if (setupImpl.isMetadataExpired()) {
-                String sessionName = setupImpl.getSessionName();
-                EntityManagerSetupImpl storedImpl = null;
-                synchronized (EntityManagerFactoryProvider.emSetupImpls){
-                    storedImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
-                }
-                if (storedImpl != null) {
-                    delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties(), this);
+            if (setupImpl != null) {
+                if (setupImpl.isMetadataExpired()) {
+                    String sessionName = setupImpl.getSessionName();
+                    EntityManagerSetupImpl storedImpl = null;
+                    synchronized (EntityManagerFactoryProvider.emSetupImpls){
+                        storedImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
+                    }
+                    if (storedImpl != null) {
+                        delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties(), this);
+                    }
                 }
             }
+            currentDelegate = delegate;
         }
 
-        return delegate.createEntityManagerImpl(properties, syncType);
+        return currentDelegate.createEntityManagerImpl(properties, syncType);
     }
 
     /**
@@ -858,12 +981,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         queries.forEach((queryName, queriesList) -> {
             if (!result.containsKey(queryName)) {
                 for (DatabaseQuery query : queriesList) {
-                    if (query.getReferenceClass() != null && resultType.isAssignableFrom(query.getReferenceClass())) {
+                    Class<?> actualType = EJBQueryImpl.queryResultType(query);
+                    if (actualType != null && resultType.isAssignableFrom(actualType)) {
                         Map<String, Object> hints = QueryHintsHandler.get(query);
                         result.put(queryName,
-                                   new TypedQueryReferenceImpl<>(queryName,
-                                                               (Class<? extends R>) query.getReferenceClass(),
-                                                               hints != null ? hints : Collections.emptyMap()));
+                                   AugmentedQueryReference.owned(new TypedQueryReferenceImpl<>(queryName,
+                                                               (Class<? extends R>) actualType,
+                                                               hints != null ? hints : Collections.emptyMap()), session));
                         break;
                     }
                 }
@@ -920,7 +1044,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                             "jpa_non_persistent_class", new String[] {entityType.getName()}));
                 }
                 session.getDescriptor(entityType);
-                result.put(name, new EntityGraphImpl<>(attributeGroup, descriptor));
+                result.put(name, new EntityGraphImpl<>(attributeGroup.clone(), descriptor, metamodel));
             }
         });
         return result;
@@ -934,6 +1058,57 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     @Override
     public <R> R callInTransaction(Function<EntityManager, R> work) {
         return delegate.callInTransaction(work);
+    }
+
+    @Override
+    public EntityManager createEntityManager(CreationOption... options) {
+        var creationOptions = parseCreateOptions(options);
+        return createEntityManagerImpl(creationOptions.properties(), creationOptions.synchronizationType());
+    }
+
+    @Override
+    public EntityAgent createEntityAgent(jakarta.persistence.EntityAgent.CreationOption... options) {
+        return delegate.createEntityAgent(options);
+    }
+
+    @Override
+    public EntityAgent createEntityAgent(Map<?, ?> properties) {
+        return delegate.createEntityAgent(properties);
+    }
+
+    @Override
+    public <R> TypedQueryReference<R> addNamedQuery(String name, TypedQuery<R> query) {
+        return delegate.addNamedQuery(name, query);
+    }
+
+    @Override
+    public StatementReference addNamedStatement(String name, Statement statement) {
+        return delegate.addNamedStatement(name, statement);
+    }
+
+    @Override
+    public Map<String, StatementReference> getNamedStatements() {
+        return delegate.getNamedStatements();
+    }
+
+    @Override
+    public <R> Map<String, ResultSetMapping<R>> getResultSetMappings(Class<R> resultType) {
+        return delegate.getResultSetMappings(resultType);
+    }
+
+    @Override
+    public <E> EntityListenerRegistration addListener(Class<E> entityType, Class<? extends Annotation> callbackType, Consumer<? super E> listener) {
+        return delegate.addListener(entityType, callbackType, listener);
+    }
+
+    @Override
+    public <H extends EntityHandler> void runInTransaction(Class<H> handlerClass, Consumer<H> work) {
+        delegate.runInTransaction(handlerClass, work);
+    }
+
+    @Override
+    public <R, H extends EntityHandler> R callInTransaction(Class<H> handlerClass, Function<H, R> work) {
+        return delegate.callInTransaction(handlerClass, work);
     }
 
 }

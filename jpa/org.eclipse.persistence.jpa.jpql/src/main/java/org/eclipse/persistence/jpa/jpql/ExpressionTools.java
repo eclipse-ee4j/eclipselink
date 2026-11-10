@@ -34,6 +34,23 @@ import java.util.regex.Pattern;
 public final class ExpressionTools {
 
     /**
+     * The {@link Pattern} representing the regular expression of a numerical value as a
+     * {@link java.math.BigDecimal}, which is an exact numeric literal carrying the {@code bd}
+     * suffix. Like a double, it may have a fractional part, an exponent, or neither.
+     *
+     * @since 5.0
+     */
+    public static final Pattern BIG_DECIMAL_REGEXP = Pattern.compile("^[-+]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][-+]?[0-9]+)?[bB][dD]$");
+
+    /**
+     * The {@link Pattern} representing the regular expression of a numerical value as a
+     * {@link java.math.BigInteger}, which is an integer literal carrying the {@code bi} suffix.
+     *
+     * @since 5.0
+     */
+    public static final Pattern BIG_INTEGER_REGEXP = Pattern.compile("^[-+]?[0-9]+[bB][iI]$");
+
+    /**
      * The {@link Pattern} representing the regular expression of a numerical value as a double.
      */
     public static final Pattern DOUBLE_REGEXP = Pattern.compile("^[-+]?[0-9]*(\\.[0-9]+)?([dD]|([eE][-+]?[0-9]+))?$");

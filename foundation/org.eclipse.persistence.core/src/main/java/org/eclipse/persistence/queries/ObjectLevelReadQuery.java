@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -50,11 +50,13 @@ import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DeferredLockManager;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
 import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
 import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
+import org.eclipse.persistence.internal.queries.FetchedLockContext;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.QueryByExampleMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -157,8 +159,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /** Flag to turn on/off the use of the default fetch group. */
     protected boolean shouldUseDefaultFetchGroup = true;
 
+    /** Keep deferred association holders when building detached graph results. */
+    protected boolean shouldRetainUnfetchedRelationships;
+
     /** Specifies indirection that should be instantiated before returning result */
     protected LoadGroup loadGroup;
+
+    /** Distinguish JPA graph state from independently supplied native groups. */
+    private boolean entityGraphFetchGroup;
+    private boolean entityGraphLoadGroup;
+    private boolean nativeFetchGroup;
 
     /**
      * Stores the non fetchjoin attributes, these are joins that will be
@@ -232,6 +242,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      *  reference tables (DirectCollection and AggregateCollection mapping).
      */
     protected boolean shouldExtendPessimisticLockScope;
+    /** Lock only relationship data fetched by this query operation. */
+    protected boolean shouldLockFetchedRelationships;
 
     /**
      * Allow a query's results to be unioned (UNION, INTERSECT, EXCEPT) with another query results.
@@ -967,6 +979,17 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     @Override
     public Object checkEarlyReturn(AbstractSession session, AbstractRecord translationRow) {
+        Object result = checkEarlyReturnWithoutLoading(session, translationRow);
+        // Relationship queries may return an object whose value holder is still being populated.
+        if (result != null && result != InvalidObject.instance && getSourceMapping() == null) {
+            loadResult(result, session);
+        }
+        return result;
+    }
+
+    // Register a cached result in the caller's UnitOfWork before traversing its graph.
+    // Recursive parent-cache checks must not load state into the shared cached object.
+    private Object checkEarlyReturnWithoutLoading(AbstractSession session, AbstractRecord translationRow) {
         // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
         // an example object is done just in time.
         // Also calls checkDescriptor here.
@@ -1000,7 +1023,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         AbstractSession parentSession = unitOfWork.getParentIdentityMapSession(this);
 
         // assert parentSession != unitOfWork;
-        result = checkEarlyReturn(parentSession, translationRow);
+        result = checkEarlyReturnWithoutLoading(parentSession, translationRow);
 
         if (result != null) {
             // Optimization: If find deleted object by exact primary key
@@ -1232,6 +1255,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             clone.dontAcquireLocks();
             clone.setIsPrepared(false);
             clone.checkPrePrepare(session);
+            clone.inheritRefreshSource(this);
             return clone;
         }
         return this;
@@ -1254,7 +1278,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             throw QueryException.refreshNotPossibleWithCheckCacheOnly(this);
         }
 
-        return super.execute(session, translationRow);
+        try (FetchedLockContext.Scope scope = FetchedLockContext.open(this)) {
+            return super.execute(session, translationRow);
+        }
     }
 
     /**
@@ -1263,6 +1289,22 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     @Override
     public Object executeDatabaseQuery() throws DatabaseException {
+        AbstractSession executionSession = this.session;
+        UnitOfWorkImpl.RefreshOperation operation = beginEagerRefreshOperation();
+        boolean completed = false;
+        try {
+            Object result = executeDatabaseQueryWithRefreshOperation();
+            completed = true;
+            return result;
+        } finally {
+            setSession(executionSession);
+            if (operation != null) {
+                ((UnitOfWorkImpl)executionSession).completeRefreshOperation(operation, completed);
+            }
+        }
+    }
+
+    private Object executeDatabaseQueryWithRefreshOperation() throws DatabaseException {
         // PERF: If the query has been set to optimize building its result
         // directly from the database result-set then follow an optimized path.
         if (this.isResultSetOptimizedQuery) {
@@ -1296,28 +1338,48 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
 
         Object result = executeObjectLevelReadQuery();
-        if (result != null) {
-            if (getLoadGroup() != null) {
-                Object resultToLoad  = result;
-                if (this.shouldIncludeData) {
-                    resultToLoad = ((ComplexQueryResult)result).getResult();
-                }
-                session.load(resultToLoad, getLoadGroup(), getDescriptor(), false);
-            } else {
-                FetchGroup executionFetchGroup = getExecutionFetchGroup();
-                if (executionFetchGroup != null) {
-                    LoadGroup lg = executionFetchGroup.toLoadGroupLoadOnly();
-                    if (lg != null) {
-                        Object resultToLoad  = result;
-                        if (this.shouldIncludeData) {
-                            resultToLoad = ((ComplexQueryResult)result).getResult();
-                        }
-                        session.load(resultToLoad, lg, getDescriptor(), true);
-                    }
+        loadResult(result, session);
+        return result;
+    }
+
+    private void loadResult(Object result, AbstractSession executionSession) {
+        if (result == null) {
+            return;
+        }
+        if (executionSession instanceof UnitOfWorkImpl unitOfWork && this.fetchGroup != null
+                && this.fetchGroup.hasGraphOptions() && !shouldRefreshIdentityMapResult()) {
+            unitOfWork.withGraphCloneSelection(null, this.fetchGroup, () -> {
+                loadResultGroups(result, executionSession);
+                return null;
+            });
+        } else {
+            loadResultGroups(result, executionSession);
+        }
+    }
+
+    private void loadResultGroups(Object result, AbstractSession executionSession) {
+        Object resultToLoad = result instanceof ComplexQueryResult complex ? complex.getResult() : result;
+        if (getLoadGroup() != null) {
+            executionSession.load(resultToLoad, getLoadGroup(), getDescriptor(), false);
+        } else {
+            FetchGroup executionFetchGroup = getExecutionFetchGroup();
+            if (executionFetchGroup != null) {
+                LoadGroup group = executionFetchGroup.toLoadGroupLoadOnly();
+                if (group != null) {
+                    executionSession.load(resultToLoad, group, getDescriptor(), true);
                 }
             }
         }
-        return result;
+    }
+
+    /** INTERNAL: Returned native cursors materialize later with row-local ownership. */
+    protected UnitOfWorkImpl.RefreshOperation beginEagerRefreshOperation() {
+        if (this.session instanceof UnitOfWorkImpl unitOfWork && shouldRefreshIdentityMapResult()
+                && isRegisteringResults() && !isReadOnly()
+                && !(this instanceof ReadAllQuery readAll && readAll.getContainerPolicy().isCursorPolicy())) {
+            return unitOfWork.beginRefreshOperation(this);
+        }
+        return null;
     }
 
     /**
@@ -1337,6 +1399,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     @Override
     public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
+        try (FetchedLockContext.Scope scope = FetchedLockContext.open(this)) {
+            Object result = executeInUnitOfWorkWithFetchedContext(unitOfWork, translationRow);
+            // Only the root FETCHED operation drains its callback queue here.
+            // Other reads preserve the enclosing session's original scheduling.
+            if (scope.ownsContext()) {
+                unitOfWork.executeDeferredEvents();
+            }
+            return result;
+        }
+    }
+
+    private Object executeInUnitOfWorkWithFetchedContext(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) {
         Object result = null;
 
         if (!shouldMaintainCache() || isReadOnly()) {
@@ -1794,6 +1868,13 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
             fetchedFields.addAll(mapping.getFields());
         }
+        if (shouldRetainUnfetchedRelationships) {
+            for (DatabaseMapping mapping : getDescriptor().getMappings()) {
+                if (mapping instanceof ForeignReferenceMapping reference && reference.usesIndirection()) {
+                    fetchedFields.addAll(mapping.getFields());
+                }
+            }
+        }
         if ((nestedMapping != null) && nestedMapping.isCollectionMapping()) {
             List<DatabaseField> additionalFields = nestedMapping.getContainerPolicy().getAdditionalFieldsForJoin((CollectionMapping)nestedMapping);
             if(additionalFields != null) {
@@ -1847,7 +1928,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if(executionFetchGroup != null) {
                 String nestedAttributeName = ((QueryKeyExpression)expression).getNestedAttributeName();
                 if(nestedAttributeName != null) {
-                    if(!executionFetchGroup.containsAttributeInternal(nestedAttributeName)) {
+                    if(!executionFetchGroup.containsAttribute(nestedAttributeName)) {
                         getSession().log(SessionLog.WARNING, SessionLog.QUERY, "query_has_joined_attribute_outside_fetch_group", new Object[]{toString(), nestedAttributeName});
                     }
                 }
@@ -2032,6 +2113,42 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         shouldExtendPessimisticLockScope = isExtended;
     }
 
+    /** INTERNAL: Whether fetched relationship rows participate in the query lock. */
+    public boolean shouldLockFetchedRelationships() {
+        return shouldLockFetchedRelationships;
+    }
+
+    /** INTERNAL: Configure fetched relationship locking on this query clone. */
+    public void setShouldLockFetchedRelationships(boolean lockFetched) {
+        shouldLockFetchedRelationships = lockFetched;
+        setIsPrePrepared(false);
+    }
+
+    /** INTERNAL: Deferred lazy navigation is outside the operation obtaining the lock. */
+    public boolean shouldLockFetchedMapping(ForeignReferenceMapping mapping) {
+        if (!shouldLockFetchedRelationships || !isLockQuery()) {
+            return false;
+        }
+        String attribute = mapping.getAttributeName();
+        if (hasJoining() && getJoinedAttributeManager().isAttributeJoined(mapping.getDescriptor(), mapping)) {
+            return true;
+        }
+        if (getLoadGroup() != null && getLoadGroup().containsAttribute(attribute)) {
+            return true;
+        }
+        FetchGroup fetched = getExecutionFetchGroup(mapping.getDescriptor());
+        if (fetched != null) {
+            LoadGroup load = fetched.toLoadGroupLoadOnly();
+            if (load != null && load.containsAttribute(attribute)) {
+                return true;
+            }
+            if (!fetched.containsAttribute(attribute)) {
+                return false;
+            }
+        }
+        return !mapping.isLazy() || !mapping.usesIndirection();
+    }
+
     /**
      * INTERNAL:
      * Clear cached flags when un-preparing.
@@ -2132,9 +2249,31 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.shouldIncludeData = readQuery.shouldIncludeData;
             this.inMemoryQueryIndirectionPolicy = readQuery.inMemoryQueryIndirectionPolicy;
             this.lockModeType = readQuery.lockModeType;
+            this.loadGroup = readQuery.loadGroup == null ? null : readQuery.loadGroup.clone();
+            this.entityGraphLoadGroup = readQuery.entityGraphLoadGroup;
+            this.shouldRetainUnfetchedRelationships = readQuery.shouldRetainUnfetchedRelationships;
+            this.shouldExtendPessimisticLockScope = readQuery.shouldExtendPessimisticLockScope;
+            this.shouldLockFetchedRelationships = readQuery.shouldLockFetchedRelationships;
             this.defaultBuilder = readQuery.defaultBuilder;
             this.distinctState = readQuery.distinctState;
             this.shouldUseSerializedObjectPolicy = readQuery.shouldUseSerializedObjectPolicy;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Preserve invocation loading requirements on the executed descriptor query.
+     * SQL preparation and the descriptor's custom call remain unchanged.
+     */
+    @Override
+    protected void prepareCustomQuery(DatabaseQuery customQuery) {
+        super.prepareCustomQuery(customQuery);
+        ObjectLevelReadQuery customReadQuery = (ObjectLevelReadQuery) customQuery;
+        if (this.loadGroup != null) {
+            customReadQuery.loadGroup = this.loadGroup.clone();
+        }
+        if (!this.shouldUseDefaultFetchGroup) {
+            customReadQuery.shouldUseDefaultFetchGroup = false;
         }
     }
 
@@ -2163,6 +2302,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.defaultBuilder = objectQuery.defaultBuilder;
             this.fetchGroup = objectQuery.fetchGroup;
             this.fetchGroupName = objectQuery.fetchGroupName;
+            this.entityGraphFetchGroup = objectQuery.entityGraphFetchGroup;
+            this.nativeFetchGroup = objectQuery.nativeFetchGroup;
             this.isReferenceClassLocked = objectQuery.isReferenceClassLocked;
             this.shouldOuterJoinSubclasses = objectQuery.shouldOuterJoinSubclasses;
             this.shouldUseDefaultFetchGroup = objectQuery.shouldUseDefaultFetchGroup;
@@ -2196,6 +2337,25 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 }
             }
             if (this.fetchGroup != null) {
+                if (this.fetchGroup.hasGraphOptions() || shouldRetainUnfetchedRelationships) {
+                    this.fetchGroup = this.fetchGroup.resolveGraph(getSession(), this.descriptor,
+                            shouldRetainUnfetchedRelationships);
+                }
+                if (this.fetchGroup.hasGraphOptions() && hasJoining()
+                        && this.joinedAttributeManager.hasJoinedAttributeExpressions()) {
+                    // An explicit JOIN FETCH is a request to fetch that edge,
+                    // independent of a graph's mapping-default overrides.
+                    this.fetchGroup = this.fetchGroup.clone();
+                    for (Expression joined : this.joinedAttributeManager.getJoinedAttributeExpressions()) {
+                        QueryKeyExpression attribute = (QueryKeyExpression)joined;
+                        String path = attribute.getName();
+                        while (!attribute.getBaseExpression().isExpressionBuilder()) {
+                            attribute = (QueryKeyExpression)attribute.getBaseExpression();
+                            path = attribute.getName() + '.' + path;
+                        }
+                        this.fetchGroup.includeAttribute(path);
+                    }
+                }
                 if (hasPartialAttributeExpressions()) {
                     //fetch group does not work with partial attribute reading
                     throw QueryException.fetchGroupNotSupportOnPartialAttributeReading();
@@ -2206,6 +2366,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         } else {
             // FetchGroupManager is null
+            if (this.fetchGroup != null && this.fetchGroup.shouldIncludeDefaultAttributes()) {
+                // LAZY is a hint. A load graph on a class without fetch-group
+                // weaving keeps its additive loading behavior.
+                this.fetchGroup = null;
+            }
             if (this.fetchGroup != null || this.fetchGroupName != null) {
                 throw QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor(getDescriptor().getJavaClassName(), getName());
             }
@@ -2315,6 +2480,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Prepare the receiver for execution in a session.
      */
     protected void prepareQuery() throws QueryException {
+        if (!shouldMaintainCache() && Boolean.TRUE.equals(getProperty(EntityAgentProperties.ENTITY_AGENT))) {
+            // Lock preparation may request a managed cache refresh. Agent reads
+            // already read the database and materialize detached instances.
+            setShouldRefreshIdentityMapResult(false);
+        }
         if ((!shouldMaintainCache()) && shouldRefreshIdentityMapResult() && (!this.descriptor.isAggregateCollectionDescriptor())) {
             throw QueryException.refreshNotPossibleWithoutCache(this);
         }
@@ -2875,7 +3045,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // bug 3659145 TODO - What is this bug ref? dclarke modified this next
         // if block
         if(fetchGroup  != null) {
-            return fetchGroup.containsAttributeInternal(mapping.getAttributeName());
+            return fetchGroup.containsAttributeInternal(mapping.getAttributeName())
+                    || (shouldRetainUnfetchedRelationships && mapping instanceof ForeignReferenceMapping reference
+                            && reference.usesIndirection());
         }
 
         return isPartialAttribute(attrName);
@@ -3134,6 +3306,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setFetchGroup(FetchGroup newFetchGroup) {
         this.fetchGroup = newFetchGroup;
+        this.entityGraphFetchGroup = false;
+        this.nativeFetchGroup = newFetchGroup != null;
         this.fetchGroupName = null;
         setIsPrePrepared(false);
     }
@@ -3144,6 +3318,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setFetchGroupName(String groupName) {
         //nullify the fetch group reference as one query can only has one fetch group.
         this.fetchGroup = null;
+        this.entityGraphFetchGroup = false;
+        this.nativeFetchGroup = groupName != null;
         this.fetchGroupName = groupName;
         setIsPrePrepared(false);
     }
@@ -3153,6 +3329,66 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setLoadGroup(LoadGroup loadGroup) {
         this.loadGroup = loadGroup;
+        this.entityGraphLoadGroup = false;
+    }
+
+    /** INTERNAL: Replace a JPA graph without clearing independent native loading hints. */
+    public void setEntityGraphFetchGroup(FetchGroup group) {
+        if (group == null) {
+            if (entityGraphFetchGroup && this.fetchGroup != null && !this.fetchGroup.shouldIncludeDefaultAttributes()) {
+                setFetchGroup(null);
+            }
+            return;
+        }
+        if (entityGraphLoadGroup) {
+            setLoadGroup(null);
+        }
+        setFetchGroup(group);
+        entityGraphFetchGroup = true;
+        nativeFetchGroup = false;
+    }
+
+    /** INTERNAL: Apply additive JPA loading and, when needed, a negative fetch mask. */
+    public void setEntityGraphLoadGroup(LoadGroup group, FetchGroup exclusions) {
+        if (group == null) {
+            if (entityGraphFetchGroup && this.fetchGroup != null && this.fetchGroup.shouldIncludeDefaultAttributes()) {
+                setFetchGroup(null);
+            }
+            if (entityGraphLoadGroup) {
+                setLoadGroup(null);
+            }
+            return;
+        }
+        if (entityGraphFetchGroup) {
+            setFetchGroup(null);
+        }
+        setLoadGroup(group);
+        entityGraphLoadGroup = true;
+        // A native mask is an independent explicit selection. Preserve its
+        // precedence and ownership instead of replacing it with graph defaults.
+        if (exclusions != null && !nativeFetchGroup) {
+            setFetchGroup(exclusions);
+            entityGraphFetchGroup = true;
+            nativeFetchGroup = false;
+        }
+    }
+
+    /**
+     * INTERNAL: Preserve graph traversal and deferred holders while including
+     * the basic state required by a detached entity-agent result.
+     */
+    public void prepareForDetachedRead() {
+        if (this.fetchGroup != null && this.loadGroup == null) {
+            this.loadGroup = this.fetchGroup.toLoadGroupLoadOnly();
+        }
+        this.shouldUseDefaultFetchGroup = false;
+        this.shouldRetainUnfetchedRelationships = true;
+        setIsPrePrepared(false);
+    }
+
+    /** INTERNAL: Propagate detached holder construction into joined and batched reads. */
+    public boolean shouldRetainUnfetchedRelationships() {
+        return shouldRetainUnfetchedRelationships;
     }
 
     /**
@@ -3175,6 +3411,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setShouldUseDefaultFetchGroup(boolean shouldUseDefaultFetchGroup) {
         this.shouldUseDefaultFetchGroup = shouldUseDefaultFetchGroup;
         this.fetchGroup = null;
+        this.entityGraphFetchGroup = false;
+        this.nativeFetchGroup = false;
         this.fetchGroupName = null;
         // Force prepare again so executeFetchGroup is calculated
         setIsPrePrepared(false);

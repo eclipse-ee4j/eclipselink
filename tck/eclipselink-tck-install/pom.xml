@@ -22,7 +22,7 @@
    <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>eclipselink-tck</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
 
    <artifactId>eclipselink-tck-install</artifactId>
@@ -30,18 +30,18 @@
    <name>EclipseLink TCK: install the Jakarta Persistence TCK artifacts</name>
 
    <!--
-        Downloads the Jakarta Persistence 3.2 TCK distribution and installs
-        persistence-tck, persistence-tck-common, persistence-tck-spec-tests and
-        dbprocedures into the local repository, since they are not published to Maven
-        Central. Taken from the GlassFish runner's copy, which never had anything to do
-        with GlassFish.
+        Downloads the TCK distribution and installs persistence-tck-common,
+        persistence-tck-spec-tests and persistence-tck-dbprocedures into the local
+        repository, since they are not published to Maven Central. Unchanged from the
+        GlassFish runner's copy apart from these coordinates - it never had anything
+        to do with GlassFish.
     -->
 
    <properties>
         <tck.test.persistence.file>jakarta-persistence-tck-${tck.test.persistence.version}.zip</tck.test.persistence.file>
-        <tck.test.persistence.main.version>3.2</tck.test.persistence.main.version>
+        <tck.test.persistence.main.version>4.0</tck.test.persistence.main.version>
         <tck.test.persistence.url>https://download.eclipse.org/jakartaee/persistence/${tck.test.persistence.main.version}/${tck.test.persistence.file}</tck.test.persistence.url>
-        <tck.test.persistence.version>3.2.0</tck.test.persistence.version>
+        <tck.test.persistence.version>4.0.0-M6</tck.test.persistence.version>
     </properties>
 
    <build>
@@ -68,7 +68,7 @@
 
             <plugin>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.4</version>
+                <version>3.2.0</version>
                 <executions>
 
                     <!--Persistence TCK DB procedures -->
@@ -80,11 +80,11 @@
                         </goals>
                         <phase>process-resources</phase>
                         <configuration>
-                            <file>${project.build.directory}/persistence-tck/artifacts/dbprocedures-${tck.test.persistence.version}.jar</file>
-                            <groupId>jakarta.tck</groupId>
-                            <artifactId>dbprocedures</artifactId>
+                            <file>${project.build.directory}/persistence-tck/artifacts/persistence-tck-dbprocedures-${tck.test.persistence.version}.jar</file>
+                            <groupId>jakarta.persistence</groupId>
+                            <artifactId>persistence-tck-dbprocedures</artifactId>
                             <version>${tck.test.persistence.version}</version>
-                            <sources>${project.build.directory}/persistence-tck/artifacts/dbprocedures-${tck.test.persistence.version}-sources.jar</sources>
+                            <sources>${project.build.directory}/persistence-tck/artifacts/persistence-tck-dbprocedures-${tck.test.persistence.version}-sources.jar</sources>
                             <packaging>jar</packaging>
                         </configuration>
                     </execution>
@@ -96,9 +96,9 @@
                         </goals>
                         <phase>process-resources</phase>
                         <configuration>
-                            <file>${project.build.directory}/persistence-tck/artifacts/dbprocedures-${tck.test.persistence.version}.pom</file>
-                            <groupId>jakarta.tck</groupId>
-                            <artifactId>dbprocedures</artifactId>
+                            <file>${project.build.directory}/persistence-tck/artifacts/persistence-tck-dbprocedures-${tck.test.persistence.version}.pom</file>
+                            <groupId>jakarta.persistence</groupId>
+                            <artifactId>persistence-tck-dbprocedures</artifactId>
                             <version>${tck.test.persistence.version}</version>
                             <packaging>pom</packaging>
                         </configuration>
@@ -114,7 +114,7 @@
                         <phase>process-resources</phase>
                         <configuration>
                             <file>${project.build.directory}/persistence-tck/artifacts/persistence-tck-common-${tck.test.persistence.version}.jar</file>
-                            <groupId>jakarta.tck</groupId>
+                            <groupId>jakarta.persistence</groupId>
                             <artifactId>persistence-tck-common</artifactId>
                             <version>${tck.test.persistence.version}</version>
                             <sources>${project.build.directory}/persistence-tck/artifacts/persistence-tck-common-${tck.test.persistence.version}-sources.jar</sources>
@@ -130,7 +130,7 @@
                         <phase>process-resources</phase>
                         <configuration>
                             <file>${project.build.directory}/persistence-tck/artifacts/persistence-tck-common-${tck.test.persistence.version}.pom</file>
-                            <groupId>jakarta.tck</groupId>
+                            <groupId>jakarta.persistence</groupId>
                             <artifactId>persistence-tck-common</artifactId>
                             <version>${tck.test.persistence.version}</version>
                             <packaging>pom</packaging>
@@ -138,30 +138,12 @@
                     </execution>
 
                     <!--
-                        Persistence TCK parent
-
-                        Installed because all three artifacts below declare
-                        jakarta.tck:persistence-tck as their parent, and resolve
-                        ${jakarta.ee.version} from it for their own dependencies on
-                        jakarta.tck:runtime and jakarta.tck:libutil. Without it they cannot be
-                        resolved at all. Its own parent, org.eclipse.ee4j:project, is on Maven
-                        Central, so the chain terminates.
+                        The persistence-tck-parent aggregator pom is deliberately not installed.
+                        It inherits from jakarta.persistence:jakarta.persistence-parent, which is
+                        not published to Maven Central, so installing it would create an
+                        unresolvable parent chain. None of the artifacts consumed by the runner
+                        (common, spec-tests, dbprocedures) declares a parent, so it is not needed.
                     -->
-
-                    <execution>
-                        <id>install-persistence-tck-pom</id>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <file>${project.build.directory}/persistence-tck/artifacts/persistence-tck-${tck.test.persistence.version}.pom</file>
-                            <groupId>jakarta.tck</groupId>
-                            <artifactId>persistence-tck</artifactId>
-                            <version>${tck.test.persistence.version}</version>
-                            <packaging>pom</packaging>
-                        </configuration>
-                    </execution>
 
                     <!-- Persistence TCK Spec tests -->
 
@@ -173,7 +155,7 @@
                         <phase>process-resources</phase>
                         <configuration>
                             <file>${project.build.directory}/persistence-tck/artifacts/persistence-tck-spec-tests-${tck.test.persistence.version}.jar</file>
-                            <groupId>jakarta.tck</groupId>
+                            <groupId>jakarta.persistence</groupId>
                             <artifactId>persistence-tck-spec-tests</artifactId>
                             <version>${tck.test.persistence.version}</version>
                             <sources>${project.build.directory}/persistence-tck/artifacts/persistence-tck-spec-tests-${tck.test.persistence.version}-sources.jar</sources>
@@ -189,7 +171,7 @@
                         <phase>process-resources</phase>
                         <configuration>
                             <file>${project.build.directory}/persistence-tck/artifacts/persistence-tck-spec-tests-${tck.test.persistence.version}.pom</file>
-                            <groupId>jakarta.tck</groupId>
+                            <groupId>jakarta.persistence</groupId>
                             <artifactId>persistence-tck-spec-tests</artifactId>
                             <version>${tck.test.persistence.version}</version>
                             <packaging>pom</packaging>

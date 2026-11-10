@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,18 +16,23 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Locale;
-import java.util.Map;
-
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
+
+import java.util.Map;
+
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.tools.schemaframework.TableValidationException;
 
+import static java.util.Locale.ROOT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigProperty;
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
 
 // Maps EclipseLink core API to jakarta.persistence.SchemaManager
@@ -38,12 +43,16 @@ class SchemaManagerImpl implements SchemaManager {
 
     // EclipseLink schema manager
     private final org.eclipse.persistence.tools.schemaframework.SchemaManager schemaManager;
+
+    private final DatabaseSessionImpl session;
+
     // Persistence unit properties
-    final Map<String, ?> props;
+    final Map<String, ?> properties;
 
     SchemaManagerImpl(DatabaseSessionImpl session, Map<String, ?> props) {
         this.schemaManager = new org.eclipse.persistence.tools.schemaframework.SchemaManager(session);
-        this.props = props;
+        this.properties = props;
+        this.session = session;
     }
 
     @Override
@@ -63,14 +72,15 @@ class SchemaManagerImpl implements SchemaManager {
     @Override
     public void validate() throws SchemaValidationException {
         ValidationFailure failures = new ValidationFailure();
-        String mode = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_VALIDATION_MODE,
-                                                props,
-                                                PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE)
-                .toLowerCase(Locale.ROOT);
-        boolean full = PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+        String mode =
+            getConfigPropertyAsString(SCHEMA_VALIDATION_MODE, properties, SCHEMA_VALIDATION_MODE_SIMPLE)
+            .toLowerCase(ROOT);
+
+
+        boolean full = SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+
         if (!schemaManager.validateDefaultTables(failures, true, full)) {
-            throw new SchemaValidationException(
-                    ExceptionLocalization.buildMessage("schema_validation_failed"),
+            throw new SchemaValidationException(ExceptionLocalization.buildMessage("schema_validation_failed"),
                     failures.result().toArray(new TableValidationException[0]));
         }
     }
@@ -78,10 +88,26 @@ class SchemaManagerImpl implements SchemaManager {
     @Override
     public void truncate() {
         try {
-            schemaManager.truncateDefaultTables(false);
+            // Foreign key constraints have to be generated here, even though truncate creates
+            // no schema: truncateDefaultTables drops the constraints, truncates and re-creates
+            // them, and the table definitions it works from only carry those constraints when
+            // asked for them. Passing false leaves the drop/create a no-op while the real tables
+            // still have their foreign keys, and databases that refuse TRUNCATE on a referenced
+            // table (Derby XCL48) then leave the parent table's rows behind.
+            schemaManager.truncateDefaultTables(true);
         } catch (EclipseLinkException ex) {
             throw new PersistenceException(ex.getMessage(), ex);
         }
+    }
+
+    @Override
+    public void populate() {
+        if (session.isSessionBroker()) {
+            throw new UnsupportedOperationException("Population is not supported for composite persistence units");
+        }
+        Object source = getConfigProperty(SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE, properties);
+        EntityManagerSetupImpl.executeSourceScript(source, session,
+                session.getDatasourcePlatform().getConversionManager().getLoader());
     }
 
 }

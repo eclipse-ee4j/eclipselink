@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +20,6 @@ import java.util.Vector;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.LockModeType;
-import jakarta.persistence.RollbackException;
 import jakarta.persistence.TypedQuery;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -134,6 +134,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             beginTransaction(em);
             Employee e1 = new Employee(100, invalidName, validName, 1337);
             em.persist(e1);
+            // Default validation occurs before the database insert in Persistence 4.0.
+            em.flush();
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
@@ -168,6 +170,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             beginTransaction(em);
             Employee e1 = new Employee(100, validName, invalidName, 1337);
             em.persist(e1);
+            // Default validation occurs before the database insert in Persistence 4.0.
+            em.flush();
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
@@ -240,6 +244,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             Address address = new Address("street", "city", "state" /*passing invalid value for state */);
             e1.setAddress(address);
             em.persist(e1);
+            // Default validation occurs before the database insert in Persistence 4.0.
+            em.flush();
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             gotConstraintViolations = true;
@@ -474,12 +480,19 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             task.setPriority(2);
             
             commitTransaction(em);
-        }  catch (RollbackException e) {
-            // we're expecting a rollback exception because we've changed the object
-            // and it isn't passing validation. Check that the cause is a ConstraintViolationException.
-
-            final ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
-            final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+        }  catch (RuntimeException e) {
+            // we're expecting a rollback because we've changed the object and it isn't passing validation.
+            // Check that it was caused by a ConstraintViolationException: the direct cause of a
+            // jakarta.persistence.RollbackException in Java SE, further down on the server, where the commit
+            // of the Jakarta Transactions transaction fails instead.
+            Throwable cause = e.getCause();
+            while (cause != null && !(cause instanceof ConstraintViolationException)) {
+                cause = cause.getCause();
+            }
+            if (cause == null) {
+                throw e;
+            }
+            final Set<ConstraintViolation<?>> constraintViolations = ((ConstraintViolationException) cause).getConstraintViolations();
             final ConstraintViolation constraintViolation = constraintViolations.iterator().next();
             // Messages may be localized so "must not be null" may not match
             assertTrue(constraintViolation.getMessage().toLowerCase().contains("null"));

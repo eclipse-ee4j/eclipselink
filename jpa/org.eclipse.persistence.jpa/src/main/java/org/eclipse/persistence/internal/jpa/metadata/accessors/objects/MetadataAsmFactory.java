@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -55,6 +55,8 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JAKARTA_NONNULL_DESCRIPTOR;
 
 /**
  * INTERNAL: A metadata factory that uses ASM technology and no reflection
@@ -262,6 +264,13 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         @Override
+        public void visitInnerClass(String name, String outerName, String innerName, int access) {
+            if (outerName != null && innerName != null && toClassName(name).equals(this.classMetadata.getName())) {
+                this.classMetadata.setEnclosingClass(toClassName(outerName), innerName);
+            }
+        }
+
+        @Override
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
             this.processedMemeber = true;
             if (this.classMetadata.isLazy()) {
@@ -462,7 +471,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Ljakarta/persistence")
-                    || desc.startsWith("Lorg/eclipse/persistence")) {
+                    || desc.startsWith("Lorg/eclipse/persistence") || JAKARTA_NONNULL_DESCRIPTOR.equals(desc)) {
                 return new MetadataAnnotationVisitor(this.field, desc);
             }
             return null;
@@ -494,6 +503,9 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.method.setModifiers(access);
 
             this.method.setGenericType(processDescription(desc, true));
+            if (desc != null) {
+                this.method.setGenericReturnSignature(desc.substring(desc.indexOf(')') + 1));
+            }
 
             List<String> argumentNames = processDescription(signature, false);
             if (argumentNames != null && !argumentNames.isEmpty()) {
@@ -506,7 +518,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Ljakarta/persistence")
-                    || desc.startsWith("Lorg/eclipse/persistence")) {
+                    || desc.startsWith("Lorg/eclipse/persistence") || JAKARTA_NONNULL_DESCRIPTOR.equals(desc)) {
                 return new MetadataAnnotationVisitor(this.method, desc);
             }
             return null;

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,6 +23,7 @@ import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CommitManager;
@@ -222,6 +224,9 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
             }
 
             if (rowCount < 1) {
+                if (getProperty(EntityAgentProperties.OPERATION) != null) {
+                    throw OptimisticLockException.objectChangedSinceLastReadWhenDeleting(object, this);
+                }
                 if (session.hasEventManager()) {
                     session.getEventManager().noRowsModified(this, object);
                 }

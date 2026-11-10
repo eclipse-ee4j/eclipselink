@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022,2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
 import java.io.BufferedWriter;
@@ -39,6 +40,28 @@ import java.util.Map;
  * Used for parameterized expressions, such as expression defined in mapping queries.
  */
 public class ParameterExpression extends BaseExpression {
+
+    /** An explicitly converted argument must not pass through its mapped converter again. */
+    public record ConvertedValue(Object value) implements java.io.Serializable {
+    }
+
+    /** An execution-local null binding type; the expression's Java type is unchanged. */
+    public record TypedNull(Class<?> type) implements java.io.Serializable {
+    }
+
+    /** A selected parameter may expose a different JDBC type on its next execution. */
+    private static final class ResultField extends DatabaseField {
+        private static final long serialVersionUID = 1L;
+
+        private ResultField() {
+            super("*");
+        }
+
+        @Override
+        public boolean shouldCacheSqlType() {
+            return false;
+        }
+    }
 
     /** The parameter field or name. */
     protected DatabaseField field;
@@ -338,6 +361,9 @@ public class ParameterExpression extends BaseExpression {
                 }
             }
 
+            if (value instanceof ConvertedValue converted) {
+                return converted.value();
+            }
             // validate parameter type against mapping
             // validate against the localbase (false), since there are no nested params
             validateParameterValueAgainstMapping(value, false);
@@ -349,6 +375,48 @@ public class ParameterExpression extends BaseExpression {
         }
 
         return value;
+    }
+
+    /** Preserve relational or explicit type information when a parameter is null. */
+    public DatabaseField getNullValueField(AbstractRecord translationRow) {
+        if (localBase instanceof DataExpression data) {
+            DatabaseField mappedField = data.getField();
+            if (mappedField != null && (mappedField.getType() != null
+                    || mappedField.getSqlType() != DatabaseField.NULL_SQL_TYPE)) {
+                return mappedField.clone();
+            }
+        }
+        if (localBase instanceof QueryKeyExpression key && key.getMapping() instanceof OneToOneMapping reference
+                && reference.getSourceToTargetKeyFields().size() == 1) {
+            // A relationship's foreign key carries no type of its own; its target key does.
+            Map.Entry<DatabaseField, DatabaseField> keyFields = reference.getSourceToTargetKeyFields().entrySet().iterator().next();
+            DatabaseField targetField = keyFields.getValue();
+            if (targetField.getType() != null || targetField.getSqlType() != DatabaseField.NULL_SQL_TYPE) {
+                DatabaseField foreignKey = keyFields.getKey().clone();
+                foreignKey.setType(targetField.getType());
+                foreignKey.setSqlType(targetField.getSqlType());
+                return foreignKey;
+            }
+        }
+        DatabaseField nullField = field.clone();
+        DatabaseField rowField = translationRow == null ? null : translationRow.getField(field);
+        if (rowField != null) {
+            // Duplicate argument names may have promoted metadata on the row.
+            if (rowField.getType() != null && rowField.getType() != Object.class) {
+                if (nullField.getType() != rowField.getType()) {
+                    nullField.setSqlType(rowField.getSqlType());
+                }
+                nullField.setType(rowField.getType());
+                nullField.setTypeName(rowField.getType().getName());
+            }
+            if (nullField.getSqlType() == DatabaseField.NULL_SQL_TYPE) {
+                nullField.setSqlType(rowField.getSqlType());
+            }
+        }
+        if ((nullField.getType() == null || nullField.getType() == Object.class) && type instanceof Class<?> javaType) {
+            nullField.setType(javaType);
+        }
+        return nullField;
     }
 
     private boolean directionUp = true;
@@ -623,7 +691,7 @@ public class ParameterExpression extends BaseExpression {
         }
 
         // This field is a parameter value, so any name can be used.
-        newFields.add(new DatabaseField("*"));
+        newFields.add(new ResultField());
         printSQL(printer);
     }
 

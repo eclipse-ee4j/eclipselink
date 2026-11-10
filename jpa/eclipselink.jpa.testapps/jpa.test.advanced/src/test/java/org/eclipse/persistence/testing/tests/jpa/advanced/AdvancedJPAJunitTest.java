@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1314,7 +1314,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         beginTransaction(em);
 
         try {
-            EJBQueryImpl<Employee> query = (EJBQueryImpl<Employee>) em.createNamedQuery("findAllSQLEquipment", Employee.class);
+            EJBQueryImpl<Equipment> query = (EJBQueryImpl<Equipment>) em.createNamedQuery("findAllSQLEquipment", Equipment.class);
             @SuppressWarnings({"unchecked"})
             Collection<Equipment> equipment = query.getResultCollection();
 

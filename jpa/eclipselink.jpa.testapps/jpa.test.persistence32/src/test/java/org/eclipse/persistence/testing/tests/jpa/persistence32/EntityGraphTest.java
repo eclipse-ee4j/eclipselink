@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,6 +18,7 @@ import java.util.Set;
 
 import jakarta.persistence.AttributeNode;
 import jakarta.persistence.EntityGraph;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.metamodel.Attribute;
@@ -79,10 +81,14 @@ public class EntityGraphTest extends AbstractPokemonSuite {
             pokemonGraph.addSubgraph("types").addAttributeNode("name");
             pokemonGraph.addSubgraph("trainer").addAttributeNode("name");
             pokemonGraph.removeAttributeNodes(Attribute.PersistentAttributeType.MANY_TO_ONE);
-            // Trainer node, which is many-to-one, shall be gone now. Verify nodes content.
+            // Jakarta Persistence 4.0 retains removed nodes with the LAZY option.
             List<AttributeNode<?>> nodes = pokemonGraph.getAttributeNodes();
-            Set<String> checkNodes = new HashSet<>(List.of("id", "name", "types"));
-            assertEquals(3, nodes.size());
+            Set<String> checkNodes = new HashSet<>(List.of("id", "name", "types", "trainer"));
+            assertEquals(4, nodes.size());
+            assertTrue(pokemonGraph.getAttributeNode("trainer").getOptions().contains(FetchType.LAZY));
+            assertTrue(pokemonGraph.getAttributeNode("id").getOptions().contains(FetchType.EAGER));
+            assertTrue(pokemonGraph.getAttributeNode("name").getOptions().contains(FetchType.EAGER));
+            assertTrue(pokemonGraph.getAttributeNode("types").getOptions().contains(FetchType.EAGER));
             for (AttributeNode<?> node : nodes) {
                 if (checkNodes.contains(node.getAttributeName())) {
                     checkNodes.remove(node.getAttributeName());

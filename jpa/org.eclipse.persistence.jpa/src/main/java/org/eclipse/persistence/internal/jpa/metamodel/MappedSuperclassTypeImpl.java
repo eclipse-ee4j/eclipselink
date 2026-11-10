@@ -23,18 +23,18 @@
 //     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import jakarta.persistence.metamodel.MappedSuperclassType;
+
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
-
-import jakarta.persistence.metamodel.MappedSuperclassType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p>
  * <b>Purpose</b>: Provides the implementation for the MappedSuperclassType interface
- *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *  of the Jakarta Persistence Metamodel API.
  * <p>
  * <b>Description</b>:
  *  Instances of the type MappedSuperclassType represent mapped
@@ -148,5 +148,10 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     @Override
     public boolean isMappedSuperclass() {
         return !isEntity();
+    }
+
+    @Override
+    public boolean hasId() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

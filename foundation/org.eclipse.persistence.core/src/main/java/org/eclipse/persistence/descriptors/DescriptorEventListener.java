@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -157,5 +157,34 @@ public interface DescriptorEventListener extends EventListener {
      * If the object is existing and has no changes, it will not be updated in a unit of work.
      */
     void preWrite(DescriptorEvent event);
+
+    /**
+     * INTERNAL: Reserved for JPA and Bean Validation listener dispatch before an entity upsert writes database state.
+     * Native listeners registered with {@code addListener} and entity-native callbacks receive the physical
+     * insert or update events instead.
+     */
+    default void preUpsert(DescriptorEvent event) {}
+
+    /**
+     * INTERNAL: Reserved for JPA and Bean Validation listener dispatch after an entity upsert writes database state.
+     * Native listeners registered with {@code addListener} and entity-native callbacks receive the physical
+     * insert or update events instead.
+     */
+    default void postUpsert(DescriptorEvent event) {}
+
+    /**
+     * INTERNAL: Called before copying detached state into a managed entity.
+     */
+    default void preMerge(DescriptorEvent event) {}
+
+    /**
+     * INTERNAL: Called after a managed entity has been inserted.
+     */
+    default void postPersist(DescriptorEvent event) {}
+
+    /**
+     * INTERNAL: Called after a managed entity has been deleted.
+     */
+    default void postRemove(DescriptorEvent event) {}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,8 @@ import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JAKARTA_NONNULL;
+
 /**
  * A one to one relationship accessor. A OneToOne annotation currently is not
  * required to be on the accessible object, that is, a 1-1 can default.
@@ -87,6 +89,10 @@ public class OneToOneAccessor extends ObjectAccessor {
         if (oneToOne != null) {
             setMappedBy(oneToOne.getAttributeString("mappedBy"));
             setOrphanRemoval(oneToOne.getAttributeBooleanDefaultFalse("orphanRemoval"));
+        }
+
+        if (isAnnotationPresent(JAKARTA_NONNULL)) {
+            setOptional(false);
         }
     }
 

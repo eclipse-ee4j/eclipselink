@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Thu Sep 03 08:47:01 CEST 2026:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-01a0-6605-592e-00000f58d618 
+on database directory /Users/arjan/eclipse-2023-03/workspace/eclipselinkx/tck/eclipselink-tck-run/target/derbydb with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@2c854dc5 
+Loaded from file:/Users/arjan/.m2/repository/org/apache/derby/derby/10.16.1.1/derby-10.16.1.1.jar
+java.vendor=Eclipse Adoptium
+java.runtime.version=21.0.9+10-LTS
+user.dir=/Users/arjan/eclipse-2023-03/workspace/eclipselinkx/tck/eclipselink-tck-run
+os.name=Mac OS X
+os.arch=aarch64
+os.version=26.5.1
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

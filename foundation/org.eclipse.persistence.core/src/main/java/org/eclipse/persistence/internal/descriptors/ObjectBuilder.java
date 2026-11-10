@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -59,6 +59,7 @@ import org.eclipse.persistence.internal.helper.ConcurrencySemaphore;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.InvalidObject;
@@ -669,7 +670,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             } else {
                 event.setEventCode(DescriptorEventManager.PostBuildEvent);
             }
-            descriptorEventManager.executeEvent(event);
+            if (forRefresh && query.isRefreshSource()) {
+                descriptorEventManager.executeRefreshSourceEvent(event);
+            } else {
+                descriptorEventManager.executeEvent(event);
+            }
         }
     }
 
@@ -928,6 +933,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Force instantiation to any eager mappings.
      */
     public void instantiateEagerMappings(Object object, AbstractSession session) {
+        instantiateEagerMappings(object, session, null);
+    }
+
+    /** INTERNAL: Apply query-local eager selection while preserving the object's actual fetched state. */
+    public void instantiateEagerMappings(Object object, AbstractSession session, FetchGroup selection) {
         // Force instantiation to eager mappings.
         if (!this.eagerMappings.isEmpty()) {
             FetchGroup fetchGroup = null;
@@ -938,8 +948,16 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             int size = this.eagerMappings.size();
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = this.eagerMappings.get(index);
-                if (fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
-                    mapping.instantiateAttribute(object, session);
+                if ((fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName()))
+                        && (selection == null || selection.containsAttributeInternal(mapping.getAttributeName()))) {
+                    if (selection != null && session instanceof UnitOfWorkImpl unitOfWork) {
+                        unitOfWork.withGraphCloneSelection(null, selection.getGroup(mapping.getAttributeName()), () -> {
+                            mapping.instantiateAttribute(object, session);
+                            return null;
+                        });
+                    } else {
+                        mapping.instantiateAttribute(object, session);
+                    }
                 }
             }
         }
@@ -977,7 +995,16 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 };
                 session.getServerPlatform().launchContainerRunnable(runnable);
             } else {
-                mapping.load(object, item, session, fromFetchGroup);
+                FetchGroup selection = session instanceof UnitOfWorkImpl unitOfWork
+                        ? unitOfWork.getGraphCloneSelection(object) : null;
+                if (selection != null) {
+                    ((UnitOfWorkImpl) session).withGraphCloneSelection(null, selection.getGroup(mapping.getAttributeName()), () -> {
+                        mapping.load(object, item, session, fromFetchGroup);
+                        return null;
+                    });
+                } else {
+                    mapping.load(object, item, session, fromFetchGroup);
+                }
             }
         }
     }
@@ -1048,6 +1075,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         Object clone = unitOfWorkCacheKey.getObject();
         boolean found = clone != null;
         Object original = null;
+        boolean deferRefresh = query.shouldRefreshIdentityMapResult() && query.isRegisteringResults()
+                && !unitOfWork.isClassReadOnly(concreteDescriptor.getJavaClass(), concreteDescriptor);
+        UnitOfWorkImpl.RefreshOperation refreshOperation = null;
+        boolean ownsRefreshOperation = false;
+        boolean refreshComplete = false;
         try {
             // Only check parent cache if not in unit of work, or if a refresh is required.
             if (!found || query.shouldRefreshIdentityMapResult()
@@ -1072,8 +1104,17 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         return query.registerIndividualResult(original, primaryKey, unitOfWork, null, concreteDescriptor);
                     }
                 } else {
+                    if (deferRefresh) {
+                        refreshOperation = unitOfWork.getRefreshOperation(query);
+                        if (refreshOperation == null) {
+                            refreshOperation = unitOfWork.beginRefreshOperation(query);
+                            ownsRefreshOperation = true;
+                        }
+                    }
                     // PERF: This optimizes the normal case to avoid duplicate cache access.
-                    CacheKey parentCacheKey = (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
+                    CacheKey parentCacheKey = deferRefresh
+                            ? buildRefreshSource(query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager)
+                            : (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
                     original = parentCacheKey.getObject();
                     if (query.shouldCacheQueryResults()) {
                         query.cacheResult(original);
@@ -1088,8 +1129,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     if (!query.isRegisteringResults()) {
                         return original;
                     }
+                    FetchGroup graphSelection = query instanceof ObjectLevelReadQuery read && read.getFetchGroup() != null
+                            && read.getFetchGroup().hasGraphOptions() && !query.shouldRefreshIdentityMapResult()
+                            ? read.getExecutionFetchGroup(concreteDescriptor) : null;
+                    boolean freshGraphClone = clone == null && graphSelection != null;
                     if (clone == null) {
-                        clone = unitOfWork.cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, concreteDescriptor);
+                        Object source = original;
+                        UnitOfWorkImpl.RefreshOperation operation = refreshOperation;
+                        clone = unitOfWork.withGraphCloneSelection(source, graphSelection,
+                                () -> unitOfWork.cloneAndRegisterObject(source, parentCacheKey, unitOfWorkCacheKey, concreteDescriptor, operation));
                         // TODO-dclarke: At this point the clones do not have their fetch-group specified
                         // relationship attributes loaded
                     }
@@ -1097,7 +1145,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     //fetch group manager control fetch group support
                     if (concreteDescriptor.hasFetchGroupManager()) {
                         //if the object is already registered in uow, but it's partially fetched (fetch group case)
-                        if (concreteDescriptor.getFetchGroupManager().shouldWriteInto(original, clone)) {
+                        if (!freshGraphClone && concreteDescriptor.getFetchGroupManager().shouldWriteInto(original, clone)) {
                             //there might be cases when reverting/refreshing clone is needed.
                             concreteDescriptor.getFetchGroupManager().writePartialIntoClones(original, clone, unitOfWork.getBackupClone(clone, concreteDescriptor), unitOfWork);
                         }
@@ -1105,11 +1153,26 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
             }
             query.postRegisterIndividualResult(clone, original, primaryKey, unitOfWork, joinManager, concreteDescriptor);
+            refreshComplete = true;
         } finally {
             unitOfWorkCacheKey.release();
             query.setSession(unitOfWork);
+            if (ownsRefreshOperation) {
+                unitOfWork.completeRefreshOperation(refreshOperation, refreshComplete);
+            }
         }
         return clone;
+    }
+
+    /**
+     * Suppress this cache source and only explicitly derived relationship
+     * sources until the shared-cache construction completes.
+     */
+    protected CacheKey buildRefreshSource(ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session,
+            Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) {
+        try (ObjectBuildingQuery.RefreshSourceScope scope = query.beginRefreshSource()) {
+            return (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
+        }
     }
 
     /**
@@ -1117,8 +1180,21 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * from the values stored in the database row.
      */
     protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+        Map<Object, CacheKey> materializedObjects = null;
+        Object context = query.getProperty(EntityAgentProperties.READ_CONTEXT);
+        if (!query.shouldMaintainCache() && primaryKey != null
+                && !concreteDescriptor.isAggregateDescriptor() && !concreteDescriptor.isAggregateCollectionDescriptor()
+                && context instanceof Map<?, ?>) {
+            @SuppressWarnings("unchecked")
+            Map<ClassDescriptor, Map<Object, CacheKey>> materialization = (Map<ClassDescriptor, Map<Object, CacheKey>>) context;
+            materializedObjects = materialization.computeIfAbsent(concreteDescriptor, ignored -> new HashMap<>());
+            CacheKey existing = materializedObjects.get(primaryKey);
+            if (existing != null) {
+                return returnCacheKey ? existing : existing.getObject();
+            }
+        }
         boolean isProtected = concreteDescriptor.getCachePolicy().isProtectedIsolation();
-        if (isProtected && session.isIsolatedClientSession()){
+        if (isProtected && session.isIsolatedClientSession() && materializedObjects == null){
             return buildProtectedObject(returnCacheKey, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
         }
         Object domainObject = null;
@@ -1179,14 +1255,34 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     cacheKey = new CacheKey(primaryKey);
                     cacheKey.setObject(domainObject);
                 }
+                if (materializedObjects != null) {
+                    // Resolve eager cycles before traversing attributes, without
+                    // publishing the source to any shared identity map.
+                    materializedObjects.put(primaryKey, cacheKey);
+                }
                 concreteObjectBuilder.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
                 if (isProtected && (cacheKey != null)) {
                     cacheForeignKeyValues(databaseRow, cacheKey, session);
                 }
-                if (shouldMaintainCache && !shouldStoreBypassCache) {
+                boolean detachedGraph = query instanceof ObjectLevelReadQuery read
+                        && read.shouldRetainUnfetchedRelationships();
+                if ((shouldMaintainCache && !shouldStoreBypassCache) || detachedGraph) {
                     // Set the fetch group to the domain object, after built.
                     if ((fetchGroup != null) && concreteDescriptor.hasFetchGroupManager()) {
                         EntityFetchGroup entityFetchGroup = concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup);
+                        if (detachedGraph && entityFetchGroup != null) {
+                            Set<String> fetched = new HashSet<>(entityFetchGroup.getAttributeNames());
+                            for (DatabaseMapping mapping : concreteDescriptor.getMappings()) {
+                                if (!fetched.contains(mapping.getAttributeName())
+                                        && mapping instanceof ForeignReferenceMapping reference && reference.usesIndirection()
+                                        && reference.getIndirectionPolicy().objectIsInstantiated(mapping.getAttributeValueFromObject(domainObject))) {
+                                    // A lifecycle callback may already have accessed the
+                                    // relationship. Preserve that state in the detached copy.
+                                    fetched.add(mapping.getAttributeName());
+                                }
+                            }
+                            entityFetchGroup = concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetched);
+                        }
                         if (entityFetchGroup !=null){
                             entityFetchGroup.setOnEntity(domainObject, session);
                         }
@@ -1233,6 +1329,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     loadBatchReadAttributes(concreteDescriptor, domainObject, cacheKey, databaseRow, query, joinManager, false);
                 }
             }
+        } catch (RuntimeException | Error failure) {
+            if (materializedObjects != null) {
+                materializedObjects.remove(primaryKey, cacheKey);
+            }
+            throw failure;
         } finally {
             if (shouldMaintainCache && (cacheKey != null)) {
                 // bug 2681401:
@@ -2061,7 +2162,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public void trimFieldsForInsert(AbstractSession session, AbstractRecord databaseRow) {
         ClassDescriptor descriptor = this.descriptor;
-        if (descriptor.usesSequenceNumbers() && descriptor.getSequence().shouldAcquireValueAfterInsert()) {
+        if (descriptor.usesSequenceNumbers() && descriptor.getSequence().shouldAcquireValueAfterInsert()
+                && !"UPSERT".equals(session.getProperty(EntityAgentProperties.OPERATION))) {
             databaseRow.remove(descriptor.getSequenceNumberField());
         }
         if (descriptor.hasReturningPolicy()) {
@@ -2175,7 +2277,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = mappings.get(index);
             if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
-                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
             }
         }
 
@@ -2216,10 +2318,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         if (mapping.isOutSopObject()) {
                             // the mapping should be processed as if there is no sopObject
                             databaseRow.setSopObject(null);
-                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
                         } else {
                             databaseRow.setSopObject(sopObject);
-                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
                         }
                     }
                 }
@@ -2245,10 +2347,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             if (mapping.isOutSopObject()) {
                                 // the mapping should be processed as if there is no sopObject
                                 databaseRow.setSopObject(null);
-                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
                             } else {
                                 databaseRow.setSopObject(sopObject);
-                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
                             }
                         }
                     }
@@ -2360,7 +2462,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         if (descriptor.getCachePolicy().isSharedIsolation() || !descriptor.shouldIsolateProtectedObjectsInUnitOfWork()) {
                             // using shared isolation and the original is from the shared cache
                             // or using protected isolation and isolated client sessions
-                            return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor);
+                            return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor, null);
                         }
                     }
                 }
@@ -2418,7 +2520,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (!unitOfWork.wasTransactionBegunPrematurely() && descriptor.getCachePolicy().isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()) {
                 // we are at this point because we have isolated protected entities to the UnitOfWork
                 // we should ensure that we populate the cache as well.
-                originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, unitOfWork.getParentIdentityMapSession(descriptor, false, true), primaryKey, preFetchedCacheKey, descriptor, joinManager);
+                AbstractSession cacheSession = unitOfWork.getParentIdentityMapSession(descriptor, false, true);
+                originalCacheKey = query.shouldRefreshIdentityMapResult() && query.isRegisteringResults()
+                        && !unitOfWork.isClassReadOnly(descriptor.getJavaClass(), descriptor)
+                        ? buildRefreshSource(query, databaseRow, cacheSession, primaryKey, preFetchedCacheKey, descriptor, joinManager)
+                        : (CacheKey)buildObject(true, query, databaseRow, cacheSession, primaryKey, preFetchedCacheKey, descriptor, joinManager);
             }
             //If we are unable to access the shared cache because of any of the above settings at this point
             // the cachekey will be null so the attribute building will not be able to access the shared cache.
@@ -2992,14 +3098,20 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 return copy;
             }
 
-            copy = instantiateClone(original, copyGroup.getSession());
+            copy = copyGroup.createCopy(original);
+            if (copy == null) {
+                copy = instantiateClone(original, copyGroup.getSession());
+            }
             copyGroup.getCopies().put(original, copy);
 
             // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
             List<DatabaseMapping> mappings = getCloningMappings();
             int size = mappings.size();
             for (int index = 0; index < size; index++) {
-                mappings.get(index).buildCopy(copy, original, copyGroup);
+                DatabaseMapping mapping = mappings.get(index);
+                if (!copyGroup.copyUnfetchedAttribute(mapping, original, copy)) {
+                    mapping.buildCopy(copy, original, copyGroup);
+                }
             }
 
             if (copyGroup.shouldResetPrimaryKey() && (!(this.descriptor.isDescriptorTypeAggregate()))) {
@@ -4363,9 +4475,36 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * The domainObject sent as parameter is always a copy from the parent of unit of work.
      */
     public void populateAttributesForClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
+        populateAttributesForClone(original, cacheKey, clone, refreshCascade, cloningSession, null);
+    }
+
+    /** INTERNAL: Build actual deferred state for graph-excluded relationships in a fresh managed clone. */
+    public void populateAttributesForClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade,
+            AbstractSession cloningSession, FetchGroup selection) {
         List<DatabaseMapping> mappings = getCloningMappings();
         int size = mappings.size();
-        if (this.descriptor.hasFetchGroupManager() && this.descriptor.getFetchGroupManager().isPartialObject(original)) {
+        if (selection != null && this.descriptor.hasFetchGroupManager()) {
+            FetchGroupManager manager = this.descriptor.getFetchGroupManager();
+            FetchGroup originalGroup = manager.getObjectFetchGroup(original);
+            Set<String> fetched = new HashSet<>((originalGroup == null
+                    ? manager.createFullFetchGroup() : originalGroup).getAttributeNames());
+            for (DatabaseMapping mapping : mappings) {
+                String attribute = mapping.getAttributeName();
+                if (!manager.isAttributeFetched(original, attribute)) {
+                    continue;
+                }
+                if (!selection.containsAttributeInternal(attribute)
+                        && mapping instanceof ForeignReferenceMapping reference && !reference.usesIndirection()) {
+                    // A shallow copy may still contain the original reference.
+                    // Leave genuinely absent state for the fetch-group accessor.
+                    mapping.setAttributeValueInObject(clone, null);
+                    fetched.remove(attribute);
+                } else {
+                    mapping.buildClone(original, cacheKey, clone, refreshCascade, cloningSession);
+                }
+            }
+            manager.setObjectFetchGroup(clone, manager.getEntityFetchGroup(fetched), cloningSession);
+        } else if (this.descriptor.hasFetchGroupManager() && this.descriptor.getFetchGroupManager().isPartialObject(original)) {
             FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = mappings.get(index);
@@ -4386,7 +4525,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             event.setOriginalObject(original);
             event.setDescriptor(descriptor);
             event.setEventCode(DescriptorEventManager.PostCloneEvent);
-            cloningSession.deferEvent(event);
+            if (cloningSession.isUnitOfWork()) {
+                ((UnitOfWorkImpl)cloningSession).deferPostCloneEvent(event);
+            } else {
+                cloningSession.deferEvent(event);
+            }
         }
     }
 

@@ -274,7 +274,7 @@ public class JUnitCriteriaUnitTest extends JUnitTestCase
            CriteriaBuilder qb = em.getCriteriaBuilder();
            CriteriaQuery<String> cq = qb.createQuery(String.class);
            Root<Employee> root = cq.from(Employee.class);
-           Join<Object, Object> phone = root.join("phoneNumbers");
+           Join<Employee, Object> phone = root.join("phoneNumbers");
            cq.select(phone.get("areaCode"));
            cq.where(qb.equal(phone.get("areaCode"), "613"));
            List<String> result = em.createQuery(cq).getResultList();
@@ -350,7 +350,7 @@ public class JUnitCriteriaUnitTest extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join<Object, Object> joinedPhone = root.join("phoneNumbers");
+            Join<Employee, Object> joinedPhone = root.join("phoneNumbers");
             cq.select(joinedPhone.get("areaCode"));
             cq.where(qb.and(qb.equal(joinedPhone.get("areaCode"), "613")), qb.equal(joinedPhone.get("owner").get("firstName"), firstName));
             List<String> result = em.createQuery(cq).getResultList();
@@ -397,7 +397,7 @@ public class JUnitCriteriaUnitTest extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join<Object, Object> joinedPhone = root.join("phoneNumbers");
+            Join<Employee, Object> joinedPhone = root.join("phoneNumbers");
             cq.select(joinedPhone.get("number"));
             //cq.where(qb.equal(joinedPhone.get("areaCode"), areaCode).add(qb.equal(joinedPhone.get("owner").get("id"), root.get("id"))).add(qb.equal(root.get("firstName"), firstName)));
             Predicate firstAnd = qb.and(qb.equal(joinedPhone.get("areaCode"), areaCode), qb.equal(joinedPhone.get("owner").get("id"), root.get("id")));
@@ -444,7 +444,7 @@ public class JUnitCriteriaUnitTest extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join<Object, Object> joinedPhone = root.join("phoneNumbers");
+            Join<Employee, Object> joinedPhone = root.join("phoneNumbers");
             cq.select(joinedPhone.get("number"));
             Predicate firstNameEquality = qb.equal(joinedPhone.get("owner").get("firstName"), firstName);
             Predicate areaCodeEquality =qb.equal(joinedPhone.get("areaCode"), areaCode);
@@ -523,7 +523,7 @@ public class JUnitCriteriaUnitTest extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = qb.createTupleQuery();
             Root<Employee> rootEmp = cq.from(Employee.class);
-            Join<Object, Object> joinedManager = rootEmp.join("manager", JoinType.LEFT);
+            Join<Employee, Object> joinedManager = rootEmp.join("manager", JoinType.LEFT);
             cq.multiselect(rootEmp.get("id"), joinedManager.get("id"));
 
             Query query = em.createQuery(cq);
@@ -558,7 +558,7 @@ public class JUnitCriteriaUnitTest extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Integer> cq = qb.createQuery(Integer.class);
             Root<Employee> rootEmp = cq.from(Employee.class);
-            Join<Object, Object> joinedManager = rootEmp.join("manager", JoinType.LEFT);
+            Join<Employee, Object> joinedManager = rootEmp.join("manager", JoinType.LEFT);
             cq.select(rootEmp.get("id"));
 
             Query query = em.createQuery(cq);

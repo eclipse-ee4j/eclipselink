@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,9 @@ public class ConstructorResult extends SQLResult {
     /** Stored the column results of this constructor result */
     protected List<ColumnResult> columnResults;
 
+    /** Entity arguments follow all column arguments in declaration order. */
+    protected List<EntityResult> entityResults;
+
     protected transient Constructor<?> constructor;
     protected Class<?>[] constructorArgTypes;
 
@@ -62,6 +65,7 @@ public class ConstructorResult extends SQLResult {
      */
     protected ConstructorResult() {
         columnResults = new ArrayList<>();
+        entityResults = new ArrayList<>();
     }
 
     /**
@@ -99,6 +103,14 @@ public class ConstructorResult extends SQLResult {
     }
 
     /**
+     * Add an entity argument to this constructor result.
+     */
+    public void addEntityResult(EntityResult entityResult) {
+        entityResults.add(entityResult);
+        entityResult.setSQLResultMapping(getSQLResultMapping());
+    }
+
+    /**
      * INTERNAL:
      * Convert all the class-name-based settings in this query to actual class-based
      * settings. This method is used when converting a project that has been built
@@ -111,6 +123,9 @@ public class ConstructorResult extends SQLResult {
         // Make sure the column results have been converted.
         for (ColumnResult columnResult : columnResults) {
             columnResult.convertClassNamesToClasses(classLoader);
+        }
+        for (EntityResult entityResult : entityResults) {
+            entityResult.convertClassNamesToClasses(classLoader);
         }
 
         //no need to get the class if we already have it
@@ -131,11 +146,23 @@ public class ConstructorResult extends SQLResult {
         }
     }
 
+    /** INTERNAL: Return the initialized constructor target class. */
+    public Class<?> getTargetClass() {
+        return targetClass;
+    }
+
     /**
      * Return the columns result of this constructor result.
      */
     public List<ColumnResult> getColumnResults() {
         return columnResults;
+    }
+
+    /**
+     * Return the ordered entity arguments of this constructor result.
+     */
+    public List<EntityResult> getEntityResults() {
+        return entityResults;
     }
 
     /**
@@ -149,10 +176,13 @@ public class ConstructorResult extends SQLResult {
         }
 
         int columnResultsSize = getColumnResults().size();
-        Object[] constructorArgs = new Object[columnResultsSize];
+        Object[] constructorArgs = new Object[columnResultsSize + getEntityResults().size()];
 
         for (int i = 0; i < columnResultsSize; i++) {
             constructorArgs[i] = ConversionManager.getDefaultManager().convertObject(record.get(getColumnResults().get(i).getColumn()), constructorArgTypes[i]);
+        }
+        for (int i = 0; i < getEntityResults().size(); i++) {
+            constructorArgs[columnResultsSize + i] = getEntityResults().get(i).getValueFromRecord(record, query);
         }
 
         try {
@@ -175,7 +205,7 @@ public class ConstructorResult extends SQLResult {
      */
     protected void initialize(DatabaseRecord record, ResultSetMappingQuery query) {
         int columnResultsSize = getColumnResults().size();
-        constructorArgTypes = new Class<?>[columnResultsSize];
+        constructorArgTypes = new Class<?>[columnResultsSize + getEntityResults().size()];
 
         for (int i = 0; i < columnResultsSize; i++) {
             ColumnResult result = getColumnResults().get(i);
@@ -192,6 +222,10 @@ public class ConstructorResult extends SQLResult {
             } else {
                 constructorArgTypes[i] = resultField.getType();
             }
+        }
+
+        for (int i = 0; i < getEntityResults().size(); i++) {
+            constructorArgTypes[columnResultsSize + i] = getEntityResults().get(i).getEntityClass();
         }
 
         try {
@@ -222,5 +256,23 @@ public class ConstructorResult extends SQLResult {
      */
     public void setColumnResults(List<ColumnResult> columnResults) {
         this.columnResults = columnResults;
+    }
+
+    /**
+     * Set the ordered entity arguments of this constructor result.
+     */
+    public void setEntityResults(List<EntityResult> entityResults) {
+        this.entityResults = entityResults;
+        for (EntityResult entityResult : entityResults) {
+            entityResult.setSQLResultMapping(getSQLResultMapping());
+        }
+    }
+
+    @Override
+    public void setSQLResultMapping(SQLResultSetMapping mapping) {
+        super.setSQLResultMapping(mapping);
+        for (EntityResult entityResult : entityResults) {
+            entityResult.setSQLResultMapping(mapping);
+        }
     }
 }

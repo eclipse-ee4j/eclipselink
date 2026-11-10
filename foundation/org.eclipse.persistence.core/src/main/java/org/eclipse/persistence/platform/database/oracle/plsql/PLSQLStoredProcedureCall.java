@@ -16,24 +16,6 @@
 
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
-//javase imports
-
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
-import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
-import org.eclipse.persistence.queries.StoredProcedureCall;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.sql.CallableStatement;
@@ -51,6 +33,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
+
+//javase imports
+
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 import static java.lang.Integer.MIN_VALUE;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
@@ -1049,8 +1049,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         // build any and all required type conversion routines for
         // complex PL/SQL types in packages
         this.typesInfo = new HashMap<>();
+
         // Rest parameters to be recomputed if being reprepared.
         this.parameters = null;
+
         // create a copy of the arguments re-ordered with different indices
         assignIndices();
 
@@ -1091,22 +1093,22 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      */
     @Override
     public Statement prepareStatement(DatabaseAccessor accessor, AbstractRecord translationRow, AbstractSession session) throws SQLException {
-        //#Bug5200836 pass shouldUnwrapConnection flag to indicate whether or not using unwrapped connection.
+        // #Bug5200836 pass shouldUnwrapConnection flag to indicate whether or not using unwrapped connection.
         Statement statement = accessor.prepareStatement(this, session);
 
         // Setup the max rows returned and query timeout limit.
         if (this.queryTimeout > 0 && this.queryTimeoutUnit != null) {
             long timeout = TimeUnit.SECONDS.convert(this.queryTimeout, this.queryTimeoutUnit);
 
-            if(timeout > Integer.MAX_VALUE){
+            if (timeout > Integer.MAX_VALUE) {
                 timeout = Integer.MAX_VALUE;
             }
 
-            //Round up the timeout if SECONDS are larger than the given units
-            if(TimeUnit.SECONDS.compareTo(this.queryTimeoutUnit) > 0 && this.queryTimeout % 1000 > 0){
+            // Round up the timeout if SECONDS are larger than the given units
+            if (TimeUnit.SECONDS.compareTo(this.queryTimeoutUnit) > 0 && this.queryTimeout % 1000 > 0) {
                 timeout += 1;
             }
-            statement.setQueryTimeout((int)timeout);
+            statement.setQueryTimeout((int) timeout);
         }
         if (!this.ignoreMaxResultsSetting && this.maxRows > 0) {
             statement.setMaxRows(this.maxRows);
@@ -1118,10 +1120,11 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         if (this.parameters == null) {
             return statement;
         }
-        List parameters = getParameters();
+
+        List<Object> parameters = getParameters();
         int size = parameters.size();
         for (int index = 0; index < size; index++) {
-            session.getPlatform().setParameterValueInDatabaseCall(parameters.get(index), (PreparedStatement)statement, index+1, session);
+            session.getPlatform().setParameterValueInDatabaseCall(parameters.get(index), (PreparedStatement) statement, index + 1, session);
         }
 
         return statement;

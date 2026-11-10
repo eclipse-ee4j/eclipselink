@@ -27,8 +27,11 @@ public class BeanValidationChecker {
      */
     static boolean isBeanValidationPresent() {
         try {
-            Class.forName("jakarta.validation.Validation").getConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
+            // Only the presence of the type matters. Do not instantiate: as of Jakarta
+            // Validation 4.0 the class is final with no public constructor, so reflective
+            // instantiation fails and would report Bean Validation as absent.
+            Class.forName("jakarta.validation.Validation");
+        } catch (ClassNotFoundException e) {
             return false;
         }
         return true;

@@ -366,7 +366,12 @@ public class TableCreator {
         List<TableDefinition> tables = tableCreator.getTableDefinitions();
         dropConstraints(session, schemaManager, false);
         for (TableDefinition table : tables) {
-            if (!table.getName().equals(sequenceTableName)) {
+            // Skip tables that are not on the database. Emptying a table that does not exist is
+            // a no-op, but attempting it costs two failed statements - the TRUNCATE and then the
+            // DELETE it falls back to - and the accessor logs each of them at WARNING before this
+            // method swallows them. SchemaManager.checkTableExists suppresses logging for the
+            // probe itself and restores the previous setting afterwards.
+            if (!table.getName().equals(sequenceTableName) && schemaManager.checkTableExists(table)) {
                 try {
                     Writer stmtWriter = new StringWriter();
                     session.getPlatform().writeTruncateTable(stmtWriter, ((AbstractSession) session), table);
@@ -374,8 +379,21 @@ public class TableCreator {
                             .priviledgedExecuteNonSelectingCall(
                                     new SQLCall(stmtWriter.toString()));
                 } catch (DatabaseException ex) {
-                    if (!shouldIgnoreDatabaseException()) {
-                        throw ex;
+                    // Many databases refuse TRUNCATE TABLE on a table whose primary key is
+                    // referenced by a foreign key (Derby XCL48, Oracle ORA-02266, SQL Server
+                    // 4712), regardless of whether the referencing table holds any rows. The
+                    // constraints dropped above are only the ones this persistence unit maps,
+                    // so a reference from any other table in the schema makes TRUNCATE
+                    // permanently unusable. DELETE has no such restriction and empties the
+                    // table just the same, so fall back to it before giving up.
+                    try {
+                        ((AbstractSession) session)
+                                .priviledgedExecuteNonSelectingCall(
+                                        new SQLCall("DELETE FROM " + qualifiedName(table)));
+                    } catch (DatabaseException deleteEx) {
+                        if (!shouldIgnoreDatabaseException()) {
+                            throw deleteEx;
+                        }
                     }
                 // stmtWriter is StringWriter so this is not expected to happen
                 } catch (IOException ex) {
@@ -384,6 +402,14 @@ public class TableCreator {
             }
         }
         createConstraints(tables, session, schemaManager, false);
+    }
+
+    /**
+     * The name to address the table by in plain SQL, derived the same way
+     * the platform derives it when writing a TRUNCATE TABLE statement.
+     */
+    private static String qualifiedName(TableDefinition table) {
+        return table.getTable() == null ? table.getName() : table.getTable().getName();
     }
 
     protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session, boolean createSequenceTables, boolean createSequences) {

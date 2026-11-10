@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 2009, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,71 +55,101 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  */
 public class BeanValidationListener extends DescriptorEventAdapter {
     private final ValidatorFactory validatorFactory;
-    private final Class<?>[] groupPrePersit;
-    private final Class<?>[] groupPreUpdate;
+    private final boolean suppliedValidatorFactory;
+    private final Class<?>[] groupPrePersist;
+    private final Class<?>[] groupPreMerge;
     private final Class<?>[] groupPreRemove;
+    private final Class<?>[] groupPreInsert;
+    private final Class<?>[] groupPreUpdate;
+    private final Class<?>[] groupPreUpsert;
+    private final Class<?>[] groupPreDelete;
     private static final Class<?>[] groupDefault = new Class<?>[]{Default.class};
     private final Map<String, Validator> validatorMap;
 
-    public BeanValidationListener(ValidatorFactory validatorFactory, Class<?>[] groupPrePersit, Class<?>[] groupPreUpdate, Class<?>[] groupPreRemove) {
-        this.validatorFactory = validatorFactory;
-        //For prePersit and preUpdate, default the group to validation group Default if user has not specified one
-        this.groupPrePersit = groupPrePersit != null ? groupPrePersit : groupDefault;
-        this.groupPreUpdate = groupPreUpdate != null ? groupPreUpdate : groupDefault;
-        //No validation performed on preRemove if user has not explicitly specified a validation group
-        this.groupPreRemove = groupPreRemove;
+    public BeanValidationListener(ValidatorFactory validatorFactory, Class<?>[] groupPrePersist,
+            Class<?>[] groupPreUpdate, Class<?>[] groupPreRemove) {
+        this(validatorFactory, groupPrePersist, null, groupPreRemove, null, groupPreUpdate, null, null);
+    }
 
+    public BeanValidationListener(ValidatorFactory validatorFactory, Class<?>[] groupPrePersist,
+            Class<?>[] groupPreMerge, Class<?>[] groupPreRemove, Class<?>[] groupPreInsert,
+            Class<?>[] groupPreUpdate, Class<?>[] groupPreUpsert, Class<?>[] groupPreDelete) {
+        this(validatorFactory, groupPrePersist, groupPreMerge, groupPreRemove, groupPreInsert,
+                groupPreUpdate, groupPreUpsert, groupPreDelete, false);
+    }
+
+    public BeanValidationListener(ValidatorFactory validatorFactory, Class<?>[] groupPrePersist,
+            Class<?>[] groupPreMerge, Class<?>[] groupPreRemove, Class<?>[] groupPreInsert,
+            Class<?>[] groupPreUpdate, Class<?>[] groupPreUpsert, Class<?>[] groupPreDelete,
+            boolean suppliedValidatorFactory) {
+        this.validatorFactory = validatorFactory;
+        this.suppliedValidatorFactory = suppliedValidatorFactory;
+        this.groupPrePersist = groups(groupPrePersist, false);
+        this.groupPreMerge = groups(groupPreMerge, false);
+        this.groupPreRemove = groups(groupPreRemove, false);
+        this.groupPreInsert = groups(groupPreInsert, true);
+        this.groupPreUpdate = groups(groupPreUpdate, true);
+        this.groupPreUpsert = groups(groupPreUpsert, true);
+        this.groupPreDelete = groups(groupPreDelete, false);
         validatorMap = new ConcurrentHashMap<>();
     }
 
-    @Override
-    public void prePersist (DescriptorEvent event) {
-        //  since we are using prePersist to perform validation, invlid data may get inserted into database as shown by
-        // following example
-        //    tx.begin()
-        //    e = new MyEntity(...);
-        //    em.perist(e); // prePersist validation happens here
-        //    em.setXXX("invalid data");
-        //    tx.commit();
-        //  "invalid data" would get inserted into database.
-        //
-        //  preInsert can be used to work around above issue. Howerver, the JPA spec does not itent it.
-        //  This might be corrected in next iteration of spec
-        validateOnCallbackEvent(event, "prePersist", groupPrePersit);
+    private static Class<?>[] groups(Class<?>[] configured, boolean useDefault) {
+        return configured == null ? (useDefault ? groupDefault : new Class<?>[0]) : configured.clone();
     }
 
     @Override
-    public void aboutToUpdate(DescriptorEvent event) {
-        Object source = event.getSource();
-        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl )event.getSession();
-        // preUpdate is also generated for deleted objects that were modified in this UOW.
-        // Do not perform preUpdate validation for such objects as preRemove would have already been called.
-        if(!unitOfWork.isObjectDeleted(source)) {
-            ObjectChangeSet changeSet = event.getChangeSet();
-            if (changeSet != null && (changeSet.isNew() || (changeSet.getChanges() != null && changeSet.getChanges().size() > 0))) {
-                validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
-            }
-        }
+    public void prePersist(DescriptorEvent event) {
+        validateOnCallbackEvent(event, "prePersist", groupPrePersist);
+    }
+
+    @Override
+    public void preMerge(DescriptorEvent event) {
+        validateOnCallbackEvent(event, "preMerge", groupPreMerge);
+    }
+
+    @Override
+    public void preRemove(DescriptorEvent event) {
+        validateOnCallbackEvent(event, "preRemove", groupPreRemove);
+    }
+
+    @Override
+    public void preInsert(DescriptorEvent event) {
+        validateOnCallbackEvent(event, "preInsert", groupPreInsert);
     }
 
     @Override
     public void preUpdateWithChanges(DescriptorEvent event) {
-        aboutToUpdate(event);
+        if (event.getSession() instanceof UnitOfWorkImpl unitOfWork) {
+            // Removed entities and version-only lock writes do not validate update groups.
+            ObjectChangeSet changeSet = event.getChangeSet();
+            if (unitOfWork.isObjectDeleted(event.getSource()) || changeSet == null
+                    || (!changeSet.isNew() && (changeSet.getChanges() == null || changeSet.getChanges().isEmpty()))) {
+                return;
+            }
+        }
+        validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
     }
 
     @Override
-    public void preRemove (DescriptorEvent event) {
-        if(groupPreRemove != null) { //No validation performed on preRemove if user has not explicitly specified a validation group
-           validateOnCallbackEvent(event, "preRemove", groupPreRemove);
-        }
+    public void preUpsert(DescriptorEvent event) {
+        validateOnCallbackEvent(event, "preUpsert", groupPreUpsert);
+    }
+
+    @Override
+    public void preDelete(DescriptorEvent event) {
+        validateOnCallbackEvent(event, "preDelete", groupPreDelete);
     }
 
     private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class<?>[] validationGroup) {
+        if (validationGroup.length == 0) {
+            return;
+        }
         Object source = event.getSource();
         Validator validator = getValidator(event);
-        boolean isBeanConstrained = isBeanConstrained(source, validator);
         boolean noOptimization = "true".equalsIgnoreCase((String) event.getSession().getProperty(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION));
-        boolean shouldValidate = noOptimization || isBeanConstrained;
+        // A supplied factory controls validation itself and may instrument every call.
+        boolean shouldValidate = suppliedValidatorFactory || noOptimization || isBeanConstrained(source, validator);
         if (shouldValidate) {
             Set<ConstraintViolation<Object>> constraintViolations = validate(source, validationGroup, validator);
             if (!constraintViolations.isEmpty()) {
@@ -200,72 +230,57 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         }
 
 
-        /**
-         * @return false for any lazily loaded property of root object being validated
-         */
         @Override
-        public boolean isReachable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
-            boolean reachable = true;
-            String attributeName = null;
-            if (isRootObjectPath(pathToTraversableObject)) {
-                attributeName = traversableProperty.getName(); //Refer to section 4.2 of Bean Validation spec for more details about Path.Node
-                DatabaseMapping mapping = getMappingForAttributeName(attributeName);
-                if(mapping != null) {
-                    if(mapping.isForeignReferenceMapping()) {
-                        // For lazy relationships check whether it is instantiated
-                        if(mapping.isLazy()) {
-                            Object attributeValue = mapping.getAttributeAccessor().getAttributeValueFromObject(traversableObject);
-                            reachable = ((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiatedOrChanged(attributeValue);
-                        }
-                    } else {
-                        // For lazy non relationship attributes, check whether it is fetched
-                        FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
-                        if (fetchGroupManager != null) {
-                            reachable = fetchGroupManager.isAttributeFetched(traversableObject, attributeName);
-                        }
-                    }
-                }
+        public boolean isReachable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType,
+                Path pathToTraversableObject, ElementType elementType) {
+            ClassDescriptor current = descriptorForPath(pathToTraversableObject);
+            if (current == null || traversableObject == null) {
+                return true;
             }
-            return reachable;
-
+            String attributeName = traversableProperty.getName();
+            DatabaseMapping mapping = current.getObjectBuilder().getMappingForAttributeName(attributeName);
+            if (mapping == null) {
+                return true;
+            }
+            FetchGroupManager fetchGroupManager = current.getFetchGroupManager();
+            if (fetchGroupManager != null && !fetchGroupManager.isAttributeFetched(traversableObject, attributeName)) {
+                return false;
+            }
+            if (mapping.isForeignReferenceMapping() && mapping.isLazy()) {
+                Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(traversableObject);
+                return ((ForeignReferenceMapping) mapping).getIndirectionPolicy().objectIsInstantiatedOrChanged(value);
+            }
+            return true;
         }
 
-        /**
-         * Called only if isReachable returns true
-         * @return false for any associatons of root object being validated true otherwise
-         */
         @Override
-        public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
-            boolean cascadable = true;
-            if (isRootObjectPath(pathToTraversableObject)) {
-                String attributeName = traversableProperty.getName(); //Refer to section 4.2 of Bean Validation spec for more details about Path
-                DatabaseMapping mapping = getMappingForAttributeName(attributeName);
-                if(mapping != null && mapping.isForeignReferenceMapping()) {
-                    cascadable = false;
-                }
+        public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType,
+                Path pathToTraversableObject, ElementType elementType) {
+            ClassDescriptor current = descriptorForPath(pathToTraversableObject);
+            if (current == null) {
+                return true;
             }
-
-            return cascadable;
+            DatabaseMapping mapping = current.getObjectBuilder().getMappingForAttributeName(traversableProperty.getName());
+            // Element collections are owned values, not entity associations.
+            return mapping == null || !mapping.isForeignReferenceMapping()
+                    || mapping.isAggregateCollectionMapping() || mapping.isDirectCollectionMapping()
+                    || mapping.isDirectMapMapping();
         }
 
-        /**
-         * @return DatabaseMapping for given attribute name
-         */
-        private DatabaseMapping getMappingForAttributeName(String attributeName) {
-            return descriptor.getObjectBuilder().getMappingForAttributeName(attributeName);
-        }
-
-        /**
-         * @return true if given path corresponds to Root Object else false.
-         */
-        private boolean isRootObjectPath(Path pathToTraversableObject) {
-            // From Bean Validation spec section 3.5.2
-            // <quote>
-            //    pathToTraversableObject is the Path from the rootBeanType down to the traversableObject (it is composed of
-            //    a single Node whose name is null if the root object is traversableObject). The path is described following the
-            //    conventions described in Section 4.2 (getPropertyPath).
-            // </quote>
-            return pathToTraversableObject.iterator().next().getName() == null;
+        private ClassDescriptor descriptorForPath(Path path) {
+            ClassDescriptor current = descriptor;
+            for (Path.Node node : path) {
+                String name = node.getName();
+                if (name == null || name.startsWith("<")) {
+                    continue;
+                }
+                DatabaseMapping mapping = current.getObjectBuilder().getMappingForAttributeName(name);
+                if (mapping == null || mapping.getReferenceDescriptor() == null) {
+                    return null;
+                }
+                current = mapping.getReferenceDescriptor();
+            }
+            return current;
         }
     }
 

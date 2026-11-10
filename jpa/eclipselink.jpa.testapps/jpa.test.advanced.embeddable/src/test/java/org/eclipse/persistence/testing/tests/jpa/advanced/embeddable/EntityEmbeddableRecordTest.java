@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -107,7 +108,7 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
 
             em.createNativeQuery("DELETE FROM CMP3_EMBED_REC_VISITOR").executeUpdate();
 
@@ -116,14 +117,14 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             entity.setRecordAttribute(new RecordAttribute(new RecordNestedAttribute(NAME1, NAME2), NAME3));
             entity.setName4(NAME4);
             em.persist(entity);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Unexpected exception occurred: " + e.getMessage());
         }
         finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -133,21 +134,21 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
 
             RecordEntity entity = new RecordEntity();
             entity.setId(new RecordPK(ID_INT2, ID_STRING2));
             entity.setRecordAttribute(new RecordAttribute(new RecordNestedAttribute(NAME1, null), NAME3));
             entity.setName4(NAME4);
             em.merge(entity);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Unexpected exception occurred: " + e.getMessage());
         }
         finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -170,8 +171,8 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             fail("Unexpected exception occurred: " + e.getMessage());
         }
         finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -195,8 +196,8 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             fail("Unexpected exception occurred: " + e.getMessage());
         }
         finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -220,8 +221,8 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             fail("Unexpected exception occurred: " + e.getMessage());
         }
         finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -245,8 +246,8 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             fail("Unexpected exception occurred: " + e.getMessage());
         }
         finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -257,15 +258,15 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try {
             Segment segment = new Segment(-1L, new Point(1,1), new Point(2,2));
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(segment);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Unexpected exception occurred: " + e.getMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -285,8 +286,8 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             e.printStackTrace();
             fail("Unexpected exception occurred: " + e.getMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -305,8 +306,8 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             e.printStackTrace();
             fail("Unexpected exception occurred: " + e.getMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -326,8 +327,8 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             e.printStackTrace();
             fail("Unexpected exception occurred: " + e.getMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
@@ -346,8 +347,8 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             e.printStackTrace();
             fail("Unexpected exception occurred: " + e.getMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             closeEntityManager(em);
         }

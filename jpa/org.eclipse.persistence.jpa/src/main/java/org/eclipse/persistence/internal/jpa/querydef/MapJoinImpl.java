@@ -16,14 +16,16 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.List;
 import java.util.Map;
 
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.MapAttribute;
@@ -105,7 +107,17 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
     }
 
     @Override
-    public MapJoinImpl<Z, K, V> on(Predicate... restrictions) {
+    public MapJoinImpl<Z, K, V> on(BooleanExpression... restrictions) {
         return (MapJoinImpl<Z, K, V>)super.on(restrictions);
+    }
+
+    @Override
+    public MapJoinImpl<Z, K, V> on(List<? extends Expression<Boolean>> restrictions) {
+        return (MapJoinImpl<Z, K, V>)super.on(restrictions);
+    }
+
+    @Override
+    public <T extends V> MapJoin<Z, K, T> treat(@Nonnull Class<T> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

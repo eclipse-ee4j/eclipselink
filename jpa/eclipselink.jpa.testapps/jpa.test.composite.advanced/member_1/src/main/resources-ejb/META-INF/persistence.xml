@@ -1,5 +1,6 @@
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -25,8 +26,6 @@
             <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
             <!-- expose the factory/manager through the app namespace so the test in composite-unit can access them -->
-            <property name="jboss.entity.manager.factory.jndi.name" value="java:app/persistence/composite-advanced-member_1/factory" />
-            <property name="jboss.entity.manager.jndi.name" value="java:app/persistence/composite-advanced-member_1/entity-manager"/>
         </properties>
     </persistence-unit>
 </persistence>

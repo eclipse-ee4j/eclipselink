@@ -138,14 +138,12 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
     public JUnitCriteriaSimpleTestSuiteBase() {
         super();
         setWrapper();
-        populateAttributes();
         setPuName(getPersistenceUnitName());
     }
 
     public JUnitCriteriaSimpleTestSuiteBase(String name) {
         super(name);
         setWrapper();
-        populateAttributes();
         setPuName(getPersistenceUnitName());
     }
 
@@ -153,6 +151,21 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
     public String getPersistenceUnitName() {
         return "advanced";
     }
+
+    /**
+     * The metamodel variant of this suite takes its attributes from the canonical metamodel's static
+     * fields, and those hold null until an entity manager factory for the unit has been created. They
+     * are therefore collected here and not in the constructor: every instance of the suite is built
+     * before any test runs - since surefire 3.6.0 they are all built up front - so in the constructor
+     * the fields were still null and each attribute was collected as null.
+     */
+    @Override
+    public void setUp() {
+        super.setUp();
+        getEntityManagerFactory();
+        populateAttributes();
+    }
+
     //This method is run at the end of EVERY test case method
 
     @Override

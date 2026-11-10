@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -111,16 +112,33 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
      */
     private void removeEmployee(EntityManager em, Employee employee) {
         Collection<Equipment> equipmentColl = employee.getDepartment().getEquipment().values();
-        em.remove(employee);
-        em.remove(employee.getDepartment());
-        em.remove(employee.getAddress());
+        em.remove(managed(em, employee));
+        em.remove(managed(em, employee.getDepartment()));
+        em.remove(managed(em, employee.getAddress()));
         for (Equipment equipment : equipmentColl) {
             EquipmentCode ec = equipment.getEquipmentCode();
-            em.remove(equipment);
+            em.remove(managed(em, equipment));
             if (ec != null) {
-                em.remove(ec);
+                em.remove(managed(em, ec));
             }
         }
+    }
+
+    /**
+     * The instance of the given entity that the persistence context of the given <code>EntityManager</code>
+     * manages. The same instance in Java SE, where the application-managed persistence context outlives the
+     * transaction that persisted it. On the server the persistence context is transaction-scoped, so the
+     * instance persisted in an earlier transaction is detached by now: it is looked up by its identifier.
+     * Not merged, as merging would also merge its relationships, and the employees share entities that are
+     * removed already by the time the next employee is.
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> T managed(EntityManager em, T entity) {
+        if (em.contains(entity)) {
+            return entity;
+        }
+        Object id = em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+        return (T) em.getReference(entity.getClass(), id);
     }
 
    /**
@@ -212,7 +230,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             ex.printStackTrace();
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -258,7 +276,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             ex.printStackTrace();
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -303,7 +321,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             ex.printStackTrace();
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -349,7 +367,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             ex.printStackTrace();
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,6 +29,7 @@ import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -213,20 +215,41 @@ public class ClientSession extends AbstractSession {
      */
     @Override
     public void basicRollbackTransaction() {
+        boolean agent = Boolean.TRUE.equals(getProperty(EntityAgentProperties.ENTITY_AGENT));
+        Throwable failure = null;
         try {
             //BUG 2660471: Make sure there is an accessor (moved here from Session)
             //BUG 2846785: EXCEPTION THROWN IN PREBEGINTRANSACTION EVENT CAUSES NPE
             if (hasWriteConnection()) {
                 super.basicRollbackTransaction();
             }
-        } finally {
-            // if synchronized then the connection will be released in external transaction callback.
-            if (hasExternalTransactionController()) {
-                if(!isSynchronized()) {
-                    releaseJTSConnection();
+        } catch (RuntimeException | Error original) {
+            failure = original;
+            if (agent && !isSynchronized()) {
+                // A failed JDBC rollback may clear the accessor's transaction flag.
+                // Never return its uncertain transaction to another pool borrower.
+                for (Accessor accessor : getWriteConnections().values()) {
+                    accessor.setIsValid(false);
                 }
-            } else {
-                releaseWriteConnection();
+            }
+            throw original;
+        } finally {
+            try {
+                // A synchronized connection belongs to external transaction completion.
+                if (hasExternalTransactionController()) {
+                    if (!isSynchronized()) {
+                        releaseJTSConnection();
+                    }
+                } else {
+                    releaseWriteConnection();
+                }
+            } catch (RuntimeException | Error cleanup) {
+                if (!agent || failure == null) {
+                    throw cleanup;
+                }
+                if (cleanup != failure) {
+                    failure.addSuppressed(cleanup);
+                }
             }
         }
     }

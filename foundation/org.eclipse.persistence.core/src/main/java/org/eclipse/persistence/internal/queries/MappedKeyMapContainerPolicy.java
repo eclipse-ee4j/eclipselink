@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -240,6 +240,11 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      */
     @Override
     public Object buildCloneForKey(Object key, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isCacheCheckComplete){
+        if (cloningSession instanceof UnitOfWorkImpl unitOfWork) {
+            // The surrounding relationship selection describes values, not keys.
+            return unitOfWork.withGraphCloneSelection(null, null,
+                    () -> keyMapping.buildElementClone(key, parent, parentCacheKey, refreshCascade, cloningSession, isExisting, isCacheCheckComplete));
+        }
         return keyMapping.buildElementClone(key, parent, parentCacheKey, refreshCascade, cloningSession, isExisting, isCacheCheckComplete);
 
     }

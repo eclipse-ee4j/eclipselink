@@ -160,7 +160,19 @@ public interface DDLPlatform {
      * @return the field type definition
      */
     default FieldDefinition.DatabaseType getDatabaseType(Class<?> type) {
-        return getDatabaseTypes().get(type);
+        FieldDefinition.DatabaseType databaseType = getDatabaseTypes().get(type);
+
+        // A Year is an integer rather than a database type of its own: getJDBCType reports
+        // INTEGER for it, and setParameterValueInDatabaseCall binds it with setInt. Platforms
+        // that build their own type map from scratch - which is all of them - leave Year out,
+        // and DefaultTableGenerator silently generates an unmapped type as VARCHAR, so the
+        // column would not accept the integer the binding sends. Resolve it to whichever
+        // integer type this platform uses, so the column and the binding agree.
+        if (databaseType == null && type == java.time.Year.class) {
+            return getDatabaseTypes().get(Integer.class);
+        }
+
+        return databaseType;
     }
 
     /**

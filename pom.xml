@@ -14,135 +14,33 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<!--
+
+Running a single test with full logging:
+
+mvn clean install -Ptest1 \
+    -Dit.test=ee.jakarta.tck.persistence.core.EntityGraph.Client \
+    -Djava.util.logging.config.file=logging.properties \
+    -Djpa.provider.implementation.specific.additional.properties=:eclipselink.logging.level=FINEST
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.tests.bom</artifactId>
-        <version>5.0.3-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
         <relativePath>boms/tests/pom.xml</relativePath>
     </parent>
 
     <artifactId>org.eclipse.persistence.project</artifactId>
-    <version>5.0.3-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>EclipseLink Project</name>
     <description>Comprehensive and universal persistence framework for Java.</description>
-
-    <properties>
-        <!-- Minimum required JDK version -->
-        <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.testRelease>17</maven.compiler.testRelease>
-
-        <!-- TOOL Properties -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jdoc.doclint>all,-missing</jdoc.doclint>
-        <!-- exclude big groups from the Xlint -->
-        <comp.xlint>-Xlint:all,-serial</comp.xlint>
-        <comp.xdoclint>-Xdoclint:all,-missing</comp.xdoclint>
-        <comp.test.xlint>-Xlint:all,-rawtypes,-unchecked,-serial</comp.test.xlint>
-        <warn.limit>250</warn.limit>
-
-        <spotbugs.common>${project.build.directory}/spotbugs-exclude-common.xml</spotbugs.common>
-        <spotbugs.exclude/>
-        <spotbugs.skip>false</spotbugs.skip>
-        <spotbugs.threshold>Normal</spotbugs.threshold>
-        <dependency-check.failonerror>false</dependency-check.failonerror>
-
-        <!-- PROJECT Properties -->
-        <build.type>SNAPSHOT</build.type>
-        <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
-        <build.qualifier>v${maven.build.timestamp}</build.qualifier>
-
-        <bundle.version>${release.version}.${build.qualifier}</bundle.version>
-        <project.build.testReports.settings>test-report-settings/surefire-report.properties</project.build.testReports.settings>
-        <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
-        <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
-        <project.build.licenceResourceDirectory>${project.build.directory}/license</project.build.licenceResourceDirectory>
-        <project.build.javadocResourceDirectory>${project.build.directory}/javadoc-resources</project.build.javadocResourceDirectory>
-
-        <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
-        !!!Can't start with / character!!!-->
-        <integration.test.directory>src/it/</integration.test.directory>
-        <integration.test.sources.directory>${integration.test.directory}/java/</integration.test.sources.directory>
-        <integration.test.resources.directory>${integration.test.directory}/resources/</integration.test.resources.directory>
-        <integration.test.skip.verify>false</integration.test.skip.verify>
-
-        <!--Default location for JEE servers binaries-->
-        <test.directory>${user.home}/.eclipselinktests</test.directory>
-        <installation.url>https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip</installation.url>
-        <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
-
-        <!--Test DB property file names-->
-        <test.h2.properties.file>el-test.h2.properties</test.h2.properties.file>
-        <test.mysql.properties.file>el-test.mysql.properties</test.mysql.properties.file>
-        <test.mariadb.properties.file>el-test.mariadb.properties</test.mariadb.properties.file>
-        <test.oracle.properties.file>el-test.oracle.properties</test.oracle.properties.file>
-        <test.mongodb.properties.file>el-test.mongodb.properties</test.mongodb.properties.file>
-        <test.derby.properties.file>el-test.derby.properties</test.derby.properties.file>
-        <test.db2.properties.file>el-test.db2.properties</test.db2.properties.file>
-        <test.mssql.properties.file>el-test.mssql.properties</test.mssql.properties.file>
-        <test.pgsql.properties.file>el-test.pgsql.properties</test.pgsql.properties.file>
-
-        <!--Default test DB is Derby-->
-        <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
-        <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
-        <test.properties.default.directory>${project.build.directory}/test-default-properties</test.properties.default.directory>
-        <test.report.properties.default.directory>${project.build.directory}/test-report-properties</test.report.properties.default.directory>
-        <test.database>derby</test.database>
-        <!--false: to start In-Memory database, true: not start (MySQL, Oracle)-->
-        <test.skip.in-memory.db>false</test.skip.in-memory.db>
-
-        <!--Test JEE server property file names-->
-        <testjee.glassfish.properties.file>el-testjee.glassfish.properties</testjee.glassfish.properties.file>
-        <testjee.weblogic.properties.file>el-testjee.weblogic.properties</testjee.weblogic.properties.file>
-        <testjee.wildfly.properties.file>el-testjee.wildfly.properties</testjee.wildfly.properties.file>
-        <!--Default test JEE Server is WildFly-->
-        <testjee.properties.file>${user.home}/${testjee.wildfly.properties.file}</testjee.properties.file>
-        <testjee.properties.fileName>${testjee.wildfly.properties.file}</testjee.properties.fileName>
-
-        <!--Default DB driver used for testing-->
-        <db.driver.groupId>org.apache.derby</db.driver.groupId>
-        <db.driver.artifactId>derbyclient</db.driver.artifactId>
-        <db.driver.version>${derby.version}</db.driver.version>
-
-        <!--Default JEE client used for EJB remote call (testing)-->
-        <jee.client.groupId>org.wildfly</jee.client.groupId>
-        <jee.client.artifactId>wildfly-ejb-client-bom</jee.client.artifactId>
-        <jee.client.version>${wildfly.version}</jee.client.version>
-        <jee.client.type>pom</jee.client.type>
-
-        <skip.glassfish.configuration>true</skip.glassfish.configuration>
-
-        <!--These properties are used in MOXy and SDO tests only-->
-        <test.xml.platform>org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform</test.xml.platform>
-        <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
-
-        <!--Documentation properties-->
-        <docs.status>DRAFT</docs.status>
-
-        <!--Javadoc properties-->
-        <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
-        <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
-
-        <checkstyle.version>14.0.0</checkstyle.version>
-        <spotbugs.version>4.10.4</spotbugs.version>
-        <findsecbugs.version>1.14.0</findsecbugs.version>
-
-        <!--Documentation Dependencies version-->
-        <asciidoctorj.version>3.0.1</asciidoctorj.version>
-        <asciidoctorj.pdf.version>2.3.23</asciidoctorj.pdf.version>
-        <asciidoctorj.epub.version>2.2.0</asciidoctorj.epub.version>
-        <jruby.version>10.1.1.0</jruby.version>
-
-        <!--Server tests-->
-        <weblogic.version>12.2.1-3</weblogic.version>
-        <wildfly.version>27.0.0.Final</wildfly.version>
-    </properties>
 
     <!-- Default modules set and added to by all profiles -->
     <modules>
@@ -188,6 +86,115 @@
         <module>bundles</module>
     </modules>
 
+    <properties>
+        <!-- Minimum required JDK version -->
+        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.testRelease>21</maven.compiler.testRelease>
+
+        <!-- TOOL Properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdoc.doclint>all,-missing</jdoc.doclint>
+        <!-- exclude big groups from the Xlint -->
+        <comp.xlint>-Xlint:all,-serial</comp.xlint>
+        <comp.xdoclint>-Xdoclint:all,-missing</comp.xdoclint>
+        <comp.test.xlint>-Xlint:all,-rawtypes,-unchecked,-serial</comp.test.xlint>
+        <warn.limit>250</warn.limit>
+
+        <spotbugs.common>${project.build.directory}/spotbugs-exclude-common.xml</spotbugs.common>
+        <spotbugs.exclude/>
+        <spotbugs.skip>false</spotbugs.skip>
+        <spotbugs.threshold>Normal</spotbugs.threshold>
+        <dependency-check.failonerror>false</dependency-check.failonerror>
+
+        <!-- PROJECT Properties -->
+        <build.type>SNAPSHOT</build.type>
+        <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+        <build.qualifier>v${maven.build.timestamp}</build.qualifier>
+
+        <bundle.version>${release.version}.${build.qualifier}</bundle.version>
+        <project.build.testReports.settings>test-report-settings/surefire-report.properties</project.build.testReports.settings>
+        <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
+        <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
+        <project.build.licenceResourceDirectory>${project.build.directory}/license</project.build.licenceResourceDirectory>
+        <project.build.javadocResourceDirectory>${project.build.directory}/javadoc-resources</project.build.javadocResourceDirectory>
+
+        <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
+        !!!Can't start with / character!!!-->
+        <integration.test.directory>src/it/</integration.test.directory>
+        <integration.test.sources.directory>${integration.test.directory}/java/</integration.test.sources.directory>
+        <integration.test.resources.directory>${integration.test.directory}/resources/</integration.test.resources.directory>
+        <integration.test.skip.verify>false</integration.test.skip.verify>
+
+        <!--Default location for JEE servers binaries-->
+        <test.directory>${user.home}/.eclipselinktests</test.directory>
+        <installation.url>https://github.com/wildfly/wildfly/releases/download/41.0.1.Final/wildfly-41.0.1.Final.zip</installation.url>
+        <installation.checksum.md5>60dbc60c17a6ef712a9cc3b92784e1ec</installation.checksum.md5>
+
+        <!--Test DB property file names-->
+        <test.h2.properties.file>el-test.h2.properties</test.h2.properties.file>
+        <test.mysql.properties.file>el-test.mysql.properties</test.mysql.properties.file>
+        <test.mariadb.properties.file>el-test.mariadb.properties</test.mariadb.properties.file>
+        <test.oracle.properties.file>el-test.oracle.properties</test.oracle.properties.file>
+        <test.mongodb.properties.file>el-test.mongodb.properties</test.mongodb.properties.file>
+        <test.derby.properties.file>el-test.derby.properties</test.derby.properties.file>
+        <test.db2.properties.file>el-test.db2.properties</test.db2.properties.file>
+        <test.mssql.properties.file>el-test.mssql.properties</test.mssql.properties.file>
+        <test.pgsql.properties.file>el-test.pgsql.properties</test.pgsql.properties.file>
+
+        <!--Default test DB is Derby-->
+        <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
+        <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
+        <test.properties.default.directory>${project.build.directory}/test-default-properties</test.properties.default.directory>
+        <test.report.properties.default.directory>${project.build.directory}/test-report-properties</test.report.properties.default.directory>
+        <test.database>derby</test.database>
+        <!--false: to start In-Memory database, true: not start (MySQL, Oracle)-->
+        <test.skip.in-memory.db>false</test.skip.in-memory.db>
+
+        <!--Test JEE server property file names-->
+        <testjee.glassfish.properties.file>el-testjee.glassfish.properties</testjee.glassfish.properties.file>
+        <testjee.weblogic.properties.file>el-testjee.weblogic.properties</testjee.weblogic.properties.file>
+        <testjee.wildfly.properties.file>el-testjee.wildfly.properties</testjee.wildfly.properties.file>
+        <!--Default test JEE Server is WildFly-->
+        <testjee.properties.file>${user.home}/${testjee.wildfly.properties.file}</testjee.properties.file>
+        <testjee.properties.fileName>${testjee.wildfly.properties.file}</testjee.properties.fileName>
+
+        <!--Default DB driver used for testing-->
+        <db.driver.groupId>org.apache.derby</db.driver.groupId>
+        <db.driver.artifactId>derbyclient</db.driver.artifactId>
+        <db.driver.version>${derby.version}</db.driver.version>
+
+        <!--Default JEE client used for EJB remote call (testing)-->
+        <jee.client.groupId>org.wildfly</jee.client.groupId>
+        <jee.client.artifactId>wildfly-ejb-client-bom</jee.client.artifactId>
+        <jee.client.version>${wildfly.version}</jee.client.version>
+        <jee.client.type>pom</jee.client.type>
+
+        <!--These properties are used in MOXy and SDO tests only-->
+        <test.xml.platform>org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform</test.xml.platform>
+        <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
+
+        <!--Documentation properties-->
+        <docs.status>DRAFT</docs.status>
+
+        <!--Javadoc properties-->
+        <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
+        <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
+
+        <checkstyle.version>14.3.0</checkstyle.version>
+        <spotbugs.version>4.10.4</spotbugs.version>
+        <findsecbugs.version>1.14.0</findsecbugs.version>
+
+        <!--Documentation Dependencies version-->
+        <asciidoctorj.version>3.0.1</asciidoctorj.version>
+        <asciidoctorj.pdf.version>2.3.27</asciidoctorj.pdf.version>
+        <asciidoctorj.epub.version>2.2.0</asciidoctorj.epub.version>
+        <jruby.version>10.1.2.0</jruby.version>
+
+        <!--Server tests-->
+        <weblogic.version>12.2.1-3</weblogic.version>
+        <wildfly.version>41.0.1.Final</wildfly.version>
+    </properties>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -214,7 +221,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>6.1.0</version>
+                    <version>6.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -229,7 +236,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.15.0</version>
+                    <version>3.16.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -244,7 +251,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.5.6</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
@@ -284,7 +291,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.6</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
@@ -293,7 +300,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>3.5.6</version>
+                    <version>3.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -303,7 +310,7 @@
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
                     <artifactId>cargo-maven3-plugin</artifactId>
-                    <version>1.10.28</version>
+                    <version>1.10.29</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.gmaven</groupId>
@@ -313,7 +320,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>aspectj-maven-plugin</artifactId>
-                    <version>1.16.0</version>
+                    <version>1.16.1</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.aspectj</groupId>
@@ -335,17 +342,17 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.6.1</version>
+                    <version>3.6.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.6.3</version>
+                    <version>3.6.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -362,7 +369,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>xml-maven-plugin</artifactId>
-                    <version>1.2.1</version>
+                    <version>1.2.2</version>
                 </plugin>
                 <!--This plugin (g:org.kuali.maven.plugins) is used instead typical org.codehaus.mojo:properties-maven-plugin:1.0.0
                     due bug: "Circular property definition" if expression like this is used in the Maven pom
@@ -378,8 +385,7 @@
                     <artifactId>p2-maven-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
-                <plugin>
-                    <!-- see https://github.com/eclipse-ee4j/eclipselink-build-support -->
+                <plugin><!-- see https://github.com/eclipse-ee4j/eclipselink-build-support -->
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>eclipselink-testbuild-plugin</artifactId>
                     <version>1.1.2</version>
@@ -430,7 +436,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.10.4.0</version>
+                    <version>4.10.4.1</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.github.spotbugs</groupId>
@@ -506,45 +512,114 @@
         </pluginManagement>
 
         <plugins>
-            <!--Minimal JDK version-->
+            <!--validate: derive version and date properties.
+                generate-resources, generate-test-sources, generate-test-resources:
+                register the legal and integration test sources/resources-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <release>${maven.compiler.release}</release>
-                    <testRelease>${maven.compiler.testRelease}</testRelease>
-                    <showWarnings>true</showWarnings>
-                    <showDeprecation>true</showDeprecation>
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-compile</id>
+                        <phase>validate</phase>
+                        <id>parse-project-version</id>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <phase>validate</phase>
+                        <id>set-current-date</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
                         <configuration>
-                            <compilerArgs combine.children="append">
-                                <arg>${comp.xlint}</arg>
-                                <arg>${comp.xdoclint}</arg>
-                                <arg>-Xmaxwarns</arg>
-                                <arg>${warn.limit}</arg>
-                                <arg>-Xmaxerrs</arg>
-                                <arg>${warn.limit}</arg>
-                            </compilerArgs>
+                            <locale>en_US</locale>
+                            <name>release.date</name>
+                            <pattern>MMMM dd, YYYY</pattern>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>default-testCompile</id>
+                        <id>release.version-property</id>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
                         <configuration>
-                            <compilerArgs combine.children="append">
-                                <arg>${comp.test.xlint}</arg>
-                                <arg>${comp.xdoclint}</arg>
-                                <arg>-Xmaxwarns</arg>
-                                <arg>${warn.limit}</arg>
-                                <arg>-Xmaxerrs</arg>
-                                <arg>${warn.limit}</arg>
-                            </compilerArgs>
+                            <name>release.version</name>
+                            <value>${project.version}</value>
+                            <regex>-SNAPSHOT</regex>
+                            <replacement></replacement>
+                            <failIfNoMatch>false</failIfNoMatch>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-integration-test-sources</id>
+                        <!--<phase>generate-resources</phase>-->
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <skipAddTestSourceIfMissing>true</skipAddTestSourceIfMissing>
+                            <sources>
+                                <source>${integration.test.sources.directory}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-integration-test-resources</id>
+                        <!--<phase>generate-resources</phase>-->
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <skipAddTestResourceIfMissing>true</skipAddTestResourceIfMissing>
+                            <resources>
+                                <resource>
+                                    <directory>${integration.test.resources.directory}</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-legal-resource</id>
+                        <!--<phase>generate-resources</phase>-->
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.licenceResourceDirectory}/md</directory>
+                                    <includes>*</includes>
+                                    <targetPath>META-INF</targetPath>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.licenceResourceDirectory}/plugins</directory>
+                                    <includes>*</includes>
+                                    <targetPath>.</targetPath>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!--validate: check coding standards-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--initialize: build the shared license, javadoc, test and SpotBugs resource bundles-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -568,6 +643,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--initialize, generate-resources: unpack the shared resource bundles-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -669,97 +746,9 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <id>parse-project-version</id>
-                        <goals>
-                            <goal>parse-version</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <phase>validate</phase>
-                        <id>set-current-date</id>
-                        <goals>
-                            <goal>timestamp-property</goal>
-                        </goals>
-                        <configuration>
-                            <locale>en_US</locale>
-                            <name>release.date</name>
-                            <pattern>MMMM dd, YYYY</pattern>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>release.version-property</id>
-                        <goals>
-                            <goal>regex-property</goal>
-                        </goals>
-                        <configuration>
-                            <name>release.version</name>
-                            <value>${project.version}</value>
-                            <regex>-SNAPSHOT</regex>
-                            <replacement></replacement>
-                            <failIfNoMatch>false</failIfNoMatch>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-integration-test-sources</id>
-                        <!--<phase>generate-resources</phase>-->
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <skipAddTestSourceIfMissing>true</skipAddTestSourceIfMissing>
-                            <sources>
-                                <source>${integration.test.sources.directory}</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-integration-test-resources</id>
-                        <!--<phase>generate-resources</phase>-->
-                        <goals>
-                            <goal>add-test-resource</goal>
-                        </goals>
-                        <configuration>
-                            <skipAddTestResourceIfMissing>true</skipAddTestResourceIfMissing>
-                            <resources>
-                                <resource>
-                                    <directory>${integration.test.resources.directory}</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-legal-resource</id>
-                        <!--<phase>generate-resources</phase>-->
-                        <goals>
-                            <goal>add-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.licenceResourceDirectory}/md</directory>
-                                    <includes>*</includes>
-                                    <targetPath>META-INF</targetPath>
-                                </resource>
-                                <resource>
-                                    <directory>${project.build.licenceResourceDirectory}/plugins</directory>
-                                    <includes>*</includes>
-                                    <targetPath>.</targetPath>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--Load maven test properties from file-->
-            <plugin>
-                <!--This plugin (g:org.kuali.maven.plugins) is used instead typical org.codehaus.mojo:properties-maven-plugin:1.0.0
+
+            <!--initialize: load maven test properties from file-->
+            <plugin><!--This plugin (g:org.kuali.maven.plugins) is used instead typical org.codehaus.mojo:properties-maven-plugin:1.0.0
                     due bug: "Circular property definition" if expression like this is used in the Maven pom
                     "<server.testrunner.prefix>${modelname}/${modelname}_ejb/</server.testrunner.prefix>"
                     -->
@@ -781,7 +770,48 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Generate OSGi bundle/manifest-->
+
+            <!--compile, test-compile: minimal JDK version and compiler warnings-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                    <testRelease>${maven.compiler.testRelease}</testRelease>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <compilerArgs combine.children="append">
+                                <arg>${comp.xlint}</arg>
+                                <arg>${comp.xdoclint}</arg>
+                                <arg>-Xmaxwarns</arg>
+                                <arg>${warn.limit}</arg>
+                                <arg>-Xmaxerrs</arg>
+                                <arg>${warn.limit}</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs combine.children="append">
+                                <arg>${comp.test.xlint}</arg>
+                                <arg>${comp.xdoclint}</arg>
+                                <arg>-Xmaxwarns</arg>
+                                <arg>${warn.limit}</arg>
+                                <arg>-Xmaxerrs</arg>
+                                <arg>${warn.limit}</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--process-classes: generate OSGi bundle/manifest-->
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -809,89 +839,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Enforce certain Maven version-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>[17,)</version>
-                                </requireJavaVersion>
-                                <requireMavenVersion>
-                                    <version>[3.8.5,)</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--Create jar file with classes and manifest with OSGi entries-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-jar</id>
-                        <configuration>
-                            <archive>
-                                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--Create jar file with source files and manifest with OSGi entries-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifestEntries>
-                                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                                    <Bundle-Name>${project.name} Source</Bundle-Name>
-                                    <Bundle-SymbolicName>${project.artifactId}.source</Bundle-SymbolicName>
-                                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
-                                    <Bundle-Version>${bundle.version}</Bundle-Version>
-                                    <Eclipse-SourceBundle>${project.artifactId};version="${bundle.version}"</Eclipse-SourceBundle>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>attach-test-sources</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>test-jar-no-fork</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifestEntries>
-                                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                                    <Bundle-Name>${project.name} Test Source</Bundle-Name>
-                                    <Bundle-SymbolicName>${project.artifactId}.test.source</Bundle-SymbolicName>
-                                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
-                                    <Bundle-Version>${bundle.version}</Bundle-Version>
-                                    <Eclipse-SourceBundle>${project.artifactId};version="${bundle.version}"</Eclipse-SourceBundle>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
+            <!--process-test-resources: common DB connection settings for SQL scripts-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
@@ -903,20 +852,8 @@
                     <password>${db.pwd}</password>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.carlspring.maven</groupId>
-                <artifactId>derby-maven-plugin</artifactId>
-                <configuration>
-                    <derbyHome>${project.build.directory}/derby</derbyHome>
-                    <username>${db.user}</username>
-                    <password>${db.pwd}</password>
-                    <driver>${db.driver}</driver>
-                    <connectionURL>${db.url}</connectionURL>
-                    <!--Log SQL statements.-->
-                    <!--<debugStatements>true</debugStatements>-->
-                    <skip>${test.skip.in-memory.db}</skip>
-                </configuration>
-            </plugin>
+
+            <!--test, post-integration-test: HTML test and test summary reports-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
@@ -962,6 +899,70 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--prepare-package: create jar files with source files and manifest with OSGi entries-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                                    <Bundle-Name>${project.name} Source</Bundle-Name>
+                                    <Bundle-SymbolicName>${project.artifactId}.source</Bundle-SymbolicName>
+                                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                                    <Bundle-Version>${bundle.version}</Bundle-Version>
+                                    <Eclipse-SourceBundle>${project.artifactId};version="${bundle.version}"</Eclipse-SourceBundle>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>attach-test-sources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>test-jar-no-fork</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                                    <Bundle-Name>${project.name} Test Source</Bundle-Name>
+                                    <Bundle-SymbolicName>${project.artifactId}.test.source</Bundle-SymbolicName>
+                                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                                    <Bundle-Version>${bundle.version}</Bundle-Version>
+                                    <Eclipse-SourceBundle>${project.artifactId};version="${bundle.version}"</Eclipse-SourceBundle>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--package: create jar file with classes and manifest with OSGi entries-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <configuration>
+                            <archive>
+                                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--package: javadoc settings-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -978,33 +979,26 @@
                     <quiet>true</quiet>
                 </configuration>
             </plugin>
+
+            <!--pre-integration-test, post-integration-test: in-memory Derby DB used by tests-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>checkstyle</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.carlspring.maven</groupId>
+                <artifactId>derby-maven-plugin</artifactId>
+                <configuration>
+                    <derbyHome>${project.build.directory}/derby</derbyHome>
+                    <username>${db.user}</username>
+                    <password>${db.pwd}</password>
+                    <driver>${db.driver}</driver>
+                    <connectionURL>${db.url}</connectionURL>
+                    <!--Log SQL statements.-->
+                    <!--<debugStatements>true</debugStatements>-->
+                    <skip>${test.skip.in-memory.db}</skip>
+                </configuration>
             </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <!--For JDK<21 use Derby 10.16.1.1 as default 10.17.x support >JDK 21-->
-        <profile>
-            <id>derby-version</id>
-            <activation>
-                <jdk>[,21)</jdk>
-            </activation>
-            <properties>
-                <derby.version>10.16.1.1</derby.version>
-            </properties>
-        </profile>
         <!--Testing database profiles-->
         <!--TODO simplify properties part db.driver.XXXX to load it from file-->
         <profile>
@@ -1022,6 +1016,7 @@
                 <db.driver.version>${derby.version}</db.driver.version>
             </properties>
         </profile>
+
         <profile>
             <id>db2</id>
             <properties>
@@ -1218,6 +1213,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>h2</id>
             <properties>
@@ -1230,6 +1226,7 @@
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
+
         <profile>
             <id>mysql</id>
             <properties>
@@ -1298,6 +1295,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>mariadb</id>
             <properties>
@@ -1310,6 +1308,7 @@
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
+
         <profile>
             <id>mssql</id>
             <properties>
@@ -1322,6 +1321,7 @@
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
+
         <profile>
             <id>pgsql</id>
             <properties>
@@ -1334,6 +1334,68 @@
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
+
+        <profile>
+            <id>pgsql-start</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.49.0</version>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>postgres</alias>
+                                    <name>postgres:17</name>
+
+                                    <run>
+                                        <containerNamePattern>postgresserver</containerNamePattern>
+
+                                        <env>
+                                            <POSTGRES_USER>${db.user}</POSTGRES_USER>
+                                            <POSTGRES_PASSWORD>${db.pwd}</POSTGRES_PASSWORD>
+                                            <POSTGRES_DB>${db.name}</POSTGRES_DB>
+                                        </env>
+
+                                        <ports>
+                                            <port>5432:5432</port>
+                                        </ports>
+
+                                        <!-- Wait until PostgreSQL is really up.
+                                             The image logs "ready to accept connections" once while
+                                             initdb is still running and the server listens on the
+                                             unix socket only, so the port check is what proves it
+                                             can be reached over TCP. -->
+                                        <wait>
+                                            <log><![CDATA[database system is ready to accept connections]]></log>
+                                            <tcp>
+                                                <ports>
+                                                    <port>5432</port>
+                                                </ports>
+                                            </tcp>
+                                            <time>600000</time>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>start-postgres</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>oracle</id>
             <properties>
@@ -1346,6 +1408,7 @@
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
+
         <!--TODO simplify properties part jee.client.XXXX to load it from file-->
         <!--Testing JEE server profiles WildFly, GlassFish, Weblogic-->
         <profile>
@@ -1361,25 +1424,33 @@
                 <jee.client.version>${wildfly.version}</jee.client.version>
                 <jee.client.type>pom</jee.client.type>
                 <!--Download properties-->
-                <installation.url>https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip</installation.url>
-                <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
+                <installation.url>https://github.com/wildfly/wildfly/releases/download/41.0.1.Final/wildfly-41.0.1.Final.zip</installation.url>
+                <installation.checksum.md5>60dbc60c17a6ef712a9cc3b92784e1ec</installation.checksum.md5>
             </properties>
         </profile>
+
         <profile>
             <id>glassfish</id>
             <properties>
                 <testjee.properties.file>${user.home}/${testjee.glassfish.properties.file}</testjee.properties.file>
                 <testjee.properties.fileName>${testjee.glassfish.properties.file}</testjee.properties.fileName>
                 <jee.client.groupId>org.glassfish.main.appclient</jee.client.groupId>
-                <jee.client.artifactId>gf-client</jee.client.artifactId>
+                <!--gf-client is only the app client container launcher; gf-client-module is the artifact
+                    that brings the naming and IIOP stack a remote EJB client needs-->
+                <jee.client.artifactId>gf-client-module</jee.client.artifactId>
                 <jee.client.version>${glassfish.version}</jee.client.version>
                 <jee.client.type>jar</jee.client.type>
-                <skip.glassfish.configuration>false</skip.glassfish.configuration>
-                <!--Download properties-->
-                <installation.url>https://repo1.maven.org/maven2/org/glassfish/main/distributions/glassfish/5.1.0/glassfish-5.1.0.zip</installation.url>
-                <installation.checksum.md5>2ed2d211fd56e270f3daf8e2b5e01e30</installation.checksum.md5>
+                <!--
+                    GlassFish 9 is not published as a downloadable zip the way WildFly is, so there is no
+                    installation.url/checksum here: the distribution is resolved from the Maven repository
+                    (org.glassfish.main.distributions:glassfish:${glassfish.version}) and unpacked, which
+                    also means a locally built GlassFish is picked up automatically. The zip unpacks to a
+                    glassfish9 directory, and this is the single place that path is spelled out.
+                -->
+                <glassfish.home>${test.directory}/glassfish9</glassfish.home>
             </properties>
         </profile>
+
         <profile>
             <id>weblogic</id>
             <properties>
@@ -1391,6 +1462,7 @@
                 <jee.client.type>jar</jee.client.type>
             </properties>
         </profile>
+
         <!--Activate perfomance tests module-->
         <profile>
             <id>test-performance</id>
@@ -1399,6 +1471,7 @@
                 <module>performance/eclipselink.perf.test</module>
             </modules>
         </profile>
+
         <!--INTERNAL - Test properties fallback. Expects, that mvn command is executed from project root directory.-->
         <profile>
             <id>test-properties-fallback</id>
@@ -1411,6 +1484,7 @@
                 <test.properties.file>${test.properties.default.directory}/${test.properties.fileName}</test.properties.file>
             </properties>
         </profile>
+
         <profile>
             <id>test-jee-properties-fallback</id>
             <activation>
@@ -1422,6 +1496,7 @@
                 <testjee.properties.file>${test.properties.default.directory}/${testjee.properties.fileName}</testjee.properties.file>
             </properties>
         </profile>
+
         <!--INTERNAL - Don't start In-Memory DB in case of -DskipTests switch-->
         <profile>
             <id>test-skip-check</id>
@@ -1435,6 +1510,7 @@
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
+
         <profile>
             <id>coding-standards</id>
             <properties>
@@ -1481,6 +1557,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>spotbugs</id>
             <build>

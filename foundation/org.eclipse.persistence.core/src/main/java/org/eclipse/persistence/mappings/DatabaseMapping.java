@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -259,6 +259,17 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * be able to populate working copies directly from the row.
      */
     public abstract void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession);
+
+    /**
+     * INTERNAL:
+     * Populate a working clone while retaining whether it already existed before
+     * this read. The default preserves existing mapping implementations.
+     */
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone,
+            CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork,
+            AbstractSession executionSession, boolean existingClone) {
+        buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, sourceQuery, unitOfWork, executionSession);
+    }
 
     /**
      * INTERNAL:

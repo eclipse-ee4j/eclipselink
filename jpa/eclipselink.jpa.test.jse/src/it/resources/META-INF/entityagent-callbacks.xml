@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2026 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+-->
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm" version="4.0">
+    <named-statement name="agentXmlRename">
+        <statement>update AgentXmlCallbackRecord r set r.name = :name where r.id = :id</statement>
+    </named-statement>
+    <named-native-statement name="agentXmlNativeRename">
+        <statement>update EA_XML_CALLBACK_RECORD set NAME = 'native' where ID = 202</statement>
+    </named-native-statement>
+    <entity class="org.eclipse.persistence.jpa.entityagent.model.AgentXmlCallbackRecord" metadata-complete="true">
+        <table name="EA_XML_CALLBACK_RECORD"/>
+        <named-statement name="agentXmlDelete">
+            <statement>delete from AgentXmlCallbackRecord r where r.id = :id</statement>
+        </named-statement>
+        <named-native-statement name="agentXmlNativeDelete">
+            <statement>delete from EA_XML_CALLBACK_RECORD where ID = 202</statement>
+        </named-native-statement>
+        <pre-update method-name="beforeUpdate"/>
+        <post-update method-name="afterUpdate"/>
+        <pre-upsert method-name="beforeUpsert"/>
+        <post-upsert method-name="afterUpsert"/>
+        <pre-insert method-name="beforeInsert"/>
+        <post-insert method-name="afterInsert"/>
+        <pre-delete method-name="beforeDelete"/>
+        <post-delete method-name="afterDelete"/>
+        <post-load method-name="afterLoad"/>
+        <attributes>
+            <id name="id"/>
+            <basic name="name"/>
+            <basic name="note"/>
+            <version name="version"/>
+            <excluded-from-versioning name="note"/>
+            <transient name="events"/>
+        </attributes>
+    </entity>
+</entity-mappings>

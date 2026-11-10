@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,23 +19,37 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
+
+import java.io.Serial;
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
@@ -43,6 +57,9 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -65,10 +82,14 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     protected SelectionImpl<? extends T> selection;
     protected List<Order> orderBy;
 
     protected Set<FromImpl> joins;
+
     // Mark this query as part of the UNION/EXCEPT/INTERSECT, default is false
     private boolean isUnion = false;
 
@@ -110,6 +131,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryResult = ResultType.OTHER;
             }
         }
+
         return this;
     }
 
@@ -158,9 +180,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = null;
             return this;
         }
+
         for (Selection select : selections) {
             ((SelectionImpl)select).findRootAndParameters(this);
         }
+
         if (this.queryResult == ResultType.CONSTRUCTOR) {
             populateAndSetConstructorSelection(null, this.queryType, selections);
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
@@ -193,6 +217,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_alias_reused",
                     new Object[] { ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() }));
         }
+
         return this;
     }
 
@@ -243,22 +268,23 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = null;
             return this;
         }
-        return this.multiselect(selectionList.toArray(new Selection[0]));
+
+        return multiselect(selectionList.toArray(new Selection[0]));
     }
 
     // override the return type only:
+    @Override
+    public CriteriaQuery<T> where(BooleanExpression... restrictions) {
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
     @Override
     public CriteriaQuery<T> where(Expression<Boolean> restriction) {
         return (CriteriaQuery<T>) super.where(restriction);
     }
 
     @Override
-    public CriteriaQuery<T> where(Predicate... restrictions) {
-        return (CriteriaQuery<T>) super.where(restrictions);
-    }
-
-    @Override
-    public CriteriaQuery<T> where(List<Predicate> restrictions) {
+    public CriteriaQuery<T> where(@Nonnull List<? extends Expression<Boolean>> restrictions) {
         return (CriteriaQuery<T>) super.where(restrictions);
     }
 
@@ -303,13 +329,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     @Override
-    public CriteriaQuery<T> having(Predicate... restrictions) {
-        super.having(restrictions);
-        return this;
+    public CriteriaQuery<T> having(BooleanExpression... restrictions) {
+        return having(restrictions != null ? List.of(restrictions) : null);
     }
 
     @Override
-    public CriteriaQuery<T> having(List<Predicate> restrictions) {
+    public CriteriaQuery<T> having(@Nonnull List<? extends Expression<Boolean>> restrictions) {
         super.having(restrictions);
         return this;
     }
@@ -367,38 +392,55 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *
      */
     public void populateAndSetConstructorSelection(ConstructorSelectionImpl<T> constructorSelection, Class<T> class1, Selection<?>... selections) throws IllegalArgumentException{
-        Class<?>[] constructorArgs = new Class<?>[selections.length];
-        int count = 0;
-        for (Selection<?> select : selections) {
-            if(select instanceof ConstructorSelectionImpl) {
-                @SuppressWarnings("unchecked")
-                ConstructorSelectionImpl<T> constructorSelect = (ConstructorSelectionImpl<T>)select;
-                @SuppressWarnings("unchecked")
-                Selection<? extends T>[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[0]);
-                populateAndSetConstructorSelection(constructorSelect, (Class<T>) constructorSelect.getJavaType(), selectArray);
-            }
-            constructorArgs[count++] = select.getJavaType();
+        if (constructorSelection == null) {
+            constructorSelection = new ConstructorSelectionImpl<>(class1, selections);
         }
-        Constructor<? extends T> constructor = null;
+        populateConstructorSelection(constructorSelection);
+        this.queryResult = ResultType.CONSTRUCTOR;
+        this.selection = constructorSelection;
+    }
+
+    private void populateConstructorSelection(ConstructorSelectionImpl<?> selection) {
+        for (Selection<?> child : selection.getCompoundSelectionItems()) {
+            if (child instanceof ConstructorSelectionImpl<?> nested) {
+                populateConstructorSelection(nested);
+            }
+        }
+        resolveConstructorSelection(selection);
+    }
+
+    private <X> void resolveConstructorSelection(ConstructorSelectionImpl<X> selection) {
+        Class<?>[] constructorArgs = selection.getCompoundSelectionItems().stream()
+                .map(Selection::getJavaType).toArray(Class<?>[]::new);
         try {
+            Constructor<? extends X> constructor;
             // TODO: Remove AccessController.doPrivileged
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(class1, constructorArgs, false));
+                constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(selection.getJavaType(), constructorArgs, false));
             } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(class1, constructorArgs, false);
+                constructor = PrivilegedAccessHelper.getConstructorFor(selection.getJavaType(), constructorArgs, false);
             }
-            if (constructorSelection == null){
-                constructorSelection = new ConstructorSelectionImpl<>(class1, selections);
-            }
-            this.queryResult = ResultType.CONSTRUCTOR;
-            constructorSelection.setConstructor(constructor);
-            constructorSelection.setConstructorArgTypes(constructorArgs);
-            this.selection = constructorSelection;
-        } catch (Exception e){
-            //PrivilegedActionException and NoSuchMethodException are possible
+            selection.setConstructor(constructor);
+            selection.setConstructorArgTypes(constructorArgs);
+        } catch (Exception e) {
+            // PrivilegedActionException and NoSuchMethodException are possible.
             Object[] params = new Object[1];
             params[0] = this.queryType;
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params), e);
+        }
+    }
+
+    private void refreshConstructorSelections(Selection<?> selection) {
+        if (selection == null || !selection.isCompoundSelection()) {
+            return;
+        }
+        selection.getCompoundSelectionItems().forEach(this::refreshConstructorSelections);
+        if (selection instanceof ConstructorSelectionImpl<?> constructor && constructor.constructor != null) {
+            Class<?>[] currentTypes = constructor.getCompoundSelectionItems().stream()
+                    .map(Selection::getJavaType).toArray(Class<?>[]::new);
+            if (!Arrays.equals(constructor.constructorArgTypes, currentTypes)) {
+                resolveConstructorSelection(constructor);
+            }
         }
     }
 
@@ -423,10 +465,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
     @Override
     public void addJoin(FromImpl from) {
-        if (this.joins == null) {
-            this.joins = new LinkedHashSet<>();
+        if (joins == null) {
+            joins = new LinkedHashSet<>();
         }
-        this.joins.add(from);
+
+        joins.add(from);
     }
 
     /**
@@ -445,6 +488,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         } else {
             query = createCompoundQuery(toReportQuery);
         }
+
         return query;
     }
 
@@ -504,7 +548,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             if (toReportQuery) {
                 raq = createReportQuery(this.queryType);
                 for (SelectionImpl<?> nested : selectionItems) {
-                    ((ReportQuery) raq).addAttribute(nested.getAlias(), nested.getCurrentNode(), nested.getJavaType());
+                    ((ReportQuery) raq).addAttribute(nested.getAlias(), BooleanExpressionImpl.selectionNode(nested), nested.getJavaType());
                 }
             } else {
                 raq = new ReadAllQuery(this.queryType);
@@ -515,7 +559,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             for (SelectionImpl<?> selection : selectionItems) {
                 raq.addPartialAttribute((selection).currentNode);
             }
-            raq.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
+            raq.setExpressionBuilder(BooleanExpressionImpl.selectionNode(this.selection.getCompoundSelectionItems().get(0)).getBuilder());
             query = raq;
         } else {
             ReportQuery reportQuery = null;
@@ -532,7 +576,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     reportQuery = new ReportQuery();
                     reportQuery.setShouldReturnWithoutReportQueryResult(true);
                 }
-                reportQuery.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
+                org.eclipse.persistence.expressions.Expression firstSelection =
+                        BooleanExpressionImpl.selectionNode(this.selection.getCompoundSelectionItems().get(0));
+                if (firstSelection != null) {
+                    reportQuery.setExpressionBuilder(firstSelection.getBuilder());
+                }
                 for (Selection nested : this.selection.getCompoundSelectionItems()) {
                     if (((SelectionImpl) nested).isConstructor()) {
                         reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate());
@@ -548,7 +596,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             reportQuery.addAttribute(nested.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                             reportQuery.addGrouping(fromExpression.getCurrentNode());
                         } else {
-                            reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
+                            reportQuery.addAttribute(nested.getAlias(), BooleanExpressionImpl.selectionNode(nested), nested.getJavaType());
                         }
                     }
                 }
@@ -564,8 +612,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             // Check all the SELECTION items next
             if(queryClazz == null && this.selection != null) {
                 for(Selection<?> s : this.selection.getCompoundSelectionItems()) {
-                    if(((InternalSelection) s).getCurrentNode() != null ) {
-                        builder = ((InternalSelection) s).getCurrentNode().getBuilder();
+                    org.eclipse.persistence.expressions.Expression selectionNode = BooleanExpressionImpl.selectionNode(s);
+                    if(selectionNode != null) {
+                        builder = selectionNode.getBuilder();
                         queryClazz = builder.getQueryClass();
                         if(queryClazz != null) {
                             break;
@@ -611,9 +660,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     this.selection = (SelectionImpl<? extends T>) this.roots.iterator().next();
                     if (toReportQuery) {
                         // TODO: Test and fix
-                        query = createReportQueryWithItem(((FromImpl) this.selection).getJavaType());
+                        query = createReportQueryWithItem(this.selection.getJavaType());
                     } else {
-                        query = new ReadAllQuery(((FromImpl) this.selection).getJavaType());
+                        query = new ReadAllQuery(this.selection.getJavaType());
                     }
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
@@ -639,15 +688,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
                         query.addJoinedAttribute(fetch);
                     }
-                    query.setExpressionBuilder(((InternalSelection)selection).getCurrentNode().getBuilder());
+                    query.setExpressionBuilder(selection.getCurrentNode().getBuilder());
                 } else {
-                    query = createReportQueryWithSelection(this.selection.getCurrentNode().getBuilder().getQueryClass());
+                    query = createReportQueryWithSelection(BooleanExpressionImpl.selectionNode(this.selection).getBuilder().getQueryClass());
                 }
             }
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
-            boolean nonRootSelection = this.selection != null && (!((InternalSelection) this.selection).isRoot());
+            boolean nonRootSelection = this.selection != null && (!this.selection.isRoot());
             if (nonRootSelection) {
-                query = createReportQueryWithItem(this.queryType);
+                ExpressionBuilder sourceBuilder = BooleanExpressionImpl.selectionNode(this.selection).getBuilder();
+                Class<?> sourceClass = sourceBuilder.getQueryClass();
+                query = createReportQueryWithItem(sourceClass != null ? sourceClass : this.queryType);
+                if (sourceClass != null) {
+                    query.setExpressionBuilder(sourceBuilder);
+                }
                 ((ReportQuery) query).setShouldReturnSingleAttribute(true);
             } else {
                 // Tested by testUnionAllWithNoSelection
@@ -669,7 +723,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                         query.setExpressionBuilder(list.get(0).getBuilder());
                         doSetExpressionBuilder = false;
                     }
-                    if (this.selection == null || ((InternalSelection) this.selection).isRoot()) {
+                    if (this.selection == null || this.selection.isRoot()) {
                         for (org.eclipse.persistence.expressions.Expression fetch : list) {
                             query.addJoinedAttribute(fetch);
                         }
@@ -700,16 +754,17 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                     reportQuery.addGrouping(fromExpression.getCurrentNode());
                 }else{
-                    reportQuery.addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
+                    reportQuery.addAttribute(this.selection.getAlias(), BooleanExpressionImpl.selectionNode(this.selection), this.selection.getJavaType());
 
                 }}else{
-                if (((InternalSelection) selection).isFrom()) {
+                if (selection.isFrom()) {
                     reportQuery.addItem(selection.getAlias(), selection.getCurrentNode(), ((FromImpl) selection).findJoinFetches());
                 } else {
-                    reportQuery.addAttribute(selection.getAlias(), selection.getCurrentNode(), selection.getJavaType());
+                    reportQuery.addAttribute(selection.getAlias(), BooleanExpressionImpl.selectionNode(selection), selection.getJavaType());
                 }}
-                reportQuery.setReferenceClass(((InternalSelection) this.selection).getCurrentNode().getBuilder().getQueryClass());
-                reportQuery.setExpressionBuilder(((InternalSelection) this.selection).getCurrentNode().getBuilder());
+                org.eclipse.persistence.expressions.Expression selectionNode = BooleanExpressionImpl.selectionNode(this.selection);
+                reportQuery.setReferenceClass(selectionNode.getBuilder().getQueryClass());
+                reportQuery.setExpressionBuilder(selectionNode.getBuilder());
             }
             query = reportQuery;
             if (this.groupBy != null && !this.groupBy.isEmpty()) {
@@ -757,10 +812,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     private ReportQuery createReportQueryWithItem(Class<?> classToRead) {
         ReportQuery query = createReportQuery(classToRead);
         if (selection != null) {
-            if (((InternalSelection) selection).isFrom()) {
+            if (selection.isFrom()) {
                 query.addItem(selection.getAlias(), selection.getCurrentNode(), ((FromImpl<?, ?>) selection).findJoinFetches());
             } else {
-                query.addAttribute(selection.getAlias(), selection.getCurrentNode(), selection.getJavaType());
+                query.addAttribute(selection.getAlias(), BooleanExpressionImpl.selectionNode(selection), selection.getJavaType());
             }
         } else {
             FromImpl<?, ?> root = ((FromImpl<?, ?>) roots.iterator().next());
@@ -777,7 +832,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         if (selection == null) {
             throw new IllegalStateException("Called createReportQueryWithSelection with no selection set");
         }
-        if (!selection.isCompoundSelection() && ((InternalExpression) selection).isCompoundExpression()) {
+        if (selection instanceof Predicate) {
+            query.addAttribute(selection.getAlias(), BooleanExpressionImpl.selectionNode(selection), selection.getJavaType());
+            query.setShouldReturnSingleAttribute(true);
+        } else if (!selection.isCompoundSelection() && ((InternalExpression) selection).isCompoundExpression()) {
             // noinspection StringEquality - using String constants so instances will match
             if (((FunctionExpressionImpl<?>) selection).getOperation() == CriteriaBuilderImpl.SIZE) {
                 // Selecting size not all databases support sub-select in select clause so convert to count/groupby
@@ -810,6 +868,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     private ReadAllQuery translate(boolean toReportQuery) {
+        discoverCurrentParameters();
+        refreshConstructorSelections(selection);
         ReadAllQuery query = (ReadAllQuery) translate(getDatabaseQuery(toReportQuery));
 
         for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();) {
@@ -818,7 +878,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
         if (this.joins != null && !joins.isEmpty()) {
             for (FromImpl join : this.joins) {
-                query.addNonFetchJoinedAttribute(((InternalSelection) join).getCurrentNode());
+                query.addNonFetchJoinedAttribute(join.getCurrentNode());
             }
         }
         if (this.distinct) {
@@ -843,7 +903,156 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
         }
 
+        snapshotExpressions(query);
         return query;
+    }
+
+    // CASE/subquery mutation can add handles after initial selection discovery. Revisit the
+    // current graph; snapshotParameters then retains only handles present in the copied query.
+    private void discoverCurrentParameters() {
+        Set<Selection<?>> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        discoverParameters(selection, visited);
+        discoverParameters(where, visited);
+        discoverParameters(havingClause, visited);
+        if (groupBy != null) {
+            groupBy.forEach(expression -> discoverParameters(expression, visited));
+        }
+        if (orderBy != null) {
+            orderBy.forEach(order -> discoverParameters(order.getExpression(), visited));
+        }
+        for (Root<?> root : new ArrayList<>(roots)) {
+            discoverJoinParameters(root, visited);
+        }
+    }
+
+    private void discoverJoinParameters(From<?, ?> from, Set<Selection<?>> visited) {
+        for (Join<?, ?> join : from.getJoins()) {
+            discoverParameters(join.getOn(), visited);
+            discoverJoinParameters(join, visited);
+        }
+    }
+
+    private void discoverParameters(Selection<?> selection, Set<Selection<?>> visited) {
+        if (selection == null || !visited.add(selection)) {
+            return;
+        }
+        if (selection instanceof ParameterExpression<?> parameter) {
+            addParameter(parameter);
+        }
+        if (selection instanceof Subquery<?> subquery) {
+            discoverParameters(subquery.getSelection(), visited);
+            discoverParameters(subquery.getRestriction(), visited);
+            discoverParameters(subquery.getGroupRestriction(), visited);
+            subquery.getGroupList().forEach(expression -> discoverParameters(expression, visited));
+            subquery.getRoots().forEach(root -> discoverJoinParameters(root, visited));
+        } else if (selection instanceof FunctionExpressionImpl<?> function) {
+            function.getChildExpressions().forEach(expression -> discoverParameters(expression, visited));
+            if (function instanceof CriteriaBuilderImpl.CaseImpl<?> searched) {
+                discoverParameters(searched.getElseExpression(), visited);
+            } else if (function instanceof CriteriaBuilderImpl.SimpleCaseImpl<?, ?> simple) {
+                discoverParameters(simple.getExpression(), visited);
+                discoverParameters(simple.getElseExpression(), visited);
+            }
+        } else if (selection.isCompoundSelection()) {
+            selection.getCompoundSelectionItems().forEach(item -> discoverParameters(item, visited));
+        }
+    }
+
+    /** Detach the completed query while preserving shared roots and parameter occurrences. */
+    private static void snapshotExpressions(ReadAllQuery query) {
+        // Each parameter occurrence gets its own copy. Platforms record per-occurrence
+        // binding decisions on the node (e.g. DB2/Derby partial binding of "? + ?"),
+        // which must not leak into other clauses that use the same parameter.
+        // The originals stay registered as keys for snapshotParameters.
+        Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies = new IdentityHashMap<>() {
+            @Override
+            public org.eclipse.persistence.expressions.Expression get(Object key) {
+                if (key instanceof org.eclipse.persistence.internal.expressions.ParameterExpression) {
+                    return null;
+                }
+                return super.get(key);
+            }
+        };
+        ExpressionBuilder builder = (ExpressionBuilder) query.getExpressionBuilder().copiedVersionFrom(copies);
+        if (query.getSelectionCriteria() != null) {
+            query.setSelectionCriteria(query.getSelectionCriteria().copiedVersionFrom(copies));
+        }
+        // Setting the criteria can replace an uninitialized report builder with its WHERE root.
+        query.setExpressionBuilder(builder);
+        query.setOrderByExpressions(copyExpressions(query.getOrderByExpressions(), copies));
+        query.setNonFetchJoinAttributeExpressions(copyExpressions(query.getNonFetchJoinAttributeExpressions(), copies));
+        query.setPartialAttributeExpressions(copyExpressions(query.getPartialAttributeExpressions(), copies));
+        if (query.hasJoining()) {
+            JoinedAttributeManager original = query.getJoinedAttributeManager();
+            JoinedAttributeManager joined = new JoinedAttributeManager(original.getDescriptor(), builder, query);
+            joined.setJoinedAttributeExpressions_(copyExpressions(original.getJoinedAttributeExpressions(), copies));
+            joined.setShouldFilterDuplicates(original.shouldFilterDuplicates());
+            query.setJoinedAttributeManager(joined);
+        }
+        if (query instanceof ReportQuery report) {
+            snapshotReportItems(report.getItems(), copies);
+            report.setGroupByExpressions(copyExpressions(report.getGroupByExpressions(), copies));
+            if (report.getHavingExpression() != null) {
+                report.setHavingExpression(report.getHavingExpression().copiedVersionFrom(copies));
+            }
+        }
+        snapshotParameters(query, copies);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void snapshotParameters(ReadAllQuery query,
+            Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies) {
+        Set<String> active = new HashSet<>();
+        for (org.eclipse.persistence.expressions.Expression expression : copies.keySet()) {
+            if (expression instanceof org.eclipse.persistence.internal.expressions.ParameterExpression parameter) {
+                active.add(parameter.getField().getName());
+            }
+        }
+        Map<String, ParameterExpression<?>> original = (Map<String, ParameterExpression<?>>)
+                query.getProperty(ParameterExpressionImpl.QUERY_PARAMETERS_PROPERTY);
+        Map<String, ParameterExpression<?>> parameters = new HashMap<>();
+        List<String> names = new ArrayList<>();
+        List<Class<?>> types = new ArrayList<>();
+        for (String name : query.getArguments()) {
+            if (active.contains(name)) {
+                ParameterExpression<?> parameter = original.get(name);
+                parameters.put(name, parameter);
+                names.add(name);
+                types.add(parameter.getJavaType());
+            }
+        }
+        query.setArguments(names);
+        query.setArgumentTypes(types);
+        query.setProperty(ParameterExpressionImpl.QUERY_PARAMETERS_PROPERTY, Map.copyOf(parameters));
+    }
+
+    private static List<org.eclipse.persistence.expressions.Expression> copyExpressions(
+            List<org.eclipse.persistence.expressions.Expression> expressions,
+            Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies) {
+        if (expressions == null) {
+            return null;
+        }
+        List<org.eclipse.persistence.expressions.Expression> result = new ArrayList<>(expressions.size());
+        for (org.eclipse.persistence.expressions.Expression expression : expressions) {
+            result.add(expression.copiedVersionFrom(copies));
+        }
+        return result;
+    }
+
+    private static void snapshotReportItems(List<ReportItem> items,
+            Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies) {
+        for (ReportItem item : items) {
+            if (item.getAttributeExpression() != null) {
+                item.setAttributeExpression(item.getAttributeExpression().copiedVersionFrom(copies));
+            }
+            if (item.hasJoining()) {
+                item.getJoinedAttributeManager().setJoinedAttributeExpressions_(
+                        copyExpressions(item.getJoinedAttributeManager().getJoinedAttributeExpressions(), copies));
+            }
+            if (item instanceof ConstructorReportItem constructor) {
+                snapshotReportItems(constructor.getReportItems(), copies);
+            }
+        }
     }
 
     /**
@@ -853,6 +1062,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      */
     void isUnion() {
         isUnion = true;
+    }
+
+    @Override
+    public List<Root<?>> getRootList() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

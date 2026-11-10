@@ -838,8 +838,14 @@ final class TypeResolver extends JPQLFunctionsAbstractBuilder implements Eclipse
         IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
         Declaration declaration = queryContext.findDeclaration(identificationVariable.getVariableName());
         DatabaseMapping mapping = declaration.getMapping();
-        MappedKeyMapContainerPolicy mapContainerPolicy = (MappedKeyMapContainerPolicy) mapping.getContainerPolicy();
-        type = (Class<?>) mapContainerPolicy.getKeyType();
+        ContainerPolicy containerPolicy = mapping.getContainerPolicy();
+
+        // Only a Map with a mapped key knows its key type. KEY() over anything else is for the
+        // grammar validator to reject; all that is needed here is to leave the type unresolved
+        // rather than fail on the cast.
+        if (containerPolicy.isMappedKeyMapPolicy()) {
+            type = (Class<?>) ((MappedKeyMapContainerPolicy) containerPolicy).getKeyType();
+        }
     }
 
     @Override
@@ -997,9 +1003,17 @@ final class TypeResolver extends JPQLFunctionsAbstractBuilder implements Eclipse
         try {
             String text = expression.getText();
 
+            // BigInteger value
+            if (ExpressionTools.BIG_INTEGER_REGEXP.matcher(text).matches()) {
+                type = BigInteger.class;
+            }
+            // BigDecimal value
+            else if (ExpressionTools.BIG_DECIMAL_REGEXP.matcher(text).matches()) {
+                type = BigDecimal.class;
+            }
             // Long value
             // Integer value
-            if (ExpressionTools.LONG_REGEXP   .matcher(text).matches() ||
+            else if (ExpressionTools.LONG_REGEXP   .matcher(text).matches() ||
                 ExpressionTools.INTEGER_REGEXP.matcher(text).matches()) {
 
                 // Special case for a long number, Long.parseLong() does not handle 'l|L'
@@ -1425,8 +1439,13 @@ final class TypeResolver extends JPQLFunctionsAbstractBuilder implements Eclipse
             DatabaseMapping mapping = declaration.getMapping();
 
             ContainerPolicy containerPolicy = mapping.getContainerPolicy();
-            MappedKeyMapContainerPolicy mapPolicy = (MappedKeyMapContainerPolicy) containerPolicy;
-            descriptor = mapPolicy.getKeyMapping().getReferenceDescriptor();
+
+            // As above: only a Map with a mapped key has a key mapping to take a descriptor from,
+            // so anything else leaves the descriptor unset instead of failing on the cast.
+            if (containerPolicy.isMappedKeyMapPolicy()) {
+                MappedKeyMapContainerPolicy mapPolicy = (MappedKeyMapContainerPolicy) containerPolicy;
+                descriptor = mapPolicy.getKeyMapping().getReferenceDescriptor();
+            }
         }
 
         @Override

@@ -863,22 +863,25 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
                 writer.append(SPACE);
             }
 
-            // 'ELSE'
-            if (shouldOutput(expression) || expression.hasElse()) {
-                appendIdentifier((expression != null) ? expression.getActualElseIdentifier() : ELSE, ELSE);
-            }
+            // Preserve incomplete-query scaffolding, but not an omitted optional ELSE.
+            if (stateObject.hasElse() || expression == null || expression.hasElse() || !expression.hasEnd()) {
+                // 'ELSE'
+                if (shouldOutput(expression) || expression.hasElse()) {
+                    appendIdentifier((expression != null) ? expression.getActualElseIdentifier() : ELSE, ELSE);
+                }
 
-            if (shouldOutput(expression) || expression.hasSpaceAfterElse()) {
-                writer.append(SPACE);
-            }
+                if (shouldOutput(expression) || expression.hasSpaceAfterElse()) {
+                    writer.append(SPACE);
+                }
 
-            // Else expression
-            if (stateObject.hasElse()) {
-                stateObject.getElse().accept(this);
-            }
+                // Else expression
+                if (stateObject.hasElse()) {
+                    stateObject.getElse().accept(this);
+                }
 
-            if (shouldOutput(expression) || expression.hasSpaceAfterElseExpression()) {
-                writer.append(SPACE);
+                if (shouldOutput(expression) || expression.hasSpaceAfterElseExpression()) {
+                    writer.append(SPACE);
+                }
             }
 
             // END

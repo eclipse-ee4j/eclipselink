@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -223,7 +224,6 @@ public class XmlAdvancedCompositePKTest extends JUnitTestCase {
 
             em.persist(depAdmin);
             commitTransaction(em);
-            org.eclipse.persistence.internal.jpa.EntityManagerImpl emImpl = (org.eclipse.persistence.internal.jpa.EntityManagerImpl) em;
             DepartmentAdminRolePK depAdminPk= new DepartmentAdminRolePK(depName, depRole, location, adminEmp.getEmployee().getId());
 
             DepartmentAdminRole cacheObject = em.find(DepartmentAdminRole.class, depAdminPk);

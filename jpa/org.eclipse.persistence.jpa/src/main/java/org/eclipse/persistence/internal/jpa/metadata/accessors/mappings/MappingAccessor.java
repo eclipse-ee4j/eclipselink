@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -108,6 +108,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.persistence.FetchType;
+
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
@@ -151,6 +153,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetada
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.UUIDMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.XMLMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.graphs.FetchMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.mappings.converters.AttributeNamePrefix;
@@ -176,6 +179,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EXCLUDED_FROM_VERSIONING;
 
 /**
  * INTERNAL:
@@ -210,6 +214,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private DatabaseMapping m_overrideMapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<>();
     private String m_attributeType;
+    private boolean m_fetchOverrideInitialized;
+    private String m_fetchOverride;
     protected ColumnMetadata m_field;
 
     /**
@@ -609,6 +615,23 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected String getDefaultFetchType() {
         return JPA_FETCH_EAGER;
+    }
+
+    /**
+     * INTERNAL:
+     * Apply an unqualified Fetch annotation before resolving mapping defaults.
+     * An XML mapping replaces the annotation mapping, including its defaults.
+     * Cache only the annotation override so the persistence-unit default remains
+     * associated with the accessor's current metadata context.
+     */
+    protected String getEffectiveFetchType(String mappingFetchType) {
+        if (!m_fetchOverrideInitialized) {
+            FetchType override = loadedFromXML() ? null : FetchMetadata.getUnqualifiedFetchType(this);
+            m_fetchOverride = override == null ? null : override.name();
+            m_fetchOverrideInitialized = true;
+        }
+        String fetchType = m_fetchOverride == null ? mappingFetchType : m_fetchOverride;
+        return fetchType == null ? getDefaultFetchType() : fetchType;
     }
 
     /**
@@ -1166,7 +1189,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Init an xml mapping accessor with its necessary components.
      */
     public void initXMLMappingAccessor(ClassAccessor classAccessor) {
-        m_classAccessor = classAccessor;
+        setClassAccessor(classAccessor);
         setEntityMappings(classAccessor.getEntityMappings());
         initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());
     }
@@ -1177,6 +1200,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
+        m_fetchOverrideInitialized = false;
+        m_fetchOverride = null;
 
         initXMLObject(m_field, accessibleObject);
     }
@@ -2148,6 +2173,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public void setClassAccessor(ClassAccessor classAccessor) {
         m_classAccessor = classAccessor;
+        m_fetchOverrideInitialized = false;
+        m_fetchOverride = null;
     }
 
     /**
@@ -2239,6 +2266,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
      *     metadata.
      */
     protected void setMapping(DatabaseMapping mapping) {
+        if (isAnnotationPresent(JPA_EXCLUDED_FROM_VERSIONING)
+                || (getClassAccessor().getAttributes() != null
+                && getClassAccessor().getAttributes().getExcludedFromVersioning().contains(getAttributeName()))) {
+            mapping.setProperty("jakarta.persistence.excluded-from-versioning", Boolean.TRUE);
+        }
         if (! isMultitenantId()) {
             // Before adding the mapping to the descriptor, process the
             // properties for this mapping (if any). Avoid this is we are

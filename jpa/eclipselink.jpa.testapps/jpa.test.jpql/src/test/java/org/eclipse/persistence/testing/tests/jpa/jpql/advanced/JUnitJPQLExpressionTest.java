@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,9 +109,9 @@ public class JUnitJPQLExpressionTest extends JUnitTestCase {
             String jpql = "SELECT continent"
                 + " FROM Continent continent "
                 + " WHERE NOT EXISTS (SELECT c FROM Company c WHERE c.originCountry MEMBER OF continent.countries)";
-            List<?> result = em.createQuery(jpql, Object[].class).getResultList();
+            List<Continent> result = em.createQuery(jpql, Continent.class).getResultList();
             Assert.assertEquals(1, result.size());
-            Continent continent = (Continent) result.get(0);
+            Continent continent = result.get(0);
             Assert.assertEquals("North America", continent.getId());
 
         } catch (Exception e) {
@@ -138,9 +138,9 @@ public class JUnitJPQLExpressionTest extends JUnitTestCase {
             String jpql = "SELECT continent"
                 + " FROM Continent continent "
                 + " WHERE NOT EXISTS (SELECT c FROM ProductionCompany c WHERE c.originCountry MEMBER OF continent.countries)";
-            List<?> result = em.createQuery(jpql, Object[].class).getResultList();
+            List<Continent> result = em.createQuery(jpql, Continent.class).getResultList();
             Assert.assertEquals(1, result.size());
-            Continent continent = (Continent) result.get(0);
+            Continent continent = result.get(0);
             Assert.assertEquals("Europe", continent.getId());
 
         } catch (Exception e) {
@@ -168,9 +168,9 @@ public class JUnitJPQLExpressionTest extends JUnitTestCase {
             String jpql = "SELECT continent"
                 + " FROM Continent continent "
                 + " WHERE NOT EXISTS (SELECT c FROM CarProductionCompany c WHERE c.originCountry MEMBER OF continent.countries)";
-            List<?> result = em.createQuery(jpql, Object[].class).getResultList();
+            List<Continent> result = em.createQuery(jpql, Continent.class).getResultList();
             Assert.assertEquals(1, result.size());
-            Continent continent = (Continent) result.get(0);
+            Continent continent = result.get(0);
             Assert.assertEquals("North America", continent.getId());
 
         } catch (Exception e) {

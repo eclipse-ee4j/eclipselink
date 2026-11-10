@@ -100,6 +100,11 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     @Override
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        return exception.getErrorCode() == 1062 || super.isUniqueConstraintViolation(exception);
+    }
+
+    @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
         if (this.isConnectionDataInitialized) {
             return;
@@ -308,6 +313,8 @@ public class MySQLPlatform extends DatabasePlatform {
         addOperator(localTime());
         addOperator(localDateTime());
         addOperator(logOperator());
+        // LENGTH counts bytes in MySQL; the expression contract counts characters.
+        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "CHAR_LENGTH"));
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATAN2"));
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Concat, "CONCAT"));
         addOperator(toNumberOperator());
@@ -523,6 +530,20 @@ public class MySQLPlatform extends DatabasePlatform {
 
         private MySQLExtractOperator() {
             super();
+        }
+
+        @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString("WEEK(");
+            first.printSQL(printer);
+            printer.printString(", 3)");
+        }
+
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString("WEEK(");
+            first.printJava(printer);
+            printer.printString(", 3)");
         }
 
         @Override
@@ -755,6 +776,59 @@ public class MySQLPlatform extends DatabasePlatform {
 
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        List<?> originalFields = statement.getFields();
+        int originalFieldCount = originalFields.size();
+        List<Expression> additionalFields = new ArrayList<>();
+        List<Expression> originalOrderBy = statement.getOrderByExpressions();
+        List<Expression> orderBy = new ArrayList<>(originalOrderBy);
+        statement.setOrderByExpressions(orderBy);
+        try {
+            // MySQL has no NULLS FIRST/LAST syntax. Rank nulls independently of
+            // the requested value ordering, retaining its ASC/DESC expression.
+            for (int index = 0; index < orderBy.size(); index++) {
+                if (orderBy.get(index) instanceof FunctionExpression ordering) {
+                    int selector = ordering.getOperator().getSelector();
+                    if (selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
+                        Expression sort = ordering.getBaseExpression();
+                        Expression value = sort;
+                        if (sort instanceof FunctionExpression direction) {
+                            int sortSelector = direction.getOperator().getSelector();
+                            if (sortSelector == ExpressionOperator.Ascending || sortSelector == ExpressionOperator.Descending) {
+                                value = direction.getBaseExpression();
+                            }
+                        }
+                        String nullRank = selector == ExpressionOperator.NullsFirst ? "0" : "1";
+                        String valueRank = selector == ExpressionOperator.NullsFirst ? "1" : "0";
+                        Expression rank = value.sql("(CASE WHEN ? IS NULL THEN " + nullRank
+                                + " ELSE " + valueRank + " END)", List.of());
+                        orderBy.set(index, rank);
+                        orderBy.add(++index, sort);
+                        if (statement.shouldDistinctBeUsed()) {
+                            // Keep the same scalar rank in the projection and ordering.
+                            additionalFields.add(rank);
+                        }
+                    }
+                }
+            }
+            statement.getFields().addAll(additionalFields);
+            printSQLSelectStatementWithLimits(call, printer, statement);
+            int additionalFieldCount = statement.getFields().size() - originalFieldCount;
+            if (additionalFieldCount > 0) {
+                // Every appended rank/sort key is scalar; original entity selections may expand.
+                call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFieldCount));
+            }
+        } finally {
+            try {
+                while (originalFields.size() > originalFieldCount) {
+                    originalFields.remove(originalFields.size() - 1);
+                }
+            } finally {
+                statement.setOrderByExpressions(originalOrderBy);
+            }
+        }
+    }
+
+    private void printSQLSelectStatementWithLimits(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
         if (statement.getQuery() != null) {
             max = statement.getQuery().getMaxRows();
@@ -969,8 +1043,36 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     @Override
+    public void printExpressionTypeContext(Expression value, Class<?> type,
+            ExpressionTypeContext context, ExpressionSQLPrinter printer) {
+        if (context == ExpressionTypeContext.TEMPORAL_RESULT) {
+            if (value instanceof FunctionExpression function && function.getOperator().getSelector() == ExpressionOperator.NullIf) {
+                // MySQL's native NULLIF can lose fractions when consumed as a temporal value.
+                List<Expression> arguments = function.getChildren();
+                printer.printString("CASE WHEN ");
+                arguments.get(0).printSQL(printer);
+                printer.printString(" = ");
+                arguments.get(1).printSQL(printer);
+                printer.printString(" THEN NULL ELSE ");
+                arguments.get(0).printSQL(printer);
+                printer.printString(" END");
+            } else {
+                printTemporalTypeContext(value, type, printer);
+            }
+        } else {
+            super.printExpressionTypeContext(value, type, context, printer);
+        }
+    }
+
+    @Override
     public boolean supportsFractionalTime() {
         return isFractionalTimeSupported;
+    }
+
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
     }
 
 }

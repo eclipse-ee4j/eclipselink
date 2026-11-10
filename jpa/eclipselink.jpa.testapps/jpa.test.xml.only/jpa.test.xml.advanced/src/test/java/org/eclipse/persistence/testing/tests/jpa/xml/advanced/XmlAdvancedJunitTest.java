@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -82,16 +83,22 @@ public class XmlAdvancedJunitTest extends JUnitTestCase {
         beginTransaction(em);
         em.remove(em.find(LargeProject.class, lp1.getId()));
         em.flush();
-        JpaEntityManager eclipselinkEm = (JpaEntityManager)em.getDelegate();
-        RepeatableWriteUnitOfWork uow =
-            (RepeatableWriteUnitOfWork)eclipselinkEm.getActiveSession();
-        //duplicate the beforeCompletion call
-        uow.issueSQLbeforeCompletion();
-        //commit the transaction
-        uow.setShouldTerminateTransaction(true);
-        uow.commitTransaction();
-        //duplicate the AfterCompletion call.  This should merge, removing the LargeProject from the shared cache
-        uow.mergeClonesAfterCompletion();
+        if (isOnServer()) {
+            // The container's transaction manager makes the beforeCompletion and afterCompletion calls that are
+            // duplicated below, and the transaction it started has to be completed through it
+            commitTransaction(em);
+        } else {
+            JpaEntityManager eclipselinkEm = (JpaEntityManager)em.getDelegate();
+            RepeatableWriteUnitOfWork uow =
+                (RepeatableWriteUnitOfWork)eclipselinkEm.getActiveSession();
+            //duplicate the beforeCompletion call
+            uow.issueSQLbeforeCompletion();
+            //commit the transaction
+            uow.setShouldTerminateTransaction(true);
+            uow.commitTransaction();
+            //duplicate the AfterCompletion call.  This should merge, removing the LargeProject from the shared cache
+            uow.mergeClonesAfterCompletion();
+        }
         em = createEntityManager();
         LargeProject cachedLargeProject = em.find(LargeProject.class, lp1.getId());
         closeEntityManager(em);

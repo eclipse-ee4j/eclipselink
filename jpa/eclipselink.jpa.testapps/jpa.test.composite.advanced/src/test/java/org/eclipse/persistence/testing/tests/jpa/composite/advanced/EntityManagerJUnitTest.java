@@ -1464,6 +1464,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
     }
 
     public void testIdentityOutsideTransaction() {
+        // Java SE only: object identity across the lazy loads below needs a persistence context that outlives
+        // the query, which an application-managed entity manager has. On the server the container-managed one
+        // is transaction-scoped, and outside a transaction its query results are detached right away, as the
+        // specification requires (WildFly passes only with wildfly.jpa.skipquerydetach, which opts out of that).
+        if (isOnServer()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("SELECT e FROM PhoneNumber e");
         List<PhoneNumber> phoneNumbers = query.getResultList();
@@ -9531,7 +9538,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         query = em.createQuery("Select a from Address a");
         hints = query.getHints();
-        assertNull("Hints is not null when it should be.", hints);
+        assertNotNull("Hints must not be null.", hints);
+        assertTrue("Hints should be empty.", hints.isEmpty());
     }
 
 

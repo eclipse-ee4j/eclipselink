@@ -14,15 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jpa;
 
+import jakarta.persistence.EntityHandler;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+
 import java.util.List;
 
-import org.eclipse.persistence.queries.AttributeGroup;
-import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.queries.AttributeGroup;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -35,8 +40,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 /*
  * @author Gordon Yorke
  */
-
-public interface JpaEntityManager extends jakarta.persistence.EntityManager {
+public interface JpaEntityManager extends EntityManager, EntityHandler {
 
     /**
      * This method returns the current session to the requester.  The current session
@@ -107,37 +111,37 @@ public interface JpaEntityManager extends jakarta.persistence.EntityManager {
     /**
      * This method is used to create a query using a EclipseLink Expression for the entity class.
      */
-    jakarta.persistence.Query createQuery(Expression expression, Class<?> entityClass);
+    Query createQuery(Expression expression, Class<?> entityClass);
 
     /**
      * This method is used to create a query using a EclipseLink DatabaseQuery.
      */
-    jakarta.persistence.Query createQuery(DatabaseQuery query);
+    Query createQuery(DatabaseQuery query);
 
     /**
      * This method is used to create a query using a EclipseLink Call.
      */
-    jakarta.persistence.Query createQuery(Call call);
+    Query createQuery(Call call);
 
     /**
      * This method is used to create a query using a EclipseLink Call for the entity class.
      */
-    jakarta.persistence.Query createQuery(Call call, Class<?> entityClass);
+    Query createQuery(Call call, Class<?> entityClass);
 
     /**
      * This method is used to create a query using query by example.
      */
-    jakarta.persistence.Query createQueryByExample(Object exampleObject);
+    Query createQueryByExample(Object exampleObject);
 
     /**
      * This method will create a query object that wraps a EclipseLink Named Query.
      */
-    jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass);
+    Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass);
 
     /**
      * This method will create a query object that wraps a EclipseLink Named Query.
      */
-    jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass, List argumentTypes);
+    Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass, List argumentTypes);
 
     /**
      * This method will load the passed entity or collection of entities using the passed AttributeGroup.

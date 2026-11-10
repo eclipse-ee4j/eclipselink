@@ -42,6 +42,10 @@ import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.LiteralExpression;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -65,6 +69,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.ArrayList;
@@ -407,6 +412,12 @@ public class DB2Platform extends DatabasePlatform {
     }
 
     @Override
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        // Derby inherits this platform but has different vendor error codes.
+        return isDB2() && exception.getErrorCode() == -803 || super.isUniqueConstraintViolation(exception);
+    }
+
+    @Override
     public boolean isLockTimeoutException(DatabaseException e) {
         return
             e.getInternalException() instanceof SQLException s &&
@@ -488,11 +499,43 @@ public class DB2Platform extends DatabasePlatform {
         addOperator(rtrim2Operator());
 
         addOperator(lengthOperator());
+        if (usesCodeUnits32ForStringFunctions()) {
+            addOperator(withCodeUnits32(ExpressionOperator.locate(), "LOCATE"));
+            addOperator(withCodeUnits32(ExpressionOperator.locate2(), "LOCATE"));
+            addOperator(withCodeUnits32(ExpressionOperator.substring(), "SUBSTRING"));
+            addOperator(withCodeUnits32(ExpressionOperator.substringSingleArg(), "SUBSTRING"));
+            addOperator(clampedLeftRightOperator(ExpressionOperator.left(), "LEFT"));
+            addOperator(clampedLeftRightOperator(ExpressionOperator.right(), "RIGHT"));
+        }
         addOperator(nullifOperator());
         addOperator(coalesceOperator());
 
         addOperator(roundOperator());
         addOperator(db2ExtractOperator());
+    }
+
+    /**
+     * Use Unicode character positions consistently for Db2 LUW string functions.
+     * Other Db2 variants and Derby retain their existing function syntax.
+     */
+    protected boolean usesCodeUnits32ForStringFunctions() {
+        return true;
+    }
+
+    private static ExpressionOperator withCodeUnits32(ExpressionOperator operator, String function) {
+        List<String> strings = new ArrayList<>(List.of(operator.getDatabaseStrings()));
+        strings.set(0, function + "(");
+        strings.set(strings.size() - 1, ", CODEUNITS32)");
+        operator.printsAs(strings);
+        return operator;
+    }
+
+    private static ExpressionOperator clampedLeftRightOperator(ExpressionOperator operator, String function) {
+        // Db2 pads overlong LEFT/RIGHT results; retain only characters available in the source.
+        operator.printsAs(List.of(function + "(", ", CASE WHEN ", " > CHARACTER_LENGTH(",
+                ", CODEUNITS32) THEN CHARACTER_LENGTH(", ", CODEUNITS32) ELSE ", " END, CODEUNITS32)"));
+        operator.setArgumentIndices(new int[]{0, 1, 0, 0, 1});
+        return operator;
     }
 
     /**
@@ -585,6 +628,20 @@ public class DB2Platform extends DatabasePlatform {
 
         private DB2ExtractOperator() {
             super();
+        }
+
+        @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString("WEEK_ISO(");
+            first.printSQL(printer);
+            printer.printString(")");
+        }
+
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString("WEEK_ISO(");
+            first.printJava(printer);
+            printer.printString(")");
         }
 
         @Override
@@ -1180,6 +1237,9 @@ public class DB2Platform extends DatabasePlatform {
     protected ExpressionOperator lengthOperator() {
         ExpressionOperator operator = disableAllBindingExpression();
         ExpressionOperator.length().copyTo(operator);
+        if (usesCodeUnits32ForStringFunctions()) {
+            withCodeUnits32(operator, "CHARACTER_LENGTH");
+        }
         return operator;
     }
 
@@ -1228,10 +1288,14 @@ public class DB2Platform extends DatabasePlatform {
                 for (int i = 0; i < items.size(); i++) {
                     final int index = indices[i];
                     Expression item = items.get(index);
-                    boolean shouldBind = true;
+                    boolean shouldBind = !(item.isParameterExpression()
+                            && Boolean.FALSE.equals(((ParameterExpression) item).canBind()))
+                            && !(item.isConstantExpression()
+                            && Boolean.FALSE.equals(((ConstantExpression) item).canBind()));
 
-                    // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
-                    if(!item.isValueExpression()) {
+                    // An explicitly inline value already supplies a known type.
+                    // Do not re-enable binding requested off by the expression.
+                    if(!shouldBind || !item.isValueExpression()) {
                         allBind = false;
                     }
 
@@ -1272,10 +1336,14 @@ public class DB2Platform extends DatabasePlatform {
                 for (int i = 0; i < items.size(); i++) {
                     Expression item = items.get(i);
 
-                    boolean shouldBind = true;
+                    boolean shouldBind = !(item.isParameterExpression()
+                            && Boolean.FALSE.equals(((ParameterExpression) item).canBind()))
+                            && !(item.isConstantExpression()
+                            && Boolean.FALSE.equals(((ConstantExpression) item).canBind()));
 
-                    // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
-                    if(!item.isValueExpression()) {
+                    // An explicitly inline value already supplies a known type.
+                    // Do not re-enable binding requested off by the expression.
+                    if(!shouldBind || !item.isValueExpression()) {
                         allBind = false;
                     }
 
@@ -1730,6 +1798,140 @@ public class DB2Platform extends DatabasePlatform {
         return false;
     }
 
+    @Override
+    public void printExpressionTypeContext(Expression value, Class<?> type,
+            ExpressionTypeContext context, ExpressionSQLPrinter printer) {
+        if (context != ExpressionTypeContext.TEMPORAL_RESULT && type == java.time.LocalTime.class && !isDerby()
+                && !hasRelationalTemporalContext(value, type)) {
+            if (isNativeTime(value)) {
+                printer.printString("TIMESTAMP(DATE('1970-01-01'), ");
+                value.printSQL(printer);
+                printer.printString(")");
+                return;
+            }
+            if (!value.isValueExpression()) {
+                value.printSQL(printer);
+                return;
+            }
+            // LocalTime already binds through the epoch-day Timestamp carrier.
+            // Preserve all nine Java digits; DB2 TIME and default TIMESTAMP precision
+            // would narrow the value before evaluating the expression.
+            String carrierType = getDatabaseType(java.time.LocalDateTime.class).name() + "(9)";
+            if (value instanceof ConstantExpression constant && constant.getValue() == null) {
+                DatabaseField field = new DatabaseField();
+                field.setType(java.time.LocalDateTime.class);
+                printer.printString("CAST(");
+                printer.printPrimitive(field, constant.canBind());
+                printer.printString(" AS " + carrierType + ")");
+            } else {
+                printExpressionCast(value, carrierType, printer);
+            }
+        } else if (context == ExpressionTypeContext.CASE_VALUE && type == String.class) {
+            // A null first binding must not make subsequent strings fixed-width CHAR.
+            printExpressionCast(value, "VARCHAR(" + getCastSizeForVarcharParameter() + ")", printer);
+        } else if (context == ExpressionTypeContext.CASE_VALUE
+                && value instanceof ConstantExpression constant && constant.getValue() == null) {
+            DatabaseField field = new DatabaseField();
+            field.setType(type);
+            printExpressionCast(value, nullParameterType(field), printer);
+        } else {
+            super.printExpressionTypeContext(value, type, context, printer);
+        }
+    }
+
+    /** Only proven native TIME operands need promotion to the existing epoch carrier. */
+    private boolean isNativeTime(Expression value) {
+        if (value instanceof QueryKeyExpression queryKey
+                && queryKey.getMapping() instanceof AbstractDirectMapping mapping
+                && !mapping.hasConverter() && mapping.getAttributeClassification() == java.time.LocalTime.class) {
+            DatabaseField field = queryKey.getField();
+            if (field == null || !field.equals(mapping.getField())
+                    || field.getColumnDefinition() != null && !field.getColumnDefinition().isEmpty()
+                    || field.getSqlType() != DatabaseField.NULL_SQL_TYPE && field.getSqlType() != Types.TIME) {
+                return false;
+            }
+            FieldDefinition.DatabaseType nativeType = getDatabaseType(mapping.getFieldClassification(field));
+            return nativeType != null && "TIME".equals(nativeType.name());
+        }
+        if (!(value instanceof FunctionExpression function)) {
+            return false;
+        }
+        List<Expression> children = function.getChildren();
+        int selector = function.getOperator().getSelector();
+        if (selector == ExpressionOperator.Extract) {
+            return children.size() == 2 && children.get(1) instanceof LiteralExpression part
+                    && "TIME".equalsIgnoreCase(part.getValue());
+        }
+        if (selector == ExpressionOperator.Minimum || selector == ExpressionOperator.Maximum) {
+            return children.size() == 1 && isNativeTime(children.getFirst());
+        }
+        if (selector == ExpressionOperator.NullIf) {
+            return children.size() == 2 && isNativeTime(children.get(0))
+                    && (isNativeTime(children.get(1)) || isSqlNull(children.get(1)));
+        }
+        int start;
+        int step;
+        switch (selector) {
+            case ExpressionOperator.Case -> { start = 2; step = 2; }
+            case ExpressionOperator.CaseCondition -> { start = 1; step = 2; }
+            case ExpressionOperator.Coalesce -> { start = 0; step = 1; }
+            default -> { return false; } // Includes already contextualized carrier values.
+        }
+        boolean foundTime = false;
+        for (int i = start; i < children.size(); i += step) {
+            Expression child = children.get(i);
+            if (!isSqlNull(child)) {
+                if (!isNativeTime(child)) {
+                    return false;
+                }
+                foundTime = true;
+            }
+        }
+        // CASE's optional ELSE occupies the other parity.
+        if (step == 2 && children.size() % 2 == start % 2) {
+            Expression otherwise = children.getLast();
+            if (!isSqlNull(otherwise)) {
+                if (!isNativeTime(otherwise)) {
+                    return false;
+                }
+                foundTime = true;
+            }
+        }
+        return foundTime;
+    }
+
+    private boolean isSqlNull(Expression value) {
+        return value instanceof ConstantExpression constant && constant.getValue() == null
+                && !hasRelationalTemporalContext(value, java.time.LocalTime.class);
+    }
+
+    @Override
+    public void appendNullParameter(Writer writer, DatabaseField field) throws IOException {
+        // DB2 and Derby require a type for standalone NULL values. The fallback
+        // types only this SQL null; it must not infer a Java type for later bindings.
+        writer.write("CAST(NULL AS ");
+        writer.write(nullParameterType(field));
+        writer.write(")");
+    }
+
+    private String nullParameterType(DatabaseField field) {
+        return switch (getJDBCType(field)) {
+            case Types.BIT, Types.BOOLEAN, Types.TINYINT, Types.SMALLINT -> "SMALLINT";
+            case Types.INTEGER -> "INTEGER";
+            case Types.BIGINT -> "BIGINT";
+            case Types.REAL, Types.FLOAT -> "REAL";
+            case Types.DOUBLE -> "DOUBLE";
+            case Types.NUMERIC, Types.DECIMAL -> "DECIMAL(31, 10)";
+            case Types.CHAR, Types.NCHAR -> "CHAR(1)";
+            case Types.DATE -> "DATE";
+            case Types.TIME, Types.TIME_WITH_TIMEZONE -> "TIME";
+            case Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> "TIMESTAMP";
+            case Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY, Types.BLOB -> "BLOB(1)";
+            case Types.CLOB, Types.NCLOB -> "CLOB(1)";
+            default -> "VARCHAR(1)";
+        };
+    }
+
     /**
      * INTERNAL:
      * DB2 requires casting on certain operations, such as the CONCAT function,
@@ -1962,7 +2164,7 @@ public class DB2Platform extends DatabasePlatform {
     @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
-            writer.write(" GENERATED ALWAYS AS IDENTITY");
+            writer.write(" GENERATED BY DEFAULT AS IDENTITY");
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -1993,6 +2195,12 @@ public class DB2Platform extends DatabasePlatform {
     @Override
     public boolean isAlterSequenceObjectSupported() {
         return true;
+    }
+
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return false;
     }
 
 }

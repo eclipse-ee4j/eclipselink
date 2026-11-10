@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -85,6 +86,8 @@ public class SessionBeanTest extends JUnitTestCase {
     private static final String[] LOOKUP_STRINGS = new String[] {
     // server
     "java:comp/env/ejb/EmployeeService", "ejb/EmployeeService",
+    // portable global JNDI name (GlassFish, and any other Jakarta EE server)
+    "java:global/org.eclipse.persistence.jpa.testapps.sessionbean.ha/org.eclipse.persistence.jpa.testapps.sessionbean.ha_ejb/EmployeeServiceBean!org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService",
     // WLS
     "EmployeeService#org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService",
     // WAS

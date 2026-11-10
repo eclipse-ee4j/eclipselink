@@ -23,6 +23,23 @@
 //       - Issue 1771: Fix UUID handling for PostgreSQL
 package org.eclipse.persistence.platform.database;
 
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -41,23 +58,6 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * <p>
@@ -100,23 +100,13 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends a Boolean value. Refer to :
-     * http://www.postgresql.org/docs/8.0/static/datatype-boolean.html In
-     * PostgreSQL the following are the values that are value for a boolean
-     * field Valid literal values for the "true" state are: TRUE, 't', 'true',
-     * 'y', 'yes', '1' Valid literal values for the false" state are : FALSE,
-     * 'f', 'false', 'n', 'no', '0'
-     * <p>
-     * To be consistent with the other data platforms we are using the values
-     * '1' and '0' for true and false states of a boolean field.
+     * Append a typed SQL Boolean literal. Quoted values such as '1' and '0'
+     * can be converted when compared directly with a Boolean column, but are
+     * inferred as text in expressions such as CASE and COALESCE.
      */
     @Override
     protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
-        if (bool) {
-            writer.write("\'1\'");
-        } else {
-            writer.write("\'0\'");
-        }
+        writer.write(bool ? "TRUE" : "FALSE");
     }
 
     /**
@@ -357,6 +347,12 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return false;
     }
 
+    /** DISTINCT result rows cannot carry a FOR UPDATE locking clause. */
+    @Override
+    public boolean isForUpdateCompatibleWithDistinct() {
+        return false;
+    }
+
     /**
      * INTERNAL: Answers whether platform is Postgres.
      */
@@ -451,19 +447,26 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     protected ExpressionOperator operatorLocate2() {
         ExpressionOperator operator = new ExpressionOperator();
         operator.setSelector(ExpressionOperator.Locate2);
-        List<String> v = new ArrayList<>(2);
-        v.add("COALESCE(NULLIF(STRPOS(SUBSTRING(");
+        List<String> v = new ArrayList<>(8);
+        // A missing match is zero, but a null source, pattern or start stays null.
+        v.add("CASE STRPOS(SUBSTRING(");
         v.add(" FROM ");
         v.add("), ");
-        v.add("), 0) - 1 + ");
-        v.add(", 0)");
+        v.add(") WHEN 0 THEN 0 ELSE STRPOS(SUBSTRING(");
+        v.add(" FROM ");
+        v.add("), ");
+        v.add(") - 1 + ");
+        v.add(" END");
         operator.printsAs(v);
         operator.bePrefix();
-        int[] argumentIndices = new int[4];
+        int[] argumentIndices = new int[7];
         argumentIndices[0] = 0;
         argumentIndices[1] = 2;
         argumentIndices[2] = 1;
-        argumentIndices[3] = 2;
+        argumentIndices[3] = 0;
+        argumentIndices[4] = 2;
+        argumentIndices[5] = 1;
+        argumentIndices[6] = 2;
         operator.setArgumentIndices(argumentIndices);
         operator.setNodeClass(RelationExpression.class);
         return operator;
@@ -759,12 +762,15 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Time.class, TYPE_TIME);
         fieldTypeMapping.put(java.sql.Timestamp.class, TYPE_TIMESTAMP);
 
+
+
         fieldTypeMapping.put(java.time.LocalDate.class, PGSQL_TYPE_DATE);
         fieldTypeMapping.put(java.time.LocalDateTime.class, TYPE_TIMESTAMP);
         fieldTypeMapping.put(java.time.LocalTime.class, TYPE_TIME);
         fieldTypeMapping.put(java.time.OffsetDateTime.class, TYPE_TIMESTAMP);
         fieldTypeMapping.put(java.time.OffsetTime.class, TYPE_TIME);
         fieldTypeMapping.put(java.time.Instant.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.Year.class, PGSQL_TYPE_INTEGER);
 
         fieldTypeMapping.put(java.util.UUID.class, PGSQL_TYPE_UUID);
 
@@ -846,6 +852,12 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         // of fractional digits retained in the seconds field. By default, there is no explicit bound on precision.
         // The allowed range of p is from 0 to 6 for the timestamp and interval types.
         return true;
+    }
+
+    /** INTERNAL: DISTINCT parameterized subquery sort keys must use their selected column. */
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
     }
 
 }

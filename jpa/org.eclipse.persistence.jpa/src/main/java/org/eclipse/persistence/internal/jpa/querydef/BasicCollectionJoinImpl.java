@@ -22,6 +22,7 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.PluralExpression;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.CollectionAttribute;
@@ -63,12 +64,12 @@ public class BasicCollectionJoinImpl<Z, E> extends CollectionJoinImpl<Z, E> {
     }
 
     @Override
-    public <Y, C extends java.util.Collection<Y>> Expression<C> get(PluralAttribute<? super E, C, Y> collection){
+    public <Y, C extends java.util.Collection<Y>> PluralExpression<C, Y> get(PluralAttribute<? super E, C, Y> collection){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     @Override
-    public <L, W, M extends java.util.Map<L, W>> Expression<M> get(MapAttribute<? super E, L, W> map){
+    public <L, W, M extends java.util.Map<L, W>> PluralExpression<M, W> get(MapAttribute<? super E, L, W> map){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
@@ -108,27 +109,27 @@ public class BasicCollectionJoinImpl<Z, E> extends CollectionJoinImpl<Z, E> {
     }
 
     @Override
-    public <E, Y> Join<E, Y> join(String attributeName, JoinType jt) {
+    public <Y> Join<E, Y> join(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     @Override
-    public <E, Y> CollectionJoin<E, Y> joinCollection(String attributeName, JoinType jt) {
+    public <Y> CollectionJoin<E, Y> joinCollection(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     @Override
-    public <E, Y> ListJoin<E, Y> joinList(String attributeName, JoinType jt) {
+    public <Y> ListJoin<E, Y> joinList(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     @Override
-    public <E, L, W> MapJoin<E, L, W> joinMap(String attributeName, JoinType jt) {
+    public <L, W> MapJoin<E, L, W> joinMap(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     @Override
-    public <E, Y> SetJoin<E, Y> joinSet(String attributeName, JoinType jt) {
+    public <Y> SetJoin<E, Y> joinSet(String attributeName, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 

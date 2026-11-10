@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,6 +26,7 @@ package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
@@ -149,6 +151,23 @@ public class DynamicTestHelper {
             public boolean generateSchema(String persistenceUnitName, Map map) {
                 // TODO Auto-generated method stub
                 return false;
+            }
+
+            // Not used, added in Jakarta Persistence 4.0
+            @Override
+            public boolean generateSchema(PersistenceConfiguration configuration) {
+                return false;
+            }
+
+            // Not used, added in Jakarta Persistence 4.0
+            @Override
+            public ClassTransformer getClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
+                return null;
+            }
+
+            // Not used, added in Jakarta Persistence 4.0
+            public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
+                return null;
             }
          };
          return provider.createEntityManagerFactory(emName, getDatabaseProperties());

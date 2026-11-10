@@ -24,6 +24,8 @@
 //       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
 package org.eclipse.persistence.exceptions;
 
+import java.util.List;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.expressions.Expression;
@@ -41,12 +43,13 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.sessions.DataRecord;
 
-import java.util.List;
-
 /**
  * <p><b>Purpose</b>: This exception is used for any problem that is detected with a query.
  */
 public class QueryException extends ValidationException {
+
+    private static final long serialVersionUID = 1L;
+
     protected transient DatabaseQuery query;
     protected transient AbstractRecord queryArguments;
     public final static int ADDITIONAL_SIZE_QUERY_NOT_SPECIFIED = 6001;

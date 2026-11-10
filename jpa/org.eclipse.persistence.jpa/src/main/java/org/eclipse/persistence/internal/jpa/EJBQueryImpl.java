@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,54 +27,93 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.Parameter;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PessimisticLockScope;
+import jakarta.persistence.QueryFlushMode;
+import jakarta.persistence.Statement;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Timeout;
 import jakarta.persistence.TypedQuery;
-import org.eclipse.persistence.config.QueryHints;
+import jakarta.persistence.metamodel.Type;
+import jakarta.persistence.sql.ResultSetMapping;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
+
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.helper.GenericTypes;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.mappings.converters.ConverterClass;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.ColumnResult;
+import org.eclipse.persistence.queries.ConstructorResult;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.EntityResult;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import static org.eclipse.persistence.config.QueryHints.CACHE_RETRIEVE_MODE;
+import static org.eclipse.persistence.config.QueryHints.CACHE_STORE_MODE;
+import static org.eclipse.persistence.config.QueryHints.MAINTAIN_CACHE;
+import static org.eclipse.persistence.config.QueryHints.QUERY_TIMEOUT;
+import static org.eclipse.persistence.config.QueryHints.QUERY_TIMEOUT_UNIT;
+import static org.eclipse.persistence.config.QueryHints.PESSIMISTIC_LOCK_SCOPE;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.Collection_Class;
+import static org.eclipse.persistence.internal.helper.Helper.classImplementsInterface;
+import static org.eclipse.persistence.queries.ObjectLevelReadQuery.DONT_USE_DISTINCT;
 
 /**
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
  * executed.
  */
 public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
+
+    private final Map<Class<?>, Option> options = new LinkedHashMap<>();
+    private final List<Cursor> cursors = new ArrayList<>();
+
     /**
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
@@ -86,8 +126,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      */
     public EJBQueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         super(query, entityManager);
-        // Inherit applicable hints from EntityManager
-        inheritEntityManagerHints();
     }
 
     /**
@@ -129,16 +167,141 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      */
     public EJBQueryImpl(String queryDescription, EntityManagerImpl entityManager, boolean isNamedQuery, Class<?> resultClass) {
         super(entityManager);
+
         if (isNamedQuery) {
             this.queryName = queryDescription;
+            getDatabaseQueryInternal();
+            adaptNamedResultClass(resultClass);
         } else {
             if (databaseQuery == null) {
-                AbstractSession session = entityManager.getActiveSessionIfExists();
-                databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, entityManager.getActiveSessionIfExists(), null, null, session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
+                AbstractSession session = executionContext.getSession();
+                databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, executionContext.getSession(), null, null, session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
             }
         }
-        // Inherit applicable hints from EntityManager
-        inheritEntityManagerHints();
+    }
+
+    EJBQueryImpl(DatabaseQuery query, QueryExecutionContext context) {
+        super(query, context);
+    }
+
+    EJBQueryImpl(String jpql, QueryExecutionContext context) {
+        this(jpql, context, false, null);
+    }
+
+    EJBQueryImpl(String jpql, QueryExecutionContext context, Class<?> resultClass) {
+        this(jpql, context, false, resultClass);
+    }
+
+    EJBQueryImpl(String queryDescription, QueryExecutionContext context, boolean isNamedQuery) {
+        this(queryDescription, context, isNamedQuery, null);
+    }
+
+    EJBQueryImpl(String queryDescription, QueryExecutionContext context, boolean isNamedQuery, Class<?> resultClass) {
+        super(context);
+        context.verifyOpen();
+        if (queryDescription == null) {
+            throw new IllegalArgumentException("Query text or name must not be null");
+        }
+        if (isNamedQuery) {
+            queryName = queryDescription;
+            getDatabaseQueryInternal();
+            adaptNamedResultClass(resultClass);
+        } else {
+            AbstractSession session = context.getSession();
+            databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, session, null, null,
+                    session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
+        }
+        if (isNamedQuery && resultClass != null && !databaseQuery.isJPQLCallQuery()) {
+            ofType(resultClass);
+        }
+    }
+
+    private void adaptNamedResultClass(Class<?> resultClass) {
+        if (resultClass != null) {
+            DatabaseQuery named = getDatabaseQueryInternal();
+            if (named.getEJBQLString() == null && named.isUserDefined() && named.isReadQuery()) {
+                AbstractSession session = executionContext.getSession();
+                List<SQLResultSetMapping> mappings = named instanceof ResultSetMappingQuery mapped
+                        ? mapped.getSQLResultSetMappings(session) : List.of();
+                if (!mappings.isEmpty()) {
+                    ResultSetMappingQuery mapped = (ResultSetMappingQuery) named;
+                    Class<?> actualType = mapped.getResultClass();
+                    if (mappings.size() == 1 && mappings.getFirst() != null) {
+                        var results = mappings.getFirst().getResults();
+                        if (results.size() > 1) {
+                            actualType = Object[].class;
+                        } else if (results.size() == 1) {
+                            actualType = switch (results.getFirst()) {
+                                case ConstructorResult constructor -> constructor.getTargetClass();
+                                case EntityResult entity -> entity.getEntityClass();
+                                case ColumnResult column -> column.getColumn().getType();
+                                default -> actualType;
+                            };
+                        }
+                    }
+                    if (actualType != null) {
+                        actualType = ConversionManager.getObjectClass(actualType);
+                        if (!ConversionManager.getObjectClass(resultClass).isAssignableFrom(actualType)) {
+                            throw new IllegalArgumentException("Query result type " + actualType.getName()
+                                    + " is not assignable to " + resultClass.getName());
+                        }
+                    }
+                    // Explicit mappings determine row construction, including aliases,
+                    // argument order and entity locks. A compatible factory type does not replace them.
+                    databaseQuery = (DatabaseQuery) named.clone();
+                    ((ResultSetMappingQuery) databaseQuery).setResultClass(actualType);
+                } else {
+                    databaseQuery = buildSQLDatabaseQuery(resultClass, named.getSQLString(), session.getLoader(), session);
+                    copyNativeQuerySettings(named, databaseQuery);
+                }
+            } else {
+                databaseQuery = JPQLResultClass.adapt(named, resultClass, executionContext.getSession());
+            }
+            isShared = databaseQuery == named;
+            initializeFromDatabaseQuery();
+        }
+    }
+
+    /** Retain invocation settings while keeping the newly constructed native result identity. */
+    private static void copyNativeQuerySettings(DatabaseQuery source, DatabaseQuery target) {
+        var descriptor = target.getDescriptor();
+        Class<?> referenceClass = target.getReferenceClass();
+        boolean targetMaintainsCache = target.shouldMaintainCache();
+        target.copyFromQuery(source);
+        if (source.isDataReadQuery() && !source.shouldMaintainCache()
+                && (QueryHintsHandler.get(source) == null || !QueryHintsHandler.get(source).containsKey(MAINTAIN_CACHE))) {
+            // Native result rebuilding retains the target's baseline for an unhinted scalar source.
+            target.setShouldMaintainCache(targetMaintainsCache);
+        }
+        QueryHintsHandler.completeCacheState(source, target);
+        target.setDescriptor(descriptor);
+        if (target instanceof ObjectBuildingQuery building) {
+            building.setReferenceClass(referenceClass);
+        }
+        target.removeProperty(ResultSetMappingTranslator.NAMED_MAPPING_PREPARED_PROPERTY);
+        target.removeProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY);
+        target.setArguments(new ArrayList<>(source.getArguments()));
+        target.setArgumentTypes(new ArrayList<>(source.getArgumentTypes()));
+        target.setArgumentTypeNames(new ArrayList<>(source.getArgumentTypeNames()));
+        target.setArgumentValues(new ArrayList<>(source.getArgumentValues()));
+        target.setNullableArguments(source.getNullableArguments().stream()
+                .map(field -> field.clone()).collect(java.util.stream.Collectors.toCollection(ArrayList::new)));
+        target.setName(source.getName());
+        if (source instanceof ReadQuery readSource && target instanceof ReadQuery readTarget) {
+            readTarget.setInternalMax(readSource.getInternalMax());
+        }
+        target.setIsPrepared(false);
+    }
+
+    @Override
+    protected List<Object> processParameters() {
+        DatabaseQuery original = getDatabaseQueryInternal();
+        DatabaseQuery resolved = JPQLResultClass.resolve(original, executionContext.getSession(), parameterValues, parameterTypes);
+        if (resolved != original) {
+            databaseQuery = resolved;
+            isShared = false;
+        }
+        return super.processParameters();
     }
 
     /**
@@ -188,6 +351,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         if (isCacheable) {
             databaseQuery = session.getProject().getJPQLParseCache().get(jpqlQuery);
         }
+
         if ((databaseQuery == null) || (!databaseQuery.isPrepared())) {
             JPAQueryBuilder queryBuilder = session.getQueryBuilder();
             databaseQuery = queryBuilder.buildQuery(jpqlQuery, session);
@@ -196,16 +360,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             // filtering duplicates.
             if (databaseQuery.isReadAllQuery()) {
                 ReadAllQuery readAllQuery = (ReadAllQuery) databaseQuery;
-                if (readAllQuery.hasJoining() && (readAllQuery.getDistinctState() == ReadAllQuery.DONT_USE_DISTINCT)) {
+                if (readAllQuery.hasJoining() && (readAllQuery.getDistinctState() == DONT_USE_DISTINCT)) {
                     readAllQuery.setShouldFilterDuplicates(false);
-                }
-                if (databaseQuery.isReportQuery()) {
-                    ReportQuery reportQuery = (ReportQuery) databaseQuery;
-                    reportQuery.setResultClass(resultClass);
-                    Class<?> pkClass = reportQuery.getDescriptor().getCMPPolicy().getPKClass();
-                    if (pkClass != null && pkClass == reportQuery.getResultClass() && reportQuery.hasIDFunctionSelectItemOnly()) {
-                        reportQuery.setReturnPKClassInstance();
-                    }
                 }
             } else if (databaseQuery.isModifyQuery()) {
                 // By default, do not batch modify queries, as row count must be returned.
@@ -213,6 +369,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             }
 
             ((JPQLCallQueryMechanism) databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);
+
+            if (!isCacheable) {
+                databaseQuery = JPQLResultClass.adapt(databaseQuery, resultClass, session);
+            }
 
             // Apply the lock mode.
             if (lockMode != null && !lockMode.name().equals(ObjectLevelReadQuery.NONE)) {
@@ -255,7 +415,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             }
         }
 
-        return databaseQuery;
+        return isCacheable ? JPQLResultClass.adapt(databaseQuery, resultClass, session) : databaseQuery;
     }
 
     /**
@@ -272,7 +432,23 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *            a list of hints to be applied to the query.
      */
     public static DatabaseQuery buildSQLDatabaseQuery(Class<?> resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
-        ReadAllQuery query = new ReadAllQuery(resultClass);
+        DatabaseQuery query;
+
+        // A result class naming an entity is read as an entity result, with the columns of the
+        // result set matched against the entity's mapped columns. Any other result class - a basic
+        // type, or a class constructed from the columns - describes rows that are not entities at
+        // all, and reading them as one would go looking for a descriptor that cannot exist. Those
+        // are read through their result class instead; see
+        // ResultSetMappingQuery#buildResultSetMappingForResultClass.
+        if (session.getDescriptor(resultClass) != null) {
+            query = new ReadAllQuery(resultClass);
+        }
+        else {
+            ResultSetMappingQuery resultSetMappingQuery = new ResultSetMappingQuery();
+            resultSetMappingQuery.setResultClass(resultClass);
+            query = resultSetMappingQuery;
+        }
+
         query.setCall(((DatasourcePlatform)session.getPlatform(resultClass)).buildNativeCall(sqlString));
         query.setIsUserDefined(true);
 
@@ -351,9 +527,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if the second argument is not valid for the implementation
      */
     @Override
-    public TypedQuery<X> setHint(String hintName, Object value) {
+    public EJBQueryImpl<X> setHint(String hintName, Object value) {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setHintInternal(hintName, value);
             return this;
         } catch (RuntimeException e) {
@@ -369,76 +545,90 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if not a Java Persistence query language SELECT query
      */
     @Override
-    @SuppressWarnings("unchecked")
     public EJBQueryImpl<X> setLockMode(LockModeType lockMode) {
-        return (EJBQueryImpl<X>) super.setLockMode(lockMode);
+        if (lockMode == null) {
+            executionContext.verifyOpen();
+            throw new IllegalArgumentException("Lock mode must not be null");
+        }
+        super.setLockMode(lockMode);
+        recordOption(lockMode);
+        return this;
     }
 
 
     // Based on EntityManagerImpl#getQueryHints(Object,OperationType)
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
-        return FindOptionUtils.getCacheRetrieveMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+        Object mode = getEffectiveCacheMode(CACHE_RETRIEVE_MODE);
+        return mode == CacheRetrieveMode.BYPASS || CacheRetrieveMode.BYPASS.name().equals(mode)
+                ? CacheRetrieveMode.BYPASS : CacheRetrieveMode.USE;
     }
 
     @Override
-    public TypedQuery<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+    public EJBQueryImpl<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+        executionContext.verifyOpen();
+        if (cacheRetrieveMode == null) {
+            throw new IllegalArgumentException("Cache retrieve mode must not be null");
+        }
         FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
-        setHint(QueryHints.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+        setHint(CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+        recordOption(cacheRetrieveMode);
         return this;
     }
 
     @Override
     public CacheStoreMode getCacheStoreMode() {
-        return FindOptionUtils.getCacheStoreMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+        Object mode = getEffectiveCacheMode(CACHE_STORE_MODE);
+        if (mode == CacheStoreMode.BYPASS || CacheStoreMode.BYPASS.name().equals(mode)) {
+            return CacheStoreMode.BYPASS;
+        }
+        return mode == CacheStoreMode.REFRESH || CacheStoreMode.REFRESH.name().equals(mode)
+                ? CacheStoreMode.REFRESH : CacheStoreMode.USE;
     }
 
     @Override
-    public TypedQuery<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+    public EJBQueryImpl<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+        executionContext.verifyOpen();
+        if (cacheStoreMode == null) {
+            throw new IllegalArgumentException("Cache store mode must not be null");
+        }
         FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
-        setHint(QueryHints.CACHE_STORE_MODE, cacheStoreMode);
+        setHint(CACHE_STORE_MODE, cacheStoreMode);
+        recordOption(cacheStoreMode);
         return this;
     }
 
     @Override
     public Integer getTimeout() {
-        return FindOptionUtils.getTimeout(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+        executionContext.verifyOpen();
+        DatabaseQuery query = getDatabaseQueryInternal();
+        Map<String, Object> hints = QueryHintsHandler.get(query);
+        if (hints != null && hints.containsKey(QUERY_TIMEOUT)) {
+            return (int) query.getQueryTimeoutUnit().toMillis(query.getQueryTimeout());
+        }
+        if (query.getProperty(QUERY_TIMEOUT) == null) {
+            return null;
+        }
+        return FindOptionUtils.getTimeout(executionContext.getSession(), query.getProperties());
     }
 
     @Override
-    public TypedQuery<X> setTimeout(Integer timeout) {
+    public EJBQueryImpl<X> setTimeout(Integer timeout) {
+        executionContext.verifyOpen();
+        if (timeout != null && timeout < 0) {
+            throw new IllegalArgumentException("Query timeout must not be negative");
+        }
         FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
-        setHint(QueryHints.QUERY_TIMEOUT, timeout);
+        setHint(QUERY_TIMEOUT_UNIT, java.util.concurrent.TimeUnit.MILLISECONDS);
+        setHint(QUERY_TIMEOUT, timeout == null ? 0 : timeout);
+        if (timeout == null) {
+            getDatabaseQuery().getProperties().remove(QUERY_TIMEOUT);
+            QueryHintsHandler.get(getDatabaseQueryInternal()).remove(QUERY_TIMEOUT);
+            options.remove(Timeout.class);
+        } else {
+            recordOption(Timeout.milliseconds(timeout));
+        }
         return this;
-    }
-
-    /**
-     * Inherit applicable query hints from the EntityManager.
-     * EntityManager-level settings to newly created queries.
-     */
-    protected void inheritEntityManagerHints() {
-        if (entityManager == null || entityManager.properties == null) {
-            return;
-        }
-
-        DatabaseQuery dbQuery = getDatabaseQuery();
-        if (dbQuery == null) {
-            return;
-        }
-
-        Map<String, Object> emProperties = entityManager.properties;
-
-        // CACHE_RETRIEVE_MODE only applies to ObjectLevelReadQuery (SELECT queries)
-        if (dbQuery.isObjectLevelReadQuery() && emProperties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
-            setHint(QueryHints.CACHE_RETRIEVE_MODE, emProperties.get(QueryHints.CACHE_RETRIEVE_MODE));
-        }
-
-        // CACHE_STORE_MODE applies to all query types:
-        // - For ObjectLevelReadQuery: controls whether results are stored in cache after reading
-        // - For ModifyQuery: controls whether cache is invalidated after UPDATE/DELETE
-        if (emProperties.containsKey(QueryHints.CACHE_STORE_MODE)) {
-            setHint(QueryHints.CACHE_STORE_MODE, emProperties.get(QueryHints.CACHE_STORE_MODE));
-        }
     }
 
     /**
@@ -451,7 +641,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public Collection getResultCollection() {
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
-        this.entityManager.verifyOpenWithSetRollbackOnly();
+        this.executionContext.verifyOpenWithSetRollbackOnly();
         setAsSQLReadQuery();
         propagateResultProperties();
         // bug:4297903, check container policy class and throw exception if its
@@ -460,14 +650,14 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         try {
             if (query.isReadAllQuery()) {
                 Class<?> containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
-                if (!Helper.classImplementsInterface(containerClass, CoreClassConstants.Collection_Class)) {
-                    throw QueryException.invalidContainerClass(containerClass, CoreClassConstants.Collection_Class);
+                if (!classImplementsInterface(containerClass, Collection_Class)) {
+                    throw QueryException.invalidContainerClass(containerClass, Collection_Class);
                 }
             } else if (query.isReadObjectQuery()) {
                 List<Object> resultList = new ArrayList<>();
                 Object result = executeReadQuery();
                 if (result != null) {
-                    resultList.add(executeReadQuery());
+                    resultList.add(result);
                 }
                 return resultList;
             } else if (!query.isReadQuery()) {
@@ -494,10 +684,11 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     @Override
     public Cursor getResultCursor() {
         // bug51411440: need to throw IllegalStateException if query executed on closed em
-        this.entityManager.verifyOpenWithSetRollbackOnly();
+        this.executionContext.verifyOpenWithSetRollbackOnly();
         try {
             setAsSQLReadQuery();
             propagateResultProperties();
+
             // bug:4297903, check container policy class and throw exception if its
             // not the right type
             if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
@@ -512,8 +703,32 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
             }
 
-            Object result = executeReadQuery();
-            return (Cursor) result;
+            Cursor cursor = executeCursorReadQuery();
+            if (cursor.isClosed()) {
+                releaseCursorOwnerContext(cursor.getQuery());
+            }
+            if (!cursor.isClosed()) {
+                cursors.add(cursor);
+                executionContext.registerQuery(this);
+                // Never attach owner state to the reusable query or a named-query
+                // template. The cursor alone owns this execution-state clone.
+                ReadQuery executed = cursor.getQuery();
+                cursor.query = (ReadQuery) executed.clone();
+                if (executionContext.isEntityAgent()) {
+                    if (cursor.getPolicy() != null) {
+                        cursor.policy = (org.eclipse.persistence.queries.CursorPolicy) cursor.getPolicy().clone(cursor.query);
+                    }
+                    releaseCursorOwnerContext(executed);
+                }
+                cursor.query.setProperty("eclipselink.cursor.resource-release", (Runnable) () -> {
+                    releaseCursorOwnerContext(cursor.getQuery());
+                    cursors.remove(cursor);
+                    if (cursors.isEmpty()) {
+                        executionContext.unregisterQuery(this);
+                    }
+                });
+            }
+            return cursor;
         } catch (LockTimeoutException e) {
             throw e;
         } catch (PersistenceException | IllegalStateException exception) {
@@ -523,6 +738,47 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             setRollbackOnly();
             throw new PersistenceException(exception);
         }
+    }
+
+    private void releaseCursorOwnerContext(DatabaseQuery query) {
+        if (executionContext.isEntityAgent()) {
+            query.removeProperty("eclipselink.cursor.row-materializer");
+            query.removeProperty(ResultSetMappingTranslator.EXECUTION_CONTEXT_PROPERTY);
+            query.removeProperty(ReportQueryResult.CONSTRUCTOR_ARGUMENT_PREPARER);
+        }
+    }
+
+    private Cursor executeCursorReadQuery() {
+        if (!executionContext.isEntityAgent()) {
+            return (Cursor) executeReadQuery();
+        }
+        DatabaseQuery original = getDatabaseQueryInternal();
+        boolean shared = this.isShared;
+        LockModeType executionLock = this.lockMode;
+        this.databaseQuery = (DatabaseQuery) original.clone();
+        this.isShared = false;
+        this.databaseQuery.setProperty("eclipselink.cursor.row-materializer",
+                (BiFunction<DatabaseQuery, Supplier<Object>, Object>) (query, build) ->
+                        executionContext.materializeCursorRow(query, build, executionLock));
+        try {
+            return (Cursor) executeReadQuery();
+        } finally {
+            this.databaseQuery = original;
+            this.isShared = shared;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * {@code QueryImpl} returns {@code List<Object>}, which does not satisfy the {@code List<X>}
+     * required by {@link jakarta.persistence.TypedQuery}. This is the typed query, so it narrows the
+     * result type here, exactly as {@link #getSingleResult()} and {@link #getSingleResultOrNull()} do.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<X> getResultList() {
+        return (List<X>) super.getResultList();
     }
 
     @Override
@@ -545,8 +801,16 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public EJBQueryImpl setFirstResult(int startPosition) {
-        return (EJBQueryImpl) super.setFirstResult(startPosition);
+    public EJBQueryImpl<X> setFirstResult(int startPosition) {
+        super.setFirstResult(startPosition);
+        return this;
+    }
+
+    @Override
+    public EJBQueryImpl<X> setQueryFlushMode(QueryFlushMode flushMode) {
+        super.setQueryFlushMode(flushMode);
+        recordOption(flushMode == null ? QueryFlushMode.DEFAULT : flushMode);
+        return this;
     }
 
     /**
@@ -554,8 +818,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      */
     @Override
-    public EJBQueryImpl setFlushMode(FlushModeType flushMode) {
-        return (EJBQueryImpl) super.setFlushMode(flushMode);
+    @Deprecated(since = "6.0")
+    public EJBQueryImpl<X> setFlushMode(FlushModeType flushMode) {
+        super.setFlushMode(flushMode);
+        return this;
     }
 
     /**
@@ -564,8 +830,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public EJBQueryImpl setMaxResults(int maxResult) {
-        return (EJBQueryImpl) super.setMaxResults(maxResult);
+    public EJBQueryImpl<X> setMaxResults(int maxResult) {
+        super.setMaxResults(maxResult);
+        return this;
     }
 
     /**
@@ -574,8 +841,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(int position, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpenWithSetRollbackOnly();
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(int position, Calendar value, TemporalType temporalType) {
+        executionContext.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
 
@@ -585,8 +853,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(int position, Date value, TemporalType temporalType) {
-        entityManager.verifyOpenWithSetRollbackOnly();
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(int position, Date value, TemporalType temporalType) {
+        executionContext.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
 
@@ -596,10 +865,11 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(int position, Object value) {
+    public EJBQueryImpl<X> setParameter(int position, Object value) {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setParameterInternal(position, value);
+            parameterConverters.remove(String.valueOf(position));
             return this;
         } catch (RuntimeException e) {
             setRollbackOnly();
@@ -615,20 +885,24 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if position does not correspond to a parameter of the query
      */
     @Override
-    public TypedQuery setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpenWithSetRollbackOnly();
-        if (param == null)
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
+        executionContext.verifyOpenWithSetRollbackOnly();
+        if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
+        }
+
         //bug 402686: type validation
         String position = getParameterId(param);
-        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        Parameter<?> parameter = this.getInternalParameters().get(position);
         if (parameter == null ) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
         }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
-        return this.setParameter(position, value, temporalType);
+
+        return setParameter(position, value, temporalType);
     }
 
     /**
@@ -641,19 +915,24 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if position does not correspond to a parameter of the query
      */
     @Override
-    public TypedQuery setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
-        if (param == null)
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
+        executionContext.verifyOpen();
+        if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
+        }
+
         //bug 402686: type validation
         String position = getParameterId(param);
-        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        Parameter<?> parameter = this.getInternalParameters().get(position);
         if (parameter == null ) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
         }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
-        return this.setParameter(position, value, temporalType);
+
+        return setParameter(position, value, temporalType);
     }
 
     /**
@@ -668,20 +947,31 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if parameter does not correspond to a parameter of the query
      */
     @Override
-    public <T> TypedQuery setParameter(Parameter<T> param, T value) {
+    public <T> EJBQueryImpl<X> setParameter(Parameter<T> param, T value) {
+        executionContext.verifyOpen();
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         }
+
         //bug 402686: type validation
         String position = getParameterId(param);
-        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        Parameter<?> parameter = this.getInternalParameters().get(position);
         if (parameter == null ) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
         }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
-        return this.setParameter(position, value);
+
+        if (parameter instanceof ParameterExpressionImpl<?> criteriaParameter
+                && criteriaParameter.getConverterClass() != null) {
+            @SuppressWarnings("unchecked")
+            Class<? extends AttributeConverter<T, ?>> converter =
+                    (Class<? extends AttributeConverter<T, ?>>) criteriaParameter.getConverterClass();
+            bindConvertedParameter(position, value, converter, param.getPosition() != null);
+            return this;
+        }
+        return setParameter(position, value);
     }
 
     /**
@@ -690,8 +980,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(String name, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpenWithSetRollbackOnly();
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(String name, Calendar value, TemporalType temporalType) {
+        executionContext.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
@@ -701,8 +992,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(String name, Date value, TemporalType temporalType) {
-        entityManager.verifyOpenWithSetRollbackOnly();
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(String name, Date value, TemporalType temporalType) {
+        executionContext.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
@@ -714,10 +1006,11 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(String name, Object value) {
+    public EJBQueryImpl<X> setParameter(String name, Object value) {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setParameterInternal(name, value, false);
+            parameterConverters.remove(name);
             return this;
         } catch (RuntimeException e) {
             setRollbackOnly();
@@ -728,5 +1021,416 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + this.databaseQuery + ")";
+    }
+
+    @Override
+    public void releaseResources() {
+        RuntimeException failure = null;
+        for (Cursor cursor : new ArrayList<>(cursors)) {
+            try {
+                cursor.close();
+                cursors.remove(cursor);
+            } catch (RuntimeException exception) {
+                if (failure == null) {
+                    failure = exception;
+                } else {
+                    failure.addSuppressed(exception);
+                }
+            }
+        }
+        if (failure != null) {
+            throw failure;
+        }
+        executionContext.unregisterQuery(this);
+    }
+
+    @Override
+    public long getResultCount() {
+        executionContext.verifyOpen();
+        DatabaseQuery original = getDatabaseQueryInternal();
+        if (!original.isReadQuery()) {
+            throw new IllegalStateException("A statement does not have a result count");
+        }
+        List<Object> values = processParameters();
+        original = getDatabaseQueryInternal();
+        if (isFlushModeAUTO()) {
+            performPreQueryFlush();
+        }
+        AbstractSession session = executionContext.getExecutionSession(original);
+        ReadQuery read = (ReadQuery) original.clone();
+        read.setFirstResult(0);
+        read.setMaxRows(0);
+        if (read instanceof ObjectLevelReadQuery objectRead) {
+            objectRead.setOrderByExpressions(new ArrayList<>());
+            objectRead.setLockModeType(LockModeType.NONE.name(), session);
+        }
+        read.prepareCall(session, new DatabaseRecord());
+        read.setSession(session);
+        DatabaseCall call;
+        if (read.isObjectLevelReadQuery() && !read.isUserDefined()) {
+            CountQueryMechanism mechanism = new CountQueryMechanism(read);
+            SQLSelectStatement select = mechanism.buildCountSource();
+            select.setUseUniqueFieldAliases(true);
+            // Derived-table columns need names even when the selected value is
+            // a function, constant or scalar subquery instead of a mapped field.
+            List<Object> fields = select.getFields();
+            for (int index = 0; index < fields.size(); index++) {
+                if (fields.get(index) instanceof org.eclipse.persistence.internal.expressions.ParameterExpression parameter) {
+                    // A scalar parameter is constant across all rows, including null.
+                    // Replacing it only in the count projection preserves DISTINCT
+                    // equivalence without an untyped parameter in a derived column.
+                    org.eclipse.persistence.internal.expressions.ConstantExpression constant =
+                            (org.eclipse.persistence.internal.expressions.ConstantExpression) parameter.getBuilder().value(1);
+                    constant.setCanBind(false);
+                    fields.set(index, constant);
+                }
+                if (fields.get(index) instanceof Expression expression && !expression.isDataExpression()
+                        && !(expression instanceof FunctionExpression function
+                                && function.getOperator().getSelector() == ExpressionOperator.As)) {
+                    fields.set(index, expression.as("EL_COUNT_" + index));
+                }
+            }
+            select.setOrderByExpressions(new ArrayList<>());
+            call = select.buildCall(session, read);
+        } else {
+            call = (DatabaseCall) read.getDatasourceCall().clone();
+        }
+        // Preserve the prepared call's parameter fields: rebuilding SQL as a
+        // native string would lose named, collection and converted bindings.
+        call.setQueryString("SELECT COUNT(*) FROM (" + withoutOrderBy(call.getQueryString()) + ") EL_COUNT");
+        call.setFields(null);
+        call.prepare(session);
+        DataReadQuery count = new DataReadQuery();
+        count.setCall(call);
+        count.setArguments(new ArrayList<>(original.getArguments()));
+        List<Class<?>> argumentTypes = count.getArgumentTypes();
+        argumentTypes.clear();
+        argumentTypes.addAll(original.getArgumentTypes());
+        count.setArgumentTypeNames(new ArrayList<>(original.getArgumentTypeNames()));
+        count.setResultType(DataReadQuery.VALUE);
+        count.setProperties(new HashMap<>(original.getProperties()));
+        count.setIsPrepared(true);
+        Object result = executionContext.executeQuery(count, values, null);
+        return ((Number) result).longValue();
+    }
+
+    private static final class CountQueryMechanism extends ExpressionQueryMechanism {
+        CountQueryMechanism(ReadQuery query) {
+            super(query, query.getSelectionCriteria());
+        }
+
+        SQLSelectStatement buildCountSource() {
+            return getQuery().isReportQuery() ? buildReportQuerySelectStatement(false) : buildNormalSelectStatement();
+        }
+    }
+
+    private static String withoutOrderBy(String sql) {
+        int depth = 0;
+        char quote = 0;
+        for (int index = 0; index < sql.length(); index++) {
+            char character = sql.charAt(index);
+            if (quote != 0) {
+                if (character == quote) {
+                    if (index + 1 < sql.length() && sql.charAt(index + 1) == quote) {
+                        index++;
+                    } else {
+                        quote = 0;
+                    }
+                }
+            } else if (character == '\'' || character == '"' || character == '`') {
+                quote = character;
+            } else if (character == '(') {
+                depth++;
+            } else if (character == ')') {
+                depth--;
+            } else if (depth == 0 && (index == 0 || Character.isWhitespace(sql.charAt(index - 1)))
+                    && sql.regionMatches(true, index, "ORDER BY", 0, 8)) {
+                return sql.substring(0, index).stripTrailing();
+            }
+        }
+        return sql.stripTrailing().replaceFirst(";\\s*$", "");
+    }
+
+    @Override
+    public EJBQueryImpl<X> setLockScope(PessimisticLockScope lockScope) {
+        executionContext.verifyOpen();
+        if (lockScope == null) {
+            throw new IllegalArgumentException("Lock scope must not be null");
+        }
+        if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
+            throw new IllegalStateException("Lock scope requires an entity query");
+        }
+        setHint(PESSIMISTIC_LOCK_SCOPE, lockScope);
+        getDatabaseQuery().setProperty(PESSIMISTIC_LOCK_SCOPE, lockScope);
+        recordOption(lockScope);
+        return this;
+    }
+
+    @Override
+    public PessimisticLockScope getLockScope() {
+        executionContext.verifyOpen();
+        if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
+            throw new IllegalStateException("Lock scope requires an entity query");
+        }
+        Object value = getHints().get(PESSIMISTIC_LOCK_SCOPE);
+        if (value instanceof PessimisticLockScope scope) {
+            return scope;
+        }
+        return value instanceof String scope && !scope.isEmpty()
+                ? PessimisticLockScope.valueOf(scope.toUpperCase(java.util.Locale.ROOT)) : PessimisticLockScope.NORMAL;
+    }
+
+    @Override
+    public EJBQueryImpl<X> addOption(Option option) {
+        executionContext.verifyOpen();
+        if (option == null) {
+            throw new IllegalArgumentException("Query option must not be null");
+        }
+        if (option instanceof CacheRetrieveMode mode) {
+            setCacheRetrieveMode(mode);
+        } else if (option instanceof CacheStoreMode mode) {
+            setCacheStoreMode(mode);
+        } else if (option instanceof LockModeType mode) {
+            setLockMode(mode);
+        } else if (option instanceof PessimisticLockScope scope) {
+            setLockScope(scope);
+        } else if (option instanceof QueryFlushMode mode) {
+            setQueryFlushMode(mode);
+        } else if (option instanceof Timeout timeout) {
+            setTimeout(timeout);
+        } else {
+            recordOption(option);
+        }
+        return this;
+    }
+
+    @Override
+    public Set<Option> getOptions() {
+        executionContext.verifyOpen();
+        return new LinkedHashSet<>(options.values());
+    }
+
+    private void recordOption(Option option) {
+        options.put(option instanceof Enum<?> value ? value.getDeclaringClass() : option.getClass(), option);
+    }
+
+    int executeStatement() {
+        getDatabaseQuery().setProperty(EntityManagerQueryContext.NATIVE_STATEMENT_PROPERTY, Boolean.TRUE);
+        return executeUpdate();
+    }
+
+    @Override
+    public Statement asStatement() {
+        executionContext.verifyOpen();
+        DatabaseQuery query = getDatabaseQueryInternal();
+        if (!query.isModifyQuery() && query.getEJBQLString() != null) {
+            throw new IllegalStateException("A SELECT query cannot be used as a Statement");
+        }
+        return new StatementImpl(this);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <R> TypedQuery<R> ofType(Class<R> resultType) {
+        executionContext.verifyOpen();
+        if (resultType == null) {
+            throw new IllegalArgumentException("Query result type must not be null");
+        }
+        DatabaseQuery query = getDatabaseQueryInternal();
+        if (!query.isReadQuery()) {
+            throw new IllegalStateException("A statement cannot be used as a typed query");
+        }
+        if (query.getEJBQLString() == null && query.isUserDefined() && query.isDataReadQuery()) {
+            DatabaseQuery typed = buildSQLDatabaseQuery(resultType, query.getSQLString(), QueryHintsHandler.getNonCacheHints(query),
+                    executionContext.getSession().getLoader(), executionContext.getSession());
+            copyNativeQuerySettings(query, typed);
+            databaseQuery = typed;
+            isShared = false;
+        } else {
+            Class<?> actualType = queryResultType(query);
+            if (actualType != null && !ConversionManager.getObjectClass(resultType)
+                    .isAssignableFrom(ConversionManager.getObjectClass(actualType))) {
+                throw new IllegalArgumentException("Query result type " + actualType.getName()
+                        + " is not assignable to " + resultType.getName());
+            }
+        }
+        return (TypedQuery<R>) this;
+    }
+
+    /** Internal result metadata shared by query adapters and named-reference producers. */
+    public static Class<?> queryResultType(DatabaseQuery query) {
+        if (!query.isReadQuery()) {
+            return null;
+        }
+        if (query instanceof ResultSetMappingQuery mappingQuery) {
+            return mappingQuery.getResultClass();
+        }
+        if (query instanceof ReportQuery report) {
+            Class<?> declared = JPQLResultClass.declaredResultClass(query);
+            if (declared != null) {
+                return declared;
+            }
+            if (report.getResultClass() != null) {
+                return report.getResultClass();
+            }
+            if (report.getItems().size() != 1) {
+                return Object[].class;
+            }
+            ReportItem item = report.getItems().get(0);
+            if (item.getResultType() != null) {
+                return item.getResultType();
+            }
+            if (item.getDescriptor() != null) {
+                return item.getDescriptor().getJavaClass();
+            }
+            if (item.getMapping() != null) {
+                return item.getMapping().getAttributeClassification();
+            }
+            return null;
+        }
+        return query.getReferenceClass();
+    }
+
+    @Override
+    public <R> TypedQuery<R> withEntityGraph(EntityGraph<R> graph) {
+        executionContext.verifyOpen();
+        if (!(graph instanceof EntityGraphImpl<R> entityGraph)) {
+            throw new IllegalArgumentException("The entity graph must belong to EclipseLink");
+        }
+        TypedQuery<R> query = ofType(entityGraph.getClassType());
+        if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
+            throw new IllegalStateException("An entity graph requires an entity SELECT query");
+        }
+        setHint("jakarta.persistence.loadgraph", graph);
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <R> TypedQuery<R> withResultSetMapping(ResultSetMapping<R> mapping) {
+        executionContext.verifyOpen();
+        if (mapping == null) {
+            throw new IllegalArgumentException("Result set mapping must not be null");
+        }
+        DatabaseQuery query = getDatabaseQueryInternal();
+        if (query.getEJBQLString() != null || !query.isUserDefined()) {
+            throw new IllegalStateException("A result set mapping requires a native SQL query");
+        }
+        DatabaseQuery mapped = buildSQLDatabaseQuery(ResultSetMappingTranslator.toEclipseLinkMapping(mapping, executionContext),
+                query.getSQLString(), QueryHintsHandler.getNonCacheHints(query), executionContext.getSession().getLoader(), executionContext.getSession());
+        copyNativeQuerySettings(query, mapped);
+        mapped.setProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY,
+                ResultSetMappingTranslator.mappingRequiresTransaction(mapping));
+        databaseQuery = mapped;
+        isShared = false;
+        return (TypedQuery<R>) this;
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setParameter(String name, P value, Class<P> type) {
+        executionContext.verifyOpen();
+        checkParameterType(value, type);
+        setParameterInternal(name, value, type, false);
+        parameterConverters.remove(name);
+        return this;
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setParameter(String name, P value, Type<P> type) {
+        executionContext.verifyOpen();
+        if (type == null) {
+            throw new IllegalArgumentException("Parameter type must not be null");
+        }
+        return setParameter(name, value, type.getJavaType());
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setConvertedParameter(String name, P value, Class<? extends AttributeConverter<P, ?>> converter) {
+        bindConvertedParameter(name, value, converter, false);
+        return this;
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setParameter(int position, P value, Class<P> type) {
+        executionContext.verifyOpen();
+        checkParameterType(value, type);
+        setParameterInternal(String.valueOf(position), value, type, true);
+        parameterConverters.remove(String.valueOf(position));
+        return this;
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setParameter(int position, P value, Type<P> type) {
+        executionContext.verifyOpen();
+        if (type == null) {
+            throw new IllegalArgumentException("Parameter type must not be null");
+        }
+        return setParameter(position, value, type.getJavaType());
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setConvertedParameter(int position, P value, Class<? extends AttributeConverter<P, ?>> converter) {
+        bindConvertedParameter(String.valueOf(position), value, converter, true);
+        return this;
+    }
+
+    private void checkParameterType(Object value, Class<?> type) {
+        if (type == null || !isValidActualParameter(value, type)) {
+            throw new IllegalArgumentException("Parameter value does not match its explicit type");
+        }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private <P> void bindConvertedParameter(String name, P value,
+            Class<? extends AttributeConverter<P, ?>> converter, boolean positional) {
+        executionContext.verifyOpen();
+        if (converter == null) {
+            throw new IllegalArgumentException("Parameter converter must not be null");
+        }
+        ConverterClass converterClass = new ConverterClass(executionContext.getSession(), converter);
+        AttributeConverter<Object, Object> instance = converterClass.getAttributeConverter();
+        java.lang.reflect.Type relationalType = GenericTypes.getTypeArgument(instance, AttributeConverter.class, 1);
+        if (!(relationalType instanceof Class<?> type)) {
+            throw new IllegalArgumentException("Converter must declare a concrete database type");
+        }
+        java.lang.reflect.Type domainType = GenericTypes.getTypeArgument(instance, AttributeConverter.class, 0);
+        if (!(domainType instanceof Class<?> domainClass)) {
+            throw new IllegalArgumentException("Converter must declare a concrete domain type");
+        }
+        checkParameterType(value, domainClass);
+        // Validate the identifier before recording the original domain value.
+        // Conversion is deferred until execution, exactly once for each bind.
+        setParameterInternal(name, null, type, positional);
+        DatabaseQuery query = getDatabaseQueryInternal();
+        int index = query.getArguments().indexOf(name);
+        if (query.getEJBQLString() != null && index >= 0) {
+            Class<?> expected = org.eclipse.persistence.internal.helper.ConversionManager.getObjectClass(
+                    query.getArgumentTypes().get(index));
+            if (!expected.isAssignableFrom(org.eclipse.persistence.internal.helper.ConversionManager.getObjectClass(type))
+                    && !expected.isAssignableFrom(org.eclipse.persistence.internal.helper.ConversionManager.getObjectClass(domainClass))) {
+                throw new IllegalArgumentException("Converted parameter type does not match the query parameter");
+            }
+        }
+        parameterValues.put(name, value);
+        parameterConverters.put(name, instance);
+    }
+
+    @Override
+    public EJBQueryImpl<X> setParameters(Object... arguments) {
+        executionContext.verifyOpen();
+        if (arguments == null) {
+            throw new IllegalArgumentException("Parameter arguments must not be null");
+        }
+        validatePositionalArgumentCount(arguments.length);
+        for (int index = 0; index < arguments.length; index++) {
+            setParameter(index + 1, arguments[index]);
+        }
+        return this;
+    }
+
+    @Override
+    public EJBQueryImpl<X> setTimeout(Timeout timeout) {
+        executionContext.verifyOpen();
+        return setTimeout(timeout == null ? null : timeout.milliseconds());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,13 +12,21 @@
 // Contributors:
 //     IBM - Fix for issue 2905: ConversionException when entity @Version field is LocalDateTime
 //           and the database returns an OffsetDateTime
+// Additional boundary and compatibility tests generated with assistance from OpenAI Codex.
 package org.eclipse.persistence.testing.tests.junit.helper;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.junit.Assert;
 import org.junit.Test;
@@ -96,5 +104,82 @@ public class ConversionManagerTest {
                 "OffsetDateTime should be converted to the equivalent Instant",
                 odt.toInstant(),
                 result);
+    }
+
+    @Test
+    public void testConvertPositiveOffsetAcrossPreviousYearWithNanoseconds() {
+        OffsetDateTime source = OffsetDateTime.of(2024, 1, 1, 0, 15, 30, 123456789, ZoneOffset.ofHours(14));
+
+        Assert.assertEquals(Instant.parse("2023-12-31T10:15:30.123456789Z"), cm.convertObject(source, Instant.class));
+        Assert.assertEquals(LocalDateTime.of(2024, 1, 1, 0, 15, 30, 123456789),
+                cm.convertObject(source, LocalDateTime.class));
+    }
+
+    @Test
+    public void testConvertNegativeOffsetAcrossNextYearWithNanoseconds() {
+        OffsetDateTime source = OffsetDateTime.of(2024, 12, 31, 23, 45, 59, 987654321, ZoneOffset.ofHours(-12));
+
+        Assert.assertEquals(Instant.parse("2025-01-01T11:45:59.987654321Z"), cm.convertObject(source, Instant.class));
+        Assert.assertEquals(LocalDateTime.of(2024, 12, 31, 23, 45, 59, 987654321),
+                cm.convertObject(source, LocalDateTime.class));
+    }
+
+    @Test
+    public void testConvertTimestampPreservesNanoseconds() {
+        Instant expected = Instant.parse("2024-06-21T08:00:00.123456789Z");
+        Timestamp source = Timestamp.from(expected);
+
+        Assert.assertEquals(expected, cm.convertObject(source, Instant.class));
+        Assert.assertEquals(LocalDateTime.ofInstant(expected, ZoneId.systemDefault()),
+                cm.convertObject(source, LocalDateTime.class));
+    }
+
+    @Test
+    public void testConvertStringsPreservesNanoseconds() {
+        Assert.assertEquals(Instant.parse("2024-06-21T08:00:00.123456789Z"),
+                cm.convertObject("2024-06-21T08:00:00.123456789Z", Instant.class));
+        Assert.assertEquals(LocalDateTime.of(2024, 6, 21, 8, 0, 0, 123456789),
+                cm.convertObject("2024-06-21 08:00:00.123456789", LocalDateTime.class));
+    }
+
+    @Test
+    public void testConvertCalendarPreservesInstantAndLocalFields() {
+        Calendar source = new GregorianCalendar(TimeZone.getTimeZone("GMT+14:00"));
+        source.clear();
+        source.set(2024, Calendar.JANUARY, 1, 0, 15, 30);
+
+        Assert.assertEquals(Instant.parse("2023-12-31T10:15:30Z"), cm.convertObject(source, Instant.class));
+        Assert.assertEquals(LocalDateTime.of(2024, 1, 1, 0, 15, 30),
+                cm.convertObject(source, LocalDateTime.class));
+    }
+
+    @Test
+    public void testConvertUtilDatePreservesInstantAndLocalFields() {
+        Instant expected = Instant.parse("2024-06-21T08:00:00Z");
+        Date source = Date.from(expected);
+
+        Assert.assertEquals(expected, cm.convertObject(source, Instant.class));
+        Assert.assertEquals(LocalDateTime.ofInstant(expected, ZoneId.systemDefault()),
+                cm.convertObject(source, LocalDateTime.class));
+    }
+
+    @Test
+    public void testConvertNullTemporalValues() {
+        Assert.assertNull(cm.convertObject(null, Instant.class));
+        Assert.assertNull(cm.convertObject(null, LocalDateTime.class));
+    }
+
+    @Test
+    public void testConvertInvalidTemporalStringsThrowsConversionException() {
+        Assert.assertThrows(ConversionException.class, () -> cm.convertObject("not-a-date", Instant.class));
+        Assert.assertThrows(ConversionException.class, () -> cm.convertObject("not-a-date", LocalDateTime.class));
+    }
+
+    @Test
+    public void testConvertUnsupportedTemporalSourceThrowsConversionException() {
+        Object source = new Object();
+
+        Assert.assertThrows(ConversionException.class, () -> cm.convertObject(source, Instant.class));
+        Assert.assertThrows(ConversionException.class, () -> cm.convertObject(source, LocalDateTime.class));
     }
 }

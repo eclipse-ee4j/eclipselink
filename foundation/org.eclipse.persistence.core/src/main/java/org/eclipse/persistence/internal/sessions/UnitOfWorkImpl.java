@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,6 +85,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ModifyAllQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -106,6 +107,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -143,6 +145,161 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
     public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
     private String creationThreadStackTrace;
+
+    /** An exact-query refresh invocation; unrelated cloning never authorizes it. */
+    private transient RefreshOperation refreshOperation;
+
+    /** Explicit handoff while cloning this refresh's object graph. */
+    private transient RefreshOperation refreshCloneOperation;
+
+    /** Query-local selection, scoped to an original or one relationship operation. */
+    private transient GraphCloneContext graphCloneContext;
+
+    private static class GraphCloneContext {
+        final Object original;
+        final FetchGroup selection;
+        Object clone;
+
+        GraphCloneContext(Object original, FetchGroup selection) {
+            this.original = original;
+            this.selection = selection;
+        }
+    }
+
+    /** INTERNAL: Scope selection to one construction or relationship traversal. */
+    public <T> T withGraphCloneSelection(Object original, FetchGroup selection, Supplier<T> action) {
+        GraphCloneContext previous = this.graphCloneContext;
+        this.graphCloneContext = selection == null ? null : new GraphCloneContext(original, selection);
+        try {
+            return action.get();
+        } finally {
+            this.graphCloneContext = previous;
+        }
+    }
+
+    /** INTERNAL: A null owner is used only inside an explicit relationship traversal. */
+    public FetchGroup getGraphCloneSelection(Object original) {
+        GraphCloneContext context = this.graphCloneContext;
+        if (context == null || context.original != null && context.original != original) {
+            return null;
+        }
+        ClassDescriptor descriptor = getDescriptor(original);
+        return descriptor.hasInheritance() ? (FetchGroup) context.selection.findGroup(descriptor) : context.selection;
+    }
+
+    /**
+     * INTERNAL: Own only this invocation's JPA phases, outside the legacy
+     * deferred queue. Native notifications keep their existing queue positions.
+     */
+    public static final class RefreshOperation {
+        private final UnitOfWorkImpl unitOfWork;
+        private final ObjectBuildingQuery query;
+        private final RefreshOperation previous;
+        private final Map<Object, DescriptorEvent> events = new IdentityHashMap<>();
+        private final List<Object> targets = new ArrayList<>();
+        private boolean completed;
+
+        private RefreshOperation(UnitOfWorkImpl unitOfWork, ObjectBuildingQuery query, RefreshOperation previous) {
+            this.unitOfWork = unitOfWork;
+            this.query = query;
+            this.previous = previous;
+        }
+
+        public boolean capturePostClone(DescriptorEvent event) {
+            if (this.completed || event.getSession() != this.unitOfWork
+                    || event.getEventCode() != DescriptorEventManager.PostCloneEvent
+                    || (event.getQuery() != null && event.getQuery() != this.query)
+                    || !event.getDescriptor().isDescriptorTypeNormal()) {
+                return false;
+            }
+            Object target = event.getObject();
+            if (!this.events.containsKey(target)) {
+                this.targets.add(target);
+            }
+            DescriptorEvent phase = new DescriptorEvent(target);
+            phase.setOriginalObject(event.getOriginalObject());
+            phase.setDescriptor(event.getDescriptor());
+            phase.setSession(event.getSession());
+            phase.setRecord(event.getRecord());
+            phase.setEventCode(event.getEventCode());
+            phase.setQuery(this.query);
+            this.events.put(target, phase);
+            return true;
+        }
+
+        public void recordRefresh(Object target, Object original, ClassDescriptor descriptor) {
+            if (this.completed || this.events.containsKey(target) || !descriptor.isDescriptorTypeNormal()
+                    || !descriptor.getEventManager().hasAnyEventListeners()) {
+                return;
+            }
+            DescriptorEvent event = new DescriptorEvent(target);
+            event.setOriginalObject(original);
+            event.setDescriptor(descriptor);
+            event.setSession(this.unitOfWork);
+            event.setQuery(this.query);
+            event.setEventCode(DescriptorEventManager.PostRefreshEvent);
+            this.events.put(target, event);
+            this.targets.add(target);
+        }
+    }
+
+    /** INTERNAL: Borrow only this exact executing query's active invocation. */
+    public RefreshOperation getRefreshOperation(ObjectBuildingQuery query) {
+        return this.refreshOperation != null && this.refreshOperation.query == query && !this.refreshOperation.completed
+                ? this.refreshOperation : null;
+    }
+
+    public RefreshOperation beginRefreshOperation(ObjectBuildingQuery query) {
+        RefreshOperation operation = new RefreshOperation(this, query, this.refreshOperation);
+        this.refreshOperation = operation;
+        return operation;
+    }
+
+    public void completeRefreshOperation(RefreshOperation operation, boolean success) {
+        if (operation.completed) {
+            return;
+        }
+        operation.completed = true;
+        this.refreshOperation = operation.previous;
+        try {
+            if (success) {
+                withGraphCloneSelection(null, null, () -> {
+                    for (Object target : operation.targets) {
+                        DescriptorEvent event = operation.events.get(target);
+                        event.getDescriptor().getEventManager().executeEntityRefreshEvent(event);
+                    }
+                    return null;
+                });
+            }
+        } finally {
+            operation.events.clear();
+            operation.targets.clear();
+        }
+    }
+
+    /** Capture only a clone explicitly associated with the current cloning tree. */
+    public void deferPostCloneEvent(DescriptorEvent event) {
+        if (this.refreshCloneOperation != null && this.refreshCloneOperation == this.refreshOperation
+                && this.refreshCloneOperation.capturePostClone(event)) {
+            deferEvent(event.getDescriptor().getEventManager().createRefreshCloneEvent(event));
+        } else {
+            deferEvent(event);
+        }
+    }
+
+    @Override
+    public void executeDeferredEvents() {
+        RefreshOperation previous = this.refreshCloneOperation;
+        GraphCloneContext previousGraph = this.graphCloneContext;
+        this.refreshCloneOperation = null;
+        this.graphCloneContext = null;
+        try {
+            super.executeDeferredEvents();
+        } finally {
+            this.refreshCloneOperation = previous;
+            this.graphCloneContext = previousGraph;
+        }
+    }
 
     /* Fix made for weak caches to avoid garbage collection of the originals. */
     /* As well as used as lookup in merge algorithm for aggregates and others */
@@ -1048,6 +1205,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * as it will be used for locking.
      */
     public Object cloneAndRegisterObject(Object original, CacheKey parentCacheKey, CacheKey unitOfWorkCacheKey, ClassDescriptor descriptor) {
+        return cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, descriptor, this.refreshCloneOperation);
+    }
+
+    public Object cloneAndRegisterObject(Object original, CacheKey parentCacheKey, CacheKey unitOfWorkCacheKey, ClassDescriptor descriptor, RefreshOperation operation) {
+        GraphCloneContext graphContext = this.graphCloneContext;
+        FetchGroup graphSelection = getGraphCloneSelection(original);
         ClassDescriptor concreteDescriptor = descriptor;
         // Ensure correct subclass descriptor.
         if (original.getClass() != descriptor.getJavaClass()) {
@@ -1108,11 +1271,17 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
             //store this for look up later
             getCloneToOriginals().put(workingClone, original);
-            // just clone it.
-            populateAndRegisterObject(original, workingClone, unitOfWorkCacheKey, parentCacheKey, concreteDescriptor);
+            // Only mapping clone recursion inherits this explicit handoff.
+            RefreshOperation previous = this.refreshCloneOperation;
+            this.refreshCloneOperation = operation;
+            try {
+                populateAndRegisterObject(original, workingClone, unitOfWorkCacheKey, parentCacheKey, concreteDescriptor);
+            } finally {
+                this.refreshCloneOperation = previous;
+            }
 
             //also clone the fetch group reference if applied
-            if (concreteDescriptor.hasFetchGroupManager()) {
+            if (graphSelection == null && concreteDescriptor.hasFetchGroupManager()) {
                 concreteDescriptor.getFetchGroupManager().copyFetchGroupInto(original, workingClone, this);
             }
         } finally {
@@ -1135,7 +1304,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 }
             }
         }
-        concreteDescriptor.getObjectBuilder().instantiateEagerMappings(workingClone, this);
+        concreteDescriptor.getObjectBuilder().instantiateEagerMappings(workingClone, this, graphSelection);
+        if (graphSelection != null) {
+            graphContext.clone = workingClone;
+        }
         return workingClone;
     }
 
@@ -3052,6 +3224,28 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         iterator.startIterationOn(startNode);
     }
 
+    /** INTERNAL: The parent-cache lookup can itself clone and register a refresh target. */
+    Object getRefreshTarget(Object primaryKey, ClassDescriptor descriptor, RefreshOperation operation) {
+        RefreshOperation previous = this.refreshCloneOperation;
+        this.refreshCloneOperation = operation;
+        try {
+            return getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, null, descriptor.getJavaClass(), false, descriptor);
+        } finally {
+            this.refreshCloneOperation = previous;
+        }
+    }
+
+    /** INTERNAL: Associate internal registration with its explicit refresh operation. */
+    Object internalRegisterObject(Object object, ClassDescriptor descriptor, boolean isShallowClone, RefreshOperation operation) {
+        RefreshOperation previous = this.refreshCloneOperation;
+        this.refreshCloneOperation = operation;
+        try {
+            return internalRegisterObject(object, descriptor, isShallowClone);
+        } finally {
+            this.refreshCloneOperation = previous;
+        }
+    }
+
     /**
      * INTERNAL:
      * Register the object with the unit of work.
@@ -3536,6 +3730,21 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Merge the attributes of the clone into the unit of work copy.
      */
     public Object mergeClone(Object rmiClone, int cascadeDepth, boolean forRefresh) {
+        return mergeClone(rmiClone, cascadeDepth, forRefresh, null);
+    }
+
+    /** Only the exact executing refresh query may authorize managed load phases. */
+    public Object mergeClone(Object rmiClone, int cascadeDepth, boolean forRefresh, ObjectBuildingQuery query) {
+        RefreshOperation previous = this.refreshCloneOperation;
+        this.refreshCloneOperation = null;
+        try {
+            return mergeCloneForQuery(rmiClone, cascadeDepth, forRefresh, query);
+        } finally {
+            this.refreshCloneOperation = previous;
+        }
+    }
+
+    private Object mergeCloneForQuery(Object rmiClone, int cascadeDepth, boolean forRefresh, ObjectBuildingQuery query) {
         if (rmiClone == null) {
             return null;
         }
@@ -3544,23 +3753,26 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         logDebugMessage(rmiClone, "merge_clone");
 
         startOperationProfile(SessionProfiler.Merge);
-        ObjectBuilder builder = getDescriptor(rmiClone).getObjectBuilder();
-        Object implementation = builder.unwrapObject(rmiClone, this);
-
-        MergeManager manager = new MergeManager(this);
-        manager.mergeCloneIntoWorkingCopy();
-        manager.setCascadePolicy(cascadeDepth);
-        manager.setForRefresh(forRefresh);
-
-        Object merged = null;
         try {
-            merged = manager.mergeChanges(implementation, null, this);
-        } catch (RuntimeException exception) {
-            merged = handleException(exception);
-        }
-        endOperationProfile(SessionProfiler.Merge);
+            ObjectBuilder builder = getDescriptor(rmiClone).getObjectBuilder();
+            Object implementation = builder.unwrapObject(rmiClone, this);
 
-        return merged;
+            MergeManager manager = new MergeManager(this);
+            manager.mergeCloneIntoWorkingCopy();
+            manager.setCascadePolicy(cascadeDepth);
+            manager.setForRefresh(forRefresh);
+            if (forRefresh && query != null) {
+                manager.setRefreshOperation(getRefreshOperation(query));
+            }
+
+            try {
+                return manager.mergeChanges(implementation, null, this);
+            } catch (RuntimeException exception) {
+                return handleException(exception);
+            }
+        } finally {
+            endOperationProfile(SessionProfiler.Merge);
+        }
     }
 
     /**
@@ -3838,7 +4050,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         changePolicy.dissableEventProcessing(workingClone);
 
         ObjectBuilder builder = descriptor.getObjectBuilder();
-        builder.populateAttributesForClone(original, parentCacheKey, workingClone, null, this);
+        FetchGroup graphSelection = getGraphCloneSelection(original);
+        builder.populateAttributesForClone(original, parentCacheKey, workingClone, null, this, graphSelection);
         Object backupClone = changePolicy.buildBackupClone(workingClone, builder, this);
         // PERF: Avoid put if no backup clone.
         if (workingClone != backupClone) {
@@ -4070,6 +4283,24 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
     }
 
+    /** INTERNAL: A copied or ordinary query cannot inherit a cloning handoff. */
+    public Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor, Object queryPrimaryKey,
+            boolean isFromSharedCache, ObjectBuildingQuery query) {
+        RefreshOperation previous = this.refreshCloneOperation;
+        GraphCloneContext previousGraph = this.graphCloneContext;
+        this.graphCloneContext = query instanceof ObjectLevelReadQuery read && read.getFetchGroup() != null
+                && read.getFetchGroup().hasGraphOptions() && !query.shouldRefreshIdentityMapResult()
+                ? new GraphCloneContext(objectToRegister, read.getExecutionFetchGroup(descriptor)) : null;
+        this.refreshCloneOperation = this.refreshOperation != null && this.refreshOperation.query == query
+                ? this.refreshOperation : null;
+        try {
+            return registerExistingObject(objectToRegister, descriptor, queryPrimaryKey, isFromSharedCache);
+        } finally {
+            this.refreshCloneOperation = previous;
+            this.graphCloneContext = previousGraph;
+        }
+    }
+
     /**
      * INTERNAL:
      * Register the existing object with the unit of work.
@@ -4169,7 +4400,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             //fetch group manager control fetch group support
             if (descriptor.hasFetchGroupManager()) {
                 //if the object is already registered in uow, but it's partially fetched (fetch group case)
-                if (descriptor.getFetchGroupManager().shouldWriteInto(objectToRegister, registeredObject)) {
+                boolean freshGraphClone = this.graphCloneContext != null
+                        && (this.graphCloneContext.original == null || this.graphCloneContext.original == objectToRegister)
+                        && this.graphCloneContext.clone == registeredObject;
+                if (!freshGraphClone && descriptor.getFetchGroupManager().shouldWriteInto(objectToRegister, registeredObject)) {
                     //there might be cases when reverting/refreshing clone is needed.
                     descriptor.getFetchGroupManager().writePartialIntoClones(objectToRegister, registeredObject, this.getBackupClone(registeredObject, descriptor), this);
                 }

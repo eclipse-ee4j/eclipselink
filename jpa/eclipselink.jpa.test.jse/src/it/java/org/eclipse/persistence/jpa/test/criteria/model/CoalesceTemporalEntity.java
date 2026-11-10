@@ -11,8 +11,12 @@
  */
 package org.eclipse.persistence.jpa.test.criteria.model;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Converter;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
@@ -32,10 +36,62 @@ public class CoalesceTemporalEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestampValue;
 
+    @Convert(converter = IdentityTimestampConverter.class)
+    private Date identityValue;
+
+    @Convert(converter = ShiftedTimestampConverter.class)
+    private Date shiftedValue;
+
+    @Convert(converter = NormalizingTimestampConverter.class)
+    private Date normalizedValue;
+
     public CoalesceTemporalEntity() {
     }
 
     public CoalesceTemporalEntity(Integer id) {
         this.id = id;
+    }
+
+    @Converter
+    public static class IdentityTimestampConverter implements AttributeConverter<Date, Timestamp> {
+        @Override
+        public Timestamp convertToDatabaseColumn(Date value) {
+            return value == null ? null : new Timestamp(value.getTime());
+        }
+
+        @Override
+        public Date convertToEntityAttribute(Timestamp value) {
+            return value;
+        }
+    }
+
+    @Converter
+    public static class ShiftedTimestampConverter implements AttributeConverter<Date, Timestamp> {
+        @Override
+        public Timestamp convertToDatabaseColumn(Date value) {
+            return value == null ? null : new Timestamp(value.getTime() + 86_400_000L);
+        }
+
+        @Override
+        public Date convertToEntityAttribute(Timestamp value) {
+            return value == null ? null : new Date(value.getTime() - 86_400_000L);
+        }
+    }
+
+    @Converter
+    public static class NormalizingTimestampConverter implements AttributeConverter<Date, Timestamp> {
+        @Override
+        public Timestamp convertToDatabaseColumn(Date value) {
+            if (value == null) {
+                return null;
+            }
+            value.setTime(value.getTime() / 1000 * 1000);
+            return new Timestamp(value.getTime());
+        }
+
+        @Override
+        public Date convertToEntityAttribute(Timestamp value) {
+            return value;
+        }
     }
 }

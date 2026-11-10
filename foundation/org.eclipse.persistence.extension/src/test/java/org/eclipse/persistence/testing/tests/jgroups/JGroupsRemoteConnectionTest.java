@@ -23,7 +23,6 @@ import org.eclipse.persistence.sessions.coordination.ServiceId;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 
 import org.jgroups.JChannel;
-import org.jgroups.protocols.pbcast.FLUSH;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,6 +36,7 @@ public class JGroupsRemoteConnectionTest {
 
     private final String COMMAND_CONTENT = "testCommand";
     private final String CLUSTER_NAME = "ChatCluster";
+    private static final long DELIVERY_TIMEOUT_MS = 5000;
 
     private JChannel jChannel = null;
     private JGroupsRemoteConnection remoteConnection = null;
@@ -49,7 +49,6 @@ public class JGroupsRemoteConnectionTest {
         TransportManager senderTransportManager = new JGroupsTestTransportManager();
         remoteCommandManager.setTransportManager(senderTransportManager);
         jChannel = new JChannel();
-        jChannel.getProtocolStack().addProtocol(new FLUSH());
         remoteConnection = new JGroupsRemoteConnection(remoteCommandManager, jChannel, true);
         jChannel.connect(CLUSTER_NAME);
     }
@@ -70,7 +69,7 @@ public class JGroupsRemoteConnectionTest {
         Command testCommand = new JGroupsTestCommand(serviceId, COMMAND_CONTENT);
         jChannel.connect(CLUSTER_NAME);
         remoteConnection.executeCommand(testCommand);
-        jChannel.startFlush(true);
+        awaitCommandContent();
         assertEquals(COMMAND_CONTENT, commandProcessor.getCommandContent());
     }
 
@@ -85,8 +84,20 @@ public class JGroupsRemoteConnectionTest {
         byte[] testCommandSerialized = serializeCommand(testCommand);
         jChannel.connect(CLUSTER_NAME);
         remoteConnection.executeCommand(testCommandSerialized);
-        jChannel.startFlush(true);
+        awaitCommandContent();
         assertEquals(COMMAND_CONTENT, commandProcessor.getCommandContent());
+    }
+
+    /**
+     * JGroups 5.5 removed the FLUSH protocol and {@code JChannel.startFlush()}, which
+     * this test previously used as a delivery barrier. Wait for the asynchronous
+     * delivery to complete instead.
+     */
+    private void awaitCommandContent() throws InterruptedException {
+        long deadline = System.currentTimeMillis() + DELIVERY_TIMEOUT_MS;
+        while (commandProcessor.getCommandContent() == null && System.currentTimeMillis() < deadline) {
+            Thread.sleep(10);
+        }
     }
 
     private byte[] serializeCommand(Command command) {

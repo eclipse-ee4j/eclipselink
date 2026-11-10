@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -853,6 +853,12 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         return name;
     }
 
+    /** INTERNAL: Expose named mapping metadata without exposing its mutable registry. */
+    public Map<String, SQLResultSetMapping> getSQLResultSetMappings() {
+        return sqlResultSetMappings == null ? java.util.Collections.emptyMap()
+                : java.util.Collections.unmodifiableMap(sqlResultSetMappings);
+    }
+
     /**
      * PUBLIC:
      * Get a named SQLResultSetMapping from this project.  These SQLResultSetMappings
@@ -1658,7 +1664,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     // Default JPAQueryBuilder factory.
     // Returns new instance of HermesParser. Based on buildDefaultQueryBuilder() method of AbstractSession.
-    private static final class DefaultQueryBuilderSupplier<T extends JPAQueryBuilder> implements Supplier<T> {
+    private static final class DefaultQueryBuilderSupplier<T extends JPAQueryBuilder> implements Supplier<T>, Serializable {
 
         private static final String DEFAULT_BUILDER_CLASS_NAME = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
 

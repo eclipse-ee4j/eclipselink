@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
@@ -62,7 +63,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 
 /**
- * This is the EclipseLink EJB 3.0 provider
+ * This is the EclipseLink Jakarta Persistence provider
  * <p>
  * This provider should be used by JavaEE and JavaSE users.
  */
@@ -74,45 +75,53 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     /**
      * Internal method to return the entity manager factory.
      */
-    protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo puInfo, Map properties, boolean requiresConnection){
-        if (puInfo != null) {
+    protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo persistenceUnitInfo, Map properties, boolean requiresConnection){
+        if (persistenceUnitInfo != null) {
             boolean isNew = false;
             String uniqueName = null; // the name that uniquely defines the pu
             String sessionName = null;
             EntityManagerSetupImpl emSetupImpl = null;
-            String puName = puInfo.getPersistenceUnitName();
-            JPAInitializer initializer = getInitializer(puInfo.getPersistenceUnitName(), properties);
+            String persistenceUnitName = persistenceUnitInfo.getPersistenceUnitName();
+            JPAInitializer initializer = getInitializer(persistenceUnitInfo.getPersistenceUnitName(), properties);
 
             try {
-                if (EntityManagerSetupImpl.mustBeCompositeMember(puInfo)) {
+                if (EntityManagerSetupImpl.mustBeCompositeMember(persistenceUnitInfo)) {
                     // Persistence unit cannot be used standalone (only as a composite member).
                     // Still the factory will be created but attempt to createEntityManager would cause an exception.
-                    emSetupImpl = new EntityManagerSetupImpl(puName, puName);
+                    emSetupImpl = new EntityManagerSetupImpl(persistenceUnitName, persistenceUnitName);
                     // Predeploy assigns puInfo and does not do anything else.
                     // The session is not created, no need to add emSetupImpl to the global map.
-                    emSetupImpl.predeploy(puInfo, properties);
+                    emSetupImpl.predeploy(persistenceUnitInfo, properties);
                     isNew = true;
                 } else {
-                    if (initializer.isPersistenceUnitUniquelyDefinedByName()) {
-                        uniqueName = puName;
+                    if (initializer.isPersistenceUnitUniquelyDefinedByName(persistenceUnitInfo)) {
+                        uniqueName = persistenceUnitName;
                     } else {
-                        uniqueName = initializer.createUniquePersistenceUnitName(puInfo);
+                        uniqueName = initializer.createUniquePersistenceUnitName(persistenceUnitInfo);
                     }
 
-                    sessionName = EntityManagerSetupImpl.getOrBuildSessionName(properties, puInfo, uniqueName);
-                    synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+                    sessionName = EntityManagerSetupImpl.getOrBuildSessionName(properties, persistenceUnitInfo, uniqueName);
+                    if (usesSchemaConnection(persistenceUnitInfo, properties, requiresConnection)) {
+                        // A borrowed connection initializes metadata, not an ordinary factory's pools.
+                        emSetupImpl = initializer.callPredeploy((SEPersistenceUnitInfo) persistenceUnitInfo,
+                                properties, uniqueName, sessionName);
+                        emSetupImpl.setIsDisposableSchemaGeneration(true);
+                        emSetupImpl.changeSessionName(sessionName + "-schema-" + UUID.randomUUID());
+                        emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), properties);
+                        isNew = true;
+                    } else synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                         emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
 
                         if (emSetupImpl == null) {
                             // there may be initial emSetupImpl cached in Initializer - remove it and use.
-                            emSetupImpl = initializer.extractInitialEmSetupImpl(puName);
+                            emSetupImpl = initializer.extractInitialEmSetupImpl(persistenceUnitName);
 
                             if (emSetupImpl != null) {
                                 // change the name
                                 emSetupImpl.changeSessionName(sessionName);
                             } else {
                                 // create and predeploy a new emSetupImpl
-                                emSetupImpl = initializer.callPredeploy((SEPersistenceUnitInfo) puInfo, properties, uniqueName, sessionName);
+                                emSetupImpl = initializer.callPredeploy((SEPersistenceUnitInfo) persistenceUnitInfo, properties, uniqueName, sessionName);
                             }
 
                             // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
@@ -126,8 +135,8 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(initializer.getInitializationClassLoader(), e);
             }
 
-            if (! isNew) {
-                if (! uniqueName.equals(emSetupImpl.getPersistenceUnitUniqueName())) {
+            if (!isNew) {
+                if (!uniqueName.equals(emSetupImpl.getPersistenceUnitUniqueName())) {
                     throw PersistenceUnitLoadingException.sessionNameAlreadyInUse(sessionName, uniqueName, emSetupImpl.getPersistenceUnitUniqueName());
                 }
 
@@ -145,7 +154,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 if (undeployed) {
                     // after the emSetupImpl has been obtained from emSetupImpls
                     // it has been undeployed by factory.close() in another thread - start all over again.
-                    return (EntityManagerFactoryImpl) createEntityManagerFactory(puName, properties);
+                    return createEntityManagerFactoryImpl(persistenceUnitInfo, properties, requiresConnection);
                 }
             }
 
@@ -176,27 +185,42 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
+    private static boolean usesSchemaConnection(PersistenceUnitInfo info, Map properties, boolean requiresConnection) {
+        return !requiresConnection && EntityManagerFactoryProvider.hasConfigProperty(
+                PersistenceUnitProperties.SCHEMA_GENERATION_CONNECTION,
+                EntityManagerFactoryProvider.mergeMaps(properties, info.getProperties()));
+    }
+
     @Override
     public EntityManagerFactory createEntityManagerFactory(String emName, Map<?, ?> properties) {
         Map<?, ?> nonNullProperties = (properties == null) ? new HashMap<>() : properties;
         if (checkForProviderProperty(nonNullProperties)){
             String name = (emName == null) ? "" : emName;
             JPAInitializer initializer = getInitializer(name, nonNullProperties);
-            return createEntityManagerFactoryImpl(initializer.findPersistenceUnitInfo(name, nonNullProperties), nonNullProperties, true);
+            EntityManagerFactoryImpl factory = createEntityManagerFactoryImpl(
+                    initializer.findPersistenceUnitInfo(name, nonNullProperties), nonNullProperties, true);
+            return factory == null ? null : factory.completeCreation();
         }
 
         // Not EclipseLink so return null;
         return null;
     }
 
-    // Never call this method from this class because of stack frames removal.
     @Override
     public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
         // Check whether persistence provider is set and matches EclipseLink known classes
         if (!isProviderEclipseLink(configuration)) {
             return null;
         }
+
         JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
+        return createEntityManagerFactoryImpl(
+                initializer.customPersistenceUnitInfo(configuration, configurationRootURL(configuration)),
+                Collections.emptyMap(),
+                true).completeCreation();
+    }
+
+    private static URL configurationRootURL(PersistenceConfiguration configuration) {
         // Root URL from method caller
         StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
         StackWalker.StackFrame frame = stackWalker.walk(stream -> stream
@@ -204,6 +228,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 .dropWhile(f -> f.getClassName().startsWith("jakarta.persistence"))
                 .findFirst()
                 .orElse(null));
+
         URL rootURL;
         if (frame != null) {
             // getProtectionDomain() may be restricted by SecurityManager
@@ -231,10 +256,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                     ExceptionLocalization.buildMessage("custom_pu_create_error_no_caller",
                                                        new String[] {configuration.name()}));
         }
-        return createEntityManagerFactoryImpl(
-                initializer.customPersistenceUnitInfo(configuration, rootURL),
-                Collections.emptyMap(),
-                true);
+        return rootURL;
     }
 
     /**
@@ -369,6 +391,19 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 || EntityManagerFactoryProvider.class.getName().equals(providerClassName);
     }
 
+    // The integration-level properties as createContainerEntityManagerFactory and getClassTransformer
+    // pass them to predeploy.
+    private static Map containerProperties(Map<?, ?> properties) {
+        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
+
+        String forceTargetServer = EntityManagerFactoryProvider.getConfigPropertyAsString(SystemProperties.ENFORCE_TARGET_SERVER, null);
+        if ("true".equalsIgnoreCase(forceTargetServer)) {
+            nonNullProperties.remove(PersistenceUnitProperties.TARGET_SERVER);
+        }
+
+        return nonNullProperties;
+    }
+
     /**
      * Called by the container when an EntityManagerFactory
      * is to be created.
@@ -381,19 +416,14 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      */
     @Override
     public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties) {
-        return createContainerEntityManagerFactoryImpl(info, properties, true);
+        return ((EntityManagerFactoryImpl) createContainerEntityManagerFactoryImpl(info, properties, true)).completeCreation();
     }
 
     protected EntityManagerFactory createContainerEntityManagerFactoryImpl(PersistenceUnitInfo info, Map properties, boolean requiresConnection) {
         // Record that we are inside a JEE container to allow weaving for non managed persistence units.
         JavaSECMPInitializer.setIsInContainer(true);
 
-        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
-
-        String forceTargetServer = EntityManagerFactoryProvider.getConfigPropertyAsString(SystemProperties.ENFORCE_TARGET_SERVER, null);
-        if ("true".equalsIgnoreCase(forceTargetServer)) {
-            nonNullProperties.remove(PersistenceUnitProperties.TARGET_SERVER);
-        }
+        Map nonNullProperties = containerProperties(properties);
 
         EntityManagerSetupImpl emSetupImpl = null;
         if (EntityManagerSetupImpl.mustBeCompositeMember(info)) {
@@ -410,7 +440,14 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                                                                                   info.getPersistenceUnitName(),
                                                                                   null);
             String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
-            synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            if (usesSchemaConnection(info, nonNullProperties, requiresConnection)) {
+                emSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
+                emSetupImpl.setIsInContainerMode(true);
+                transformer = emSetupImpl.predeploy(info, nonNullProperties);
+                emSetupImpl.setIsDisposableSchemaGeneration(true);
+                emSetupImpl.changeSessionName(sessionName + "-schema-" + UUID.randomUUID());
+                isNew = true;
+            } else synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                 emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
                 if (emSetupImpl == null){
                     emSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
@@ -431,6 +468,10 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 synchronized(emSetupImpl) {
                     if(emSetupImpl.isUndeployed()) {
                         undeployed = true;
+                    } else if (emSetupImpl.takeOverClassTransformerPredeploy()) {
+                        // getClassTransformer predeployed emSetupImpl for this very factory, which is
+                        // counted already, and its transformer went to the container from there: there is
+                        // neither anything to count nor a transformer to add.
                     } else {
                         // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
                         transformer = emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
@@ -439,7 +480,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 if(undeployed) {
                     // after the emSetupImpl has been obtained from emSetupImpls
                     // it has been undeployed by factory.close() in another thread - start all over again.
-                    return createContainerEntityManagerFactory(info, properties);
+                    return createContainerEntityManagerFactoryImpl(info, properties, requiresConnection);
                 }
             }
             if (transformer != null){
@@ -604,6 +645,81 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                     ex);
         }
         return rootURL;
+    }
+
+    @Override
+    public boolean generateSchema(PersistenceConfiguration configuration) {
+        if (!isProviderEclipseLink(configuration)) {
+            return false;
+        }
+        JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
+        SEPersistenceUnitInfo info = initializer.schemaGenerationPersistenceUnitInfo(
+                configuration, configurationRootURL(configuration));
+        try (EntityManagerFactoryImpl factory = createEntityManagerFactoryImpl(info, Collections.emptyMap(), false)) {
+            // Explicit export must also deploy when ordinary factory startup was configured as lazy.
+            factory.getDatabaseSession();
+        }
+        return true;
+    }
+
+    /**
+     * The weaving transformer, for a container that calls this method, new in Jakarta Persistence 4.0, rather
+     * than taking the transformer {@link #createContainerEntityManagerFactory} hands to the deprecated
+     * {@link PersistenceUnitInfo#addTransformer} - which has no effect once this method has been called.
+     * <p>
+     * The transformer only exists after {@link EntityManagerSetupImpl#predeploy}, so this method predeploys,
+     * on behalf of the factory the container is expected to create for the same persistence unit next, and
+     * that factory takes this predeploy over instead of predeploying (and counting itself) again.
+     * <p>
+     * Not called by anything yet: GlassFish, the container this was written for, still uses
+     * {@code addTransformer}. Before it is: a container that calls this method but never creates the
+     * factory leaves the persistence unit predeployed, and nothing undeploys it.
+     */
+    @Override
+    public ClassTransformer getClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
+        JavaSECMPInitializer.setIsInContainer(true);
+
+        if (EntityManagerSetupImpl.mustBeCompositeMember(info)) {
+            // woven by the transformer of the composite persistence unit that lists this member
+            return NO_TRANSFORMATION;
+        }
+
+        Map nonNullProperties = containerProperties(properties);
+        String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(),
+                                                                              info.getPersistenceUnitName(),
+                                                                              null);
+        String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            if (EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName) == null) {
+                EntityManagerSetupImpl emSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
+                emSetupImpl.setIsInContainerMode(true);
+                // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
+                ClassTransformer transformer = emSetupImpl.predeploy(info, nonNullProperties);
+                emSetupImpl.setPredeployedForClassTransformer();
+                EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
+
+                return (transformer != null) ? transformer : NO_TRANSFORMATION;
+            }
+        }
+
+        // Predeployed already, by an earlier call or by a factory, whose transformer went to the container
+        // then. Only the first predeploy creates one.
+        return NO_TRANSFORMATION;
+    }
+
+    // What getClassTransformer returns when there is nothing to weave, as the specification does not allow null
+    private static final ClassTransformer NO_TRANSFORMATION =
+        (loader, className, classBeingRedefined, protectionDomain, classfileBuffer) -> null;
+
+    /**
+     * EclipseLink does not enhance client classes, the classes that merely use the entities of a
+     * persistence unit, so there is no such transformer: the specification allows {@code null} for
+     * exactly this case.
+     * <p>
+     * Added to the API after 4.0.0-M7, so it carries no {@code @Override} to keep compiling against M7.
+     */
+    public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
+        return null;
     }
 }
 

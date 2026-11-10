@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,10 +20,12 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
@@ -45,6 +47,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
+import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
@@ -59,6 +62,7 @@ import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
@@ -79,11 +83,13 @@ import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.queries.ReportQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE;
 import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_PATH;
@@ -97,6 +103,9 @@ import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_
  */
 @SuppressWarnings("nls")
 final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
+
+    // Consumed by the JPA result-class adapter; core must not depend on that module.
+    private static final String INCOMPATIBLE_RESULT = "eclipselink.jpql.incompatible-result";
 
     /**
      * The visitor responsible to visit the constructor items.
@@ -166,10 +175,172 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
         return constructorExpressionVisitor;
     }
 
+    /** Keep unresolved operands separate from incompatible or declared Object results. */
+    private record ScalarType(Class<?> knownType, boolean unresolved, boolean incompatible) {
+        Class<?> resultType() {
+            if (incompatible || knownType == Object.class) {
+                return Object.class;
+            }
+            return unresolved ? null : knownType;
+        }
+    }
+
+    private Class<?> scalarType(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
+        ScalarType result = scalarResult(expression);
+        if (result.incompatible()) {
+            query.setProperty(INCOMPATIBLE_RESULT, Boolean.TRUE);
+        }
+        return result.resultType();
+    }
+
+    /** Preserve semantic types through casts, nullable expressions and their wrappers. */
+    private ScalarType scalarResult(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
+        if (expression instanceof NullExpression || expression instanceof InputParameter
+                || expression instanceof KeywordExpression keyword && KeywordExpression.NULL.equals(keyword.getText())) {
+            // Null and contextual parameters do not erase another operand's known type.
+            return new ScalarType(null, false, false);
+        }
+        if (expression instanceof FunctionExpression) {
+            return new ScalarType(null, true, false);
+        }
+        if (expression instanceof CaseExpression conditional) {
+            List<ScalarType> operands = new ArrayList<>();
+            addConditionalOperands(conditional.getWhenClauses(), operands);
+            operands.add(scalarResult(conditional.getElseExpression()));
+            return conditionalType(operands);
+        }
+        if (expression instanceof WhenClause clause) {
+            return scalarResult(clause.getThenExpression());
+        }
+        if (expression instanceof CoalesceExpression coalesce) {
+            return scalarResult(coalesce.getExpression());
+        }
+        if (expression instanceof CollectionExpression collection) {
+            List<ScalarType> operands = new ArrayList<>();
+            addConditionalOperands(collection, operands);
+            return conditionalType(operands);
+        }
+        if (expression instanceof NullIfExpression nullIf) {
+            ScalarType first = scalarResult(nullIf.getFirstExpression());
+            ScalarType second = scalarResult(nullIf.getSecondExpression());
+            return numericType(first.knownType()) != null && numericType(second.knownType()) != null
+                    ? conditionalType(List.of(first, second)) : first;
+        }
+        if (expression instanceof CastExpression cast) {
+            Class<?> target = switch (cast.getDatabaseType().toParsedText().toUpperCase(Locale.ROOT)) {
+                case "STRING" -> String.class;
+                case "INTEGER" -> Integer.class;
+                case "LONG" -> Long.class;
+                case "FLOAT" -> Float.class;
+                case "DOUBLE" -> Double.class;
+                default -> null;
+            };
+            return new ScalarType(target, target == null, false);
+        }
+        if (expression instanceof AbsExpression abs) {
+            return scalarResult(abs.getExpression());
+        }
+        if (expression instanceof MathSingleExpression.Ceiling ceiling) {
+            return scalarResult(ceiling.getExpression());
+        }
+        if (expression instanceof MathSingleExpression.Floor floor) {
+            return scalarResult(floor.getExpression());
+        }
+        if (expression instanceof MathDoubleExpression.Round round) {
+            return scalarResult(round.getFirstExpression());
+        }
+        if (expression instanceof MinFunction minimum) {
+            return scalarResult(minimum.getExpression());
+        }
+        if (expression instanceof MaxFunction maximum) {
+            return scalarResult(maximum.getExpression());
+        }
+        if (expression instanceof SumFunction sum) {
+            ScalarType operand = scalarResult(sum.getExpression());
+            return new ScalarType(operand.knownType() == null ? null
+                    : queryContext.typeResolver().convertSumFunctionType(operand.knownType()),
+                    operand.unresolved(), operand.incompatible());
+        }
+        if (expression instanceof ArithmeticExpression arithmetic) {
+            ScalarType left = scalarResult(arithmetic.getLeftExpression());
+            ScalarType right = scalarResult(arithmetic.getRightExpression());
+            Class<?> first = numericType(left.knownType());
+            Class<?> second = numericType(right.knownType());
+            boolean incompatible = left.incompatible() || right.incompatible()
+                    || left.knownType() != null && first == null
+                    || right.knownType() != null && second == null;
+            Class<?> promoted = first == null ? second : second == null ? first
+                    : NumericTypeComparator.instance().compare(first, second) <= 0 ? first : second;
+            return new ScalarType(promoted, left.unresolved() || right.unresolved(), incompatible);
+        }
+        if (expression instanceof ArithmeticFactor factor) {
+            return scalarResult(factor.getExpression());
+        }
+        if (expression instanceof SubExpression subExpression) {
+            return scalarResult(subExpression.getExpression());
+        }
+        Class<?> result = queryContext.getType(expression);
+        return result == null || result == TypeResolver.class
+                ? new ScalarType(null, true, false) : new ScalarType(Helper.getObjectClass(result), false, false);
+    }
+
+    private void addConditionalOperands(org.eclipse.persistence.jpa.jpql.parser.Expression expression, List<ScalarType> operands) {
+        if (expression instanceof CollectionExpression collection) {
+            for (org.eclipse.persistence.jpa.jpql.parser.Expression child : collection.children()) {
+                operands.add(scalarResult(child));
+            }
+        } else {
+            operands.add(scalarResult(expression));
+        }
+    }
+
+    private ScalarType conditionalType(List<ScalarType> operands) {
+        Class<?> known = null;
+        boolean unresolved = false;
+        boolean incompatible = false;
+        boolean conflict = false;
+        boolean declaredObject = false;
+        for (ScalarType operand : operands) {
+            unresolved |= operand.unresolved();
+            incompatible |= operand.incompatible();
+            Class<?> next = operand.knownType();
+            declaredObject |= next == Object.class && !operand.incompatible();
+            if (next == null || next == Object.class) {
+                continue;
+            }
+            Class<?> numeric = numericType(next);
+            if (known == null) {
+                known = numeric == null ? next : numeric;
+            } else if (numericType(known) != null && numeric != null) {
+                if (NumericTypeComparator.instance().compare(known, numeric) > 0) {
+                    known = numeric;
+                }
+            } else if (known != next) {
+                conflict = true;
+            }
+        }
+        // A real Object operand supplies that type; a conflicting nested expression does not.
+        return new ScalarType(declaredObject ? Object.class : known, unresolved,
+                incompatible || conflict && !declaredObject);
+    }
+
+    /** The language's finite numeric types; compound integral results are Integer or Long. */
+    private Class<?> numericType(Class<?> value) {
+        if (value == Byte.class || value == Short.class || value == Integer.class) {
+            return Integer.class;
+        }
+        return value == Long.class || value == Float.class || value == Double.class
+                || value == java.math.BigInteger.class || value == java.math.BigDecimal.class ? value : null;
+    }
+
+    private boolean hasUnresolvedType() {
+        return type[0] == null || type[0] == Object.class || type[0] == TypeResolver.class;
+    }
+
     @Override
     public void visit(AbsExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, scalarType(expression));
     }
 
     @Override
@@ -177,17 +348,15 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
 
         Expression queryExpression = queryContext.buildExpression(expression, type);
 
-        if (type[0] == Object.class) {
-            type[0] = null;
-        }
+        type[0] = scalarType(expression);
 
         addAttribute("plus", queryExpression, type[0]);
     }
 
     @Override
     public void visit(ArithmeticFactor expression) {
-        // TODO: Anything to do other than the default behavior?
-        super.visit(expression);
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, scalarType(expression));
     }
 
     @Override
@@ -200,19 +369,22 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
     @Override
     public void visit(CaseExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
+        type[0] = scalarType(expression);
         addAttribute("Case", queryExpression, type[0]);
     }
 
     @Override
     public void visit(CastExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
+        type[0] = scalarType(expression);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
     @Override
     public void visit(CoalesceExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute("Coalesce", queryExpression);
+        type[0] = scalarType(expression);
+        addAttribute("Coalesce", queryExpression, type[0]);
     }
 
     @Override
@@ -237,7 +409,7 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
 
         Expression queryExpression = queryContext.buildExpression(expression, type);
 
-        if (type[0] == Object.class) {
+        if (hasUnresolvedType()) {
             type[0] = null;
         }
 
@@ -287,9 +459,7 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
 
         Expression queryExpression = queryContext.buildExpression(expression, type);
 
-        if (type[0] == Object.class) {
-            type[0] = null;
-        }
+        type[0] = scalarType(expression);
 
         addAttribute("divide", queryExpression, type[0]);
     }
@@ -407,13 +577,13 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
     @Override
     public void visit(MathDoubleExpression.Round expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, scalarType(expression));
     }
 
     @Override
     public void visit(MathSingleExpression.Ceiling expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, scalarType(expression));
     }
 
     @Override
@@ -425,7 +595,7 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
     @Override
     public void visit(MathSingleExpression.Floor expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, scalarType(expression));
     }
 
     @Override
@@ -444,14 +614,14 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
     public void visit(MaxFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(name, queryExpression, type[0]);
+        addAttribute(name, queryExpression, scalarType(expression));
     }
 
     @Override
     public void visit(MinFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(name, queryExpression, type[0]);
+        addAttribute(name, queryExpression, scalarType(expression));
     }
 
     @Override
@@ -465,9 +635,7 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
 
         Expression queryExpression = queryContext.buildExpression(expression, type);
 
-        if (type[0] == Object.class) {
-            type[0] = null;
-        }
+        type[0] = scalarType(expression);
 
         addAttribute("multiply", queryExpression, type[0]);
     }
@@ -475,7 +643,8 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
     @Override
     public void visit(NullIfExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(NullIfExpression.NULLIF, queryExpression);
+        type[0] = scalarType(expression);
+        addAttribute(NullIfExpression.NULLIF, queryExpression, type[0]);
     }
 
     @Override
@@ -583,9 +752,7 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
 
         Expression queryExpression = queryContext.buildExpression(expression, type);
 
-        if (type[0] == Object.class) {
-            type[0] = null;
-        }
+        type[0] = scalarType(expression);
 
         addAttribute("minus", queryExpression, type[0]);
     }
@@ -594,7 +761,7 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
     public void visit(SumFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(name, queryExpression, type[0]);
+        addAttribute(name, queryExpression, scalarType(expression));
     }
 
     @Override

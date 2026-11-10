@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2026 IBM Corporation. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
@@ -165,6 +165,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -579,10 +581,18 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
             // Create the WHEN clauses
             expression.getWhenClauses().accept(visitor);
 
-            // Create the ELSE clause
-            expression.getElseExpression().accept(this);
-            Expression elseExpression = queryExpression;
-            visitor.types.add(type[0]);
+            // Only explicit result branches contribute to the CASE result type.
+            Expression elseExpression = null;
+            if (expression.hasElseExpression()) {
+                expression.getElseExpression().accept(this);
+                elseExpression = queryExpression;
+                visitor.types.add(type[0]);
+            }
+            else {
+                ConstantExpression nullExpression = new ConstantExpression(null, queryContext.getBaseExpression());
+                nullExpression.setCanBind(false);
+                elseExpression = nullExpression;
+            }
 
             // Create the CASE expression
             if (caseOperandExpression != null) {
@@ -611,11 +621,25 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
                 queryExpression = queryExpression.caseStatement(visitor.whenClauses, elseExpression);
             }
 
+            // CASE result nulls have no independent JDBC type. Keep them literal after
+            // caseStatement has assigned local bases, just like an omitted ELSE.
+            for (Expression result : visitor.whenClauses.values()) {
+                keepCaseNullLiteral(result);
+            }
+            keepCaseNullLiteral(elseExpression);
+
             // Set the expression type
             type[0] = queryContext.typeResolver().compareCollectionEquivalentTypes(visitor.types);
         }
         finally {
             visitor.dispose();
+        }
+    }
+
+    private void keepCaseNullLiteral(Expression expression) {
+        if (expression instanceof ConstantExpression constant && constant.getValue() == null) {
+            constant.setCanBind(false);
+            constant.setLocalBase(queryContext.getBaseExpression().getBuilder());
         }
     }
 
@@ -1782,6 +1806,11 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
 
         if ((type[0] == Long.class) && (text.endsWith("L") || text.endsWith("l"))) {
             text = text.substring(0, text.length() - 1);
+        }
+        // BigInteger and BigDecimal are built below from their String constructor, which rejects
+        // the 'bi' and 'bd' suffixes, so those are removed here too
+        else if ((type[0] == BigInteger.class) || (type[0] == BigDecimal.class)) {
+            text = text.substring(0, text.length() - 2);
         }
 
         @SuppressWarnings({"unchecked"})

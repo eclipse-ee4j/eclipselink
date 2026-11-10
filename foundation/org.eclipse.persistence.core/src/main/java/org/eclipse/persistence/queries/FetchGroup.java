@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,17 +17,26 @@ package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.descriptors.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.core.queries.CoreAttributeConverter;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A FetchGroup is a performance enhancement that allows a group of attributes
@@ -108,6 +117,11 @@ public class FetchGroup extends AttributeGroup {
      * when processing the query result.
      */
     private boolean shouldLoad;
+
+    /** A load graph augments mapping defaults except for explicitly excluded attributes. */
+    private boolean shouldIncludeDefaultAttributes;
+    private boolean hasGraphOptions;
+    private Set<String> excludedAttributes = Set.of();
 
     /**
      * Caches the EntityFetch group for this FetchGroup
@@ -300,6 +314,177 @@ public class FetchGroup extends AttributeGroup {
     @Override
     public FetchGroup clone() {
         return (FetchGroup)super.clone();
+    }
+
+    /** INTERNAL: Preserve mapping defaults while applying graph exclusions. */
+    public void setShouldIncludeDefaultAttributes(boolean include) {
+        shouldIncludeDefaultAttributes = include;
+        entityFetchGroup = null;
+        isValidated = false;
+    }
+
+    /** INTERNAL: Whether this is a query-local load-graph overlay. */
+    public boolean shouldIncludeDefaultAttributes() {
+        return shouldIncludeDefaultAttributes;
+    }
+
+    /** INTERNAL: Core-neutral exclusions translated from entity-graph options. */
+    public void setExcludedAttributes(Set<String> attributes) {
+        excludedAttributes = Set.copyOf(attributes);
+        hasGraphOptions = true;
+        entityFetchGroup = null;
+        isValidated = false;
+    }
+
+    /** INTERNAL: Whether graph options require descriptor-aware preparation. */
+    public boolean hasGraphOptions() {
+        return hasGraphOptions;
+    }
+
+    /**
+     * INTERNAL: Resolve an execution copy after descriptors have initialized.
+     * The registered graph and descriptor default groups are never modified.
+     */
+    public FetchGroup resolveGraph(AbstractSession session, ClassDescriptor descriptor, boolean includeBasicState) {
+        FetchGroup resolved = clone();
+        resolved.resolveGraph(session, descriptor, includeBasicState,
+                Collections.newSetFromMap(new IdentityHashMap<>()));
+        return resolved;
+    }
+
+    private void resolveGraph(AbstractSession session, ClassDescriptor descriptor, boolean includeBasicState,
+            Set<FetchGroup> visited) {
+        if (!visited.add(this)) {
+            return;
+        }
+        if (getType() != null && session.getDescriptor(getType()) != null) {
+            descriptor = session.getDescriptor(getType());
+        }
+        Set<String> exclusions = new HashSet<>();
+        if (superClassGroup != null) {
+            FetchGroup parent = (FetchGroup)superClassGroup;
+            parent.resolveGraph(session, descriptor, includeBasicState, visited);
+            exclusions.addAll(parent.excludedAttributes);
+            // A positive node on a subtype overrides an inherited exclusion.
+            exclusions.removeAll(getItems().keySet());
+        }
+        exclusions.addAll(excludedAttributes);
+        if (shouldIncludeDefaultAttributes) {
+            FetchGroupManager manager = descriptor.getFetchGroupManager();
+            if (manager != null) {
+                FetchGroup defaults = manager.getDefaultFetchGroup();
+                if (defaults == null) {
+                    defaults = manager.createFullFetchGroup();
+                }
+                for (Map.Entry<String, AttributeItem> entry : defaults.getAllItems().entrySet()) {
+                    if (!containsAttributeInternal(entry.getKey()) && !exclusions.contains(entry.getKey())) {
+                        getItems().put(entry.getKey(), (AttributeItem)entry.getValue().clone(new IdentityHashMap<>(), this));
+                    }
+                }
+            }
+        }
+        if (includeBasicState) {
+            // Detached agent results must retain their basic state and any
+            // association that cannot be represented by an indirect holder.
+            for (DatabaseMapping mapping : descriptor.getMappings()) {
+                if (!(mapping instanceof ForeignReferenceMapping reference) || !reference.usesIndirection()) {
+                    exclusions.remove(mapping.getAttributeName());
+                    if (!containsAttributeInternal(mapping.getAttributeName())) {
+                        addAttribute(mapping.getAttributeName());
+                    }
+                }
+            }
+        }
+        if (descriptor.hasFetchGroupManager()) {
+            exclusions.removeAll(descriptor.getFetchGroupManager().createMinimalFetchGroup().getAttributeNames());
+        }
+        excludedAttributes = Set.copyOf(exclusions);
+        getItems().keySet().removeAll(exclusions);
+        entityFetchGroup = null;
+        isValidated = false;
+
+        for (AttributeItem item : getAllItems().values()) {
+            DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(item.getAttributeName());
+            if (mapping == null || mapping.getReferenceDescriptor() == null) {
+                continue;
+            }
+            ClassDescriptor target = mapping.getReferenceDescriptor();
+            if (item.getGroup() != null) {
+                if (!target.hasFetchGroupManager()
+                        && ((FetchGroup)item.getGroup()).shouldIncludeDefaultAttributes()) {
+                    // A nonwoven target may eagerly satisfy this hint. The
+                    // separate load group still applies its positive nodes.
+                    getItems().put(item.getAttributeName(), new AttributeItem(this, item.getAttributeName()));
+                    continue;
+                }
+                ((FetchGroup)item.getGroup()).resolveGraph(session, target, includeBasicState, visited);
+            }
+            if (item.getGroups() != null) {
+                for (AttributeGroup group : item.getGroups().values()) {
+                    ((FetchGroup)group).resolveGraph(session, target, includeBasicState, visited);
+                }
+            }
+        }
+        if (subClasses != null) {
+            for (CoreAttributeGroup group : subClasses) {
+                ((FetchGroup)group).resolveGraph(session, descriptor, includeBasicState, visited);
+            }
+        }
+        if (allsubclasses != null) {
+            for (CoreAttributeGroup group : allsubclasses.values()) {
+                ((FetchGroup)group).resolveGraph(session, descriptor, includeBasicState, visited);
+            }
+        }
+    }
+
+    @Override
+    public Set<String> getAttributeNames() {
+        Set<String> names = super.getAttributeNames();
+        names.removeAll(excludedAttributes);
+        return names;
+    }
+
+    @Override
+    public Map<String, AttributeItem> getAllItems() {
+        Map<String, AttributeItem> items = super.getAllItems();
+        items.keySet().removeAll(excludedAttributes);
+        return items;
+    }
+
+    @Override
+    public boolean containsAttributeInternal(String attributeName) {
+        return !excludedAttributes.contains(attributeName) && super.containsAttributeInternal(attributeName);
+    }
+
+    @Override
+    public boolean containsAttribute(String attributeNameOrPath) {
+        return !excludedAttributes.contains(CoreAttributeConverter.convert(attributeNameOrPath)[0])
+                && super.containsAttribute(attributeNameOrPath);
+    }
+
+    /** INTERNAL: An explicit query fetch takes precedence over a graph exclusion. */
+    public void includeAttribute(String attributeNameOrPath) {
+        String[] path = CoreAttributeConverter.convert(attributeNameOrPath);
+        FetchGroup group = this;
+        for (int index = 0; index < path.length; index++) {
+            String attribute = path[index];
+            if (group.excludedAttributes.contains(attribute)) {
+                Set<String> exclusions = new HashSet<>(group.excludedAttributes);
+                exclusions.remove(attribute);
+                group.excludedAttributes = Set.copyOf(exclusions);
+            }
+            group.addAttribute(attribute);
+            if (index + 1 < path.length) {
+                FetchGroup nested = group.getGroup(attribute);
+                if (nested == null) {
+                    nested = new FetchGroup(attribute);
+                    nested.setShouldIncludeDefaultAttributes(true);
+                    nested.setExcludedAttributes(Set.of());
+                    group.addAttribute(attribute, nested);
+                }
+                group = nested;
+            }
+        }
     }
 
     @Override

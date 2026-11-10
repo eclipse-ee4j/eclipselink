@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -38,13 +39,23 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN_RESULT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN_RESULTS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONSTRUCTOR_RESULT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONSTRUCTOR_RESULTS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_RESULT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_RESULTS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NATIVE_QUERY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_INSERT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_LOAD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_PERSIST;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_REMOVE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_UPDATE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_INSERT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_PERSIST;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_REMOVE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_UPDATE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_QUERY_OPTIONS;
 
 /**
  * INTERNAL:
@@ -54,12 +65,18 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
 public class MetadataMethod extends MetadataAnnotatedElement {
+    private static final Set<String> NATIVE_QUERY_ANNOTATIONS = Set.of(JPA_NATIVE_QUERY, JPA_QUERY_OPTIONS,
+            JPA_ENTITY_RESULT, JPA_ENTITY_RESULTS, JPA_CONSTRUCTOR_RESULT, JPA_CONSTRUCTOR_RESULTS,
+            JPA_COLUMN_RESULT, JPA_COLUMN_RESULTS);
 
     /** Class that the method is defined in. */
     protected MetadataClass m_metadataClass;
 
     /** Class name of method return type. */
     protected String m_returnType;
+
+    /** Generic return signature, excluding parameters and their bounds. */
+    private String m_genericReturnSignature;
 
     /** List of class names of method parameters. */
     protected List<String> m_parameters;
@@ -84,6 +101,21 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      */
     public void addParameter(String parameter) {
         m_parameters.add(parameter);
+    }
+
+    @Override
+    protected int getDeclaredAnnotationsCount(ClassAccessor classAccessor) {
+        int count = super.getDeclaredAnnotationsCount(classAccessor);
+        if (count > 0 && getAnnotations().containsKey(JPA_NATIVE_QUERY)) {
+            // A query declaration is not an attribute mapping. Keep genuine mapping annotations.
+            count -= (int) getAnnotations().keySet().stream().filter(NATIVE_QUERY_ANNOTATIONS::contains).count();
+        }
+        return count;
+    }
+
+    /** INTERNAL: Return the generic return signature independently of method parameters. */
+    public String getGenericReturnSignature() {
+        return m_genericReturnSignature;
     }
 
     /**
@@ -196,10 +228,12 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * an associated set method.
      */
     public boolean isALifeCycleCallbackMethod() {
-        return isAnnotationPresent(JPA_POST_LOAD) ||
+        return isAnnotationPresent(JPA_POST_INSERT) ||
+               isAnnotationPresent(JPA_POST_LOAD) ||
                isAnnotationPresent(JPA_POST_PERSIST) ||
                isAnnotationPresent(JPA_POST_REMOVE) ||
                isAnnotationPresent(JPA_POST_UPDATE) ||
+               isAnnotationPresent(JPA_PRE_INSERT) ||
                isAnnotationPresent(JPA_PRE_PERSIST) ||
                isAnnotationPresent(JPA_PRE_REMOVE) ||
                isAnnotationPresent(JPA_PRE_UPDATE);
@@ -271,6 +305,11 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      */
     public void setMetadataClass(MetadataClass metadataClass) {
         m_metadataClass = metadataClass;
+    }
+
+    /** INTERNAL: Preserve the return signature independently of the legacy flattened signature. */
+    public void setGenericReturnSignature(String signature) {
+        m_genericReturnSignature = signature;
     }
 
     /**

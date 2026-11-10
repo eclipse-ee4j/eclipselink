@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,6 +68,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  */
 public class XMLAttributes extends ORMetadata {
     private EmbeddedIdAccessor m_embeddedId;
+    private List<String> m_excludedFromVersioning = new ArrayList<>();
 
     private List<BasicAccessor> m_basics;
     private List<BasicCollectionAccessor> m_basicCollections;
@@ -99,6 +100,10 @@ public class XMLAttributes extends ORMetadata {
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof XMLAttributes attributes) {
+
+            if (! valuesMatch(m_excludedFromVersioning, attributes.getExcludedFromVersioning())) {
+                return false;
+            }
 
             if (! valuesMatch(m_embeddedId, attributes.getEmbeddedId())) {
                 return false;
@@ -173,6 +178,7 @@ public class XMLAttributes extends ORMetadata {
     @Override
     public int hashCode() {
         int result = super.hashCode();
+        result = 31 * result + m_excludedFromVersioning.hashCode();
         result = 31 * result + (m_embeddedId != null ? m_embeddedId.hashCode() : 0);
         result = 31 * result + (m_basics != null ? m_basics.hashCode() : 0);
         result = 31 * result + (m_basicCollections != null ? m_basicCollections.hashCode() : 0);
@@ -286,6 +292,17 @@ public class XMLAttributes extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<String> getExcludedFromVersioning() {
+        return m_excludedFromVersioning;
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public void setExcludedFromVersioning(List<String> attributes) {
+        m_excludedFromVersioning = attributes;
+    }
+
     public List<IdAccessor> getIds() {
         return m_ids;
     }
@@ -406,6 +423,11 @@ public class XMLAttributes extends ORMetadata {
     public void merge(ORMetadata metadata) {
         if (metadata != null) {
             XMLAttributes attributes = (XMLAttributes) metadata;
+            for (String name : attributes.getExcludedFromVersioning()) {
+                if (!m_excludedFromVersioning.contains(name)) {
+                    m_excludedFromVersioning.add(name);
+                }
+            }
 
             // ORMetadata object merging
             m_embeddedId = (EmbeddedIdAccessor) mergeORObjects(getEmbeddedId(), attributes.getEmbeddedId());

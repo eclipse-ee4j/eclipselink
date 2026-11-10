@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@
 //       - 277039: JPA 2.0 Cache Usage Settings
 package org.eclipse.persistence.internal.jpa.deployment.xml.parser;
 
+import jakarta.persistence.FetchType;
 import jakarta.persistence.PersistenceUnitTransactionType;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
@@ -43,9 +44,11 @@ public class PersistenceContentHandler implements ContentHandler {
     private static final String ELEMENT_MAPPING_FILE = "mapping-file";
     private static final String ELEMENT_JAR_FILE = "jar-file";
     private static final String ELEMENT_CLASS = "class";
+    private static final String ELEMENT_PACKAGE_DESCRIPTOR = "package-descriptor";
     private static final String ELEMENT_EXCLUDE_UNLISTED_CLASSES = "exclude-unlisted-classes";
     private static final String ELEMENT_CACHING = "shared-cache-mode";
     private static final String ELEMENT_VALIDATION_MODE = "validation-mode";
+    private static final String ELEMENT_DEFAULT_TO_ONE_FETCH_TYPE = "default-to-one-fetch-type";
     private static final String ELEMENT_PROPERTY = "property";
     private static final String ATTRIBUTE_NAME = "name";
     private static final String ATTRIBUTE_VALUE = "value";
@@ -152,6 +155,9 @@ public class PersistenceContentHandler implements ContentHandler {
                 case ELEMENT_CLASS:
                     persistenceUnitInfo.getManagedClassNames().add(content);
                     break;
+                case ELEMENT_PACKAGE_DESCRIPTOR:
+                    persistenceUnitInfo.addManagedPackageDescriptor(content);
+                    break;
                 case ELEMENT_EXCLUDE_UNLISTED_CLASSES:
                     // default <exclude-unlisted-classes/>  to true as well (an empty content)
                     persistenceUnitInfo.setExcludeUnlistedClasses("true".equals(content) || "1".equals(content) || content.isEmpty());
@@ -166,6 +172,13 @@ public class PersistenceContentHandler implements ContentHandler {
                 case ELEMENT_VALIDATION_MODE:
                     try {
                         persistenceUnitInfo.setValidationMode(content);
+                    } catch (IllegalArgumentException iae) {
+                        throw new SAXParseException("Unsupported value '%s' in {%s}%s".formatted(content, namespaceURI, localName), null, iae);
+                    }
+                    break;
+                case ELEMENT_DEFAULT_TO_ONE_FETCH_TYPE:
+                    try {
+                        persistenceUnitInfo.setDefaultToOneFetchType(FetchType.valueOf(content));
                     } catch (IllegalArgumentException iae) {
                         throw new SAXParseException("Unsupported value '%s' in {%s}%s".formatted(content, namespaceURI, localName), null, iae);
                     }

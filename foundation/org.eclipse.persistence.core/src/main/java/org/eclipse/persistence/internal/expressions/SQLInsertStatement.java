@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,8 +36,16 @@ import java.util.List;
  *    @since TOPLink/Java 1.0
  */
 public class SQLInsertStatement extends SQLModifyStatement {
+    private boolean overrideIdentity;
 
     public SQLInsertStatement() {
+    }
+
+    /**
+     * INTERNAL: Enable assigned identity insertion for this table only.
+     */
+    public void setOverrideIdentity(boolean overrideIdentity) {
+        this.overrideIdentity = overrideIdentity;
     }
 
     /**
@@ -47,9 +55,20 @@ public class SQLInsertStatement extends SQLModifyStatement {
     protected SQLCall buildCallWithoutReturning(AbstractSession session) {
         SQLCall call = new SQLCall();
         call.returnNothing();
+        if (overrideIdentity) {
+            call.setIdentityInsertTable(getTable().getQualifiedNameDelimited(session.getPlatform()));
+        }
 
         Writer writer = new CharArrayWriter(200);
         try {
+            if (overrideIdentity) {
+                // Binding keeps this entire batch in the driver's prepared server
+                // scope. SQL Server restores IDENTITY_INSERT on success, failure,
+                // and cancellation when that scope returns.
+                writer.write("SET IDENTITY_INSERT ");
+                writer.write(call.getIdentityInsertTable());
+                writer.write(" ON; ");
+            }
             writer.write("INSERT ");
             if (getHintString() != null) {
                 writer.write(getHintString());

@@ -23,7 +23,7 @@ package org.eclipse.persistence.internal.localization;
  * @since TOPLink/Java 5.0
  */
 public class ExceptionLocalization extends EclipseLinkLocalization {
-    public static String buildMessage(String key, Object[] arguments) {
+    public static String buildMessage(String key, Object... arguments) {
         return buildMessage("ExceptionLocalization", key, arguments);
     }
 

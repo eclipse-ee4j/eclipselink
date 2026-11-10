@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,7 @@ public class ConstructorResultMetadata extends ORMetadata {
     private MetadataClass targetClass;
     private String targetClassName;
     private List<ColumnResultMetadata> columnResults = new ArrayList<>();
+    private List<EntityResultMetadata> entityResults = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -72,6 +73,9 @@ public class ConstructorResultMetadata extends ORMetadata {
         for (Object columnResult : constructorResult.getAttributeArray("columns")) {
             columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
         }
+        for (Object entityResult : constructorResult.getAttributeArray("entities")) {
+            entityResults.add(new EntityResultMetadata((MetadataAnnotation) entityResult, accessor));
+        }
     }
 
     /**
@@ -85,7 +89,8 @@ public class ConstructorResultMetadata extends ORMetadata {
                 return false;
             }
 
-            return valuesMatch(getColumnResults(), constructorResult.getColumnResults());
+            return valuesMatch(getColumnResults(), constructorResult.getColumnResults())
+                    && valuesMatch(getEntityResults(), constructorResult.getEntityResults());
         }
 
         return false;
@@ -97,6 +102,7 @@ public class ConstructorResultMetadata extends ORMetadata {
         List<ColumnResultMetadata> columnResults = getColumnResults();
         int result = targetClass != null ? targetClass.hashCode() : 0;
         result = 31 * result + (columnResults != null ? columnResults.hashCode() : 0);
+        result = 31 * result + (entityResults != null ? entityResults.hashCode() : 0);
         return result;
     }
 
@@ -106,6 +112,14 @@ public class ConstructorResultMetadata extends ORMetadata {
      */
     public List<ColumnResultMetadata> getColumnResults() {
         return columnResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<EntityResultMetadata> getEntityResults() {
+        return entityResults;
     }
 
     /**
@@ -132,6 +146,7 @@ public class ConstructorResultMetadata extends ORMetadata {
 
         // Initialize lists of ORMetadata objects.
         initXMLObjects(getColumnResults(), accessibleObject);
+        initXMLObjects(getEntityResults(), accessibleObject);
 
         setTargetClass(initXMLClassName(getTargetClassName()));
     }
@@ -148,6 +163,9 @@ public class ConstructorResultMetadata extends ORMetadata {
         for (ColumnResultMetadata columnResult : getColumnResults()) {
             constructorResult.addColumnResult(columnResult.process());
         }
+        for (EntityResultMetadata entityResult : getEntityResults()) {
+            constructorResult.addEntityResult(entityResult.process());
+        }
 
         return constructorResult;
     }
@@ -158,6 +176,14 @@ public class ConstructorResultMetadata extends ORMetadata {
      */
     public void setColumnResults(List<ColumnResultMetadata> columnResults) {
         this.columnResults = columnResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setEntityResults(List<EntityResultMetadata> entityResults) {
+        this.entityResults = entityResults;
     }
 
     /**

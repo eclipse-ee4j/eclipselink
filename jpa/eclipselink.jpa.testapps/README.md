@@ -231,6 +231,10 @@ the DB must be started/stopped externally. This allows running tests in parallel
 and in Jakarta EE environment on WildFly server; the DB must be started/stopped externally. To allow running tests in parallel (ie `-T3C` maven option or using `mvnd`),
 datasources on the server need to point to different MySQL DB schemas from those used for running in the SE env.
 
+* `mvn verify -pl :org.eclipse.persistence.jpa.testapps -amd -Pglassfish` - runs all tests in Java SE
+environment and in Jakarta EE environment on GlassFish 9, which the build installs, starts and configures
+itself; see [GlassFish configuration](#glassfish-configuration)
+
 * `mvn test -pl :org.eclipse.persistence.jpa.testapps.jpql -Poracle` - runs all JPQL tests against Oracle DB in Java SE
 * `mvn test -pl :org.eclipse.persistence.jpa.testapps.jpql -Dtest=JUnitJPQLDateTimeTest -Pmysql` - runs single JPQL test against MySQL DB in Java SE
 
@@ -240,15 +244,25 @@ datasources on the server need to point to different MySQL DB schemas from those
 
 ### EclipseLink module
 
+WildFly ships the `org.eclipse.persistence` module as an empty slot: the distribution contains only
+WildFly's own integration adapter, `jipijapa-eclipselink-<wildfly-version>.jar`, and a `module.xml`
+listing just that one resource. Hibernate remains WildFly's own JPA provider. So the step below *adds*
+EclipseLink to that slot rather than replacing anything. The version must match the server in use -
+currently WildFly `41.0.1.Final`, see `wildfly.version` in the root `pom.xml`.
+
 ```
 WILDFLY_HOME=...
+WILDFLY_VERSION=41.0.1.Final
 REPO_HOME=$HOME/.m2/repository/org/eclipse/persistence
-VERSION=5.0.0-SNAPSHOT
-ASM_VERSION=9.4.0
+ASM_HOME=$HOME/.m2/repository/org/ow2/asm
+VERSION=6.0.0-SNAPSHOT
+ASM_VERSION=9.10.1
 
 WR=$WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/main
 
-cp -v $REPO_HOME/org.eclipse.persistence.asm/$ASM_VERSION/org.eclipse.persistence.asm-$ASM_VERSION.jar $WR/org.eclipse.persistence.asm.jar
+cp -v $ASM_HOME/asm/$ASM_VERSION/asm-$ASM_VERSION.jar $WR/asm.jar
+cp -v $ASM_HOME/asm-commons/$ASM_VERSION/asm-commons-$ASM_VERSION.jar $WR/asm-commons.jar
+cp -v $ASM_HOME/asm-tree/$ASM_VERSION/asm-tree-$ASM_VERSION.jar $WR/asm-tree.jar
 cp -v $REPO_HOME/org.eclipse.persistence.core/$VERSION/org.eclipse.persistence.core-$VERSION.jar $WR/org.eclipse.persistence.core.jar
 cp -v $REPO_HOME/org.eclipse.persistence.jpa/$VERSION/org.eclipse.persistence.jpa-$VERSION.jar $WR/org.eclipse.persistence.jpa.jar
 cp -v $REPO_HOME/org.eclipse.persistence.jpa.jpql/$VERSION/org.eclipse.persistence.jpa.jpql-$VERSION.jar $WR/org.eclipse.persistence.jpa.jpql.jar
@@ -261,7 +275,10 @@ echo '<module name="org.eclipse.persistence" xmlns="urn:jboss:module:1.9">
     </properties>
 
     <resources>
-        <resource-root path="jipijapa-eclipselink-jakarta-27.0.0.Alpha4.jar"/>
+        <resource-root path="jipijapa-eclipselink-'$WILDFLY_VERSION'.jar"/>
+        <resource-root path="asm.jar"/>
+        <resource-root path="asm-commons.jar"/>
+        <resource-root path="asm-tree.jar"/>
         <resource-root path="org.eclipse.persistence.core.jar"/>
         <resource-root path="org.eclipse.persistence.jpa.jar" />
         <resource-root path="org.eclipse.persistence.jpa.jpql.jar"/>
@@ -281,10 +298,11 @@ echo '<module name="org.eclipse.persistence" xmlns="urn:jboss:module:1.9">
         <module name="jakarta.annotation.api"/>
         <module name="jakarta.enterprise.api"/>
         <module name="jakarta.json.api" optional="true"/>
-        <module name="javax.persistence.api"/>
+        <module name="jakarta.persistence.api"/>
         <module name="jakarta.transaction.api"/>
         <module name="jakarta.validation.api"/>
         <module name="jakarta.xml.bind.api"/>
+        <module name="org.antlr"/>
         <module name="org.jboss.as.jpa.spi"/>
         <module name="org.jboss.logging"/>
         <module name="org.jboss.vfs"/>
@@ -295,13 +313,19 @@ echo '<module name="org.eclipse.persistence" xmlns="urn:jboss:module:1.9">
 
 ```
 
+Note that WildFly 41 is a Jakarta EE 11 server, so its `jakarta.persistence.api` module is Jakarta
+Persistence 3.2 while EclipseLink 6.0 is built against 4.0. The container's own JPA layer is compiled
+against 3.2 as well, so a 4.0 provider installed this way only works as far as nothing invokes a
+4.0-only method; expect `AbstractMethodError` beyond that. In-container testing of the 4.0 API needs a
+Jakarta EE 12 server.
+
 ### MySQL
 
 #### JDBC driver
 
 ```
 connect
-module add --name=com.mysql.driver8 --resources=$HOME/.m2/repository/com/mysql/mysql-connector-j/8.0.32/mysql-connector-j-8.0.32.jar --dependencies=javax.api,javax.transaction.api
+module add --name=com.mysql.driver8 --resources=$HOME/.m2/repository/com/mysql/mysql-connector-j/8.0.32/mysql-connector-j-8.0.32.jar --dependencies=jakarta.transaction.api
 /subsystem=datasources/jdbc-driver=mysql8/:add(driver-module-name=com.mysql.driver8,driver-name=mysql8,driver-class-name=com.mysql.cj.jdbc.Driver,driver-major-version=8,driver-minor-version=0)
 :shutdown(restart=true)
 ```
@@ -331,7 +355,7 @@ xa-data-source add --jndi-name=java:/jdbc/EclipseLinkDS3 --name=EclipseLinkDS3 -
 
 ```
 connect
-module add --name=com.oracle.ojdbc11 --resources=$HOME/.m2/repository/com/oracle/database/jdbc/ojdbc11/21.6.0.0.1/ojdbc11-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/jdbc/ucp/21.6.0.0.1/ucp-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/ha/simplefan/21.6.0.0.1/simplefan-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/ha/ons/21.6.0.0.1/ons-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/xml/xmlparserv2/21.6.0.0.1/xmlparserv2-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/xml/xdb/21.6.0.0.1/xdb-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/nls/orai18n/21.6.0.0.1/orai18n-21.6.0.0.1.jar --dependencies=javax.api,javax.transaction.api
+module add --name=com.oracle.ojdbc11 --resources=$HOME/.m2/repository/com/oracle/database/jdbc/ojdbc11/21.6.0.0.1/ojdbc11-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/jdbc/ucp/21.6.0.0.1/ucp-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/ha/simplefan/21.6.0.0.1/simplefan-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/ha/ons/21.6.0.0.1/ons-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/xml/xmlparserv2/21.6.0.0.1/xmlparserv2-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/xml/xdb/21.6.0.0.1/xdb-21.6.0.0.1.jar:$HOME/.m2/repository/com/oracle/database/nls/orai18n/21.6.0.0.1/orai18n-21.6.0.0.1.jar --dependencies=jakarta.transaction.api
 /subsystem=datasources/jdbc-driver=ojdbc11/:add(driver-module-name=com.oracle.ojdbc11,driver-name=ojdbc11,driver-class-name=oracle.jdbc.OracleDriver,driver-major-version=21,driver-minor-version=6)
 :shutdown(restart=true)
 ```
@@ -345,6 +369,113 @@ data-source add --jndi-name=java:/jdbc/EclipseLinkDS --name=EclipseLinkDS --conn
 
 # XA ds TBD
 ```
+
+## GlassFish configuration
+
+GlassFish ships EclipseLink as its own JPA provider, so unlike WildFly there is no module descriptor to
+write by hand: the `glassfish` profile replaces the `org.eclipse.persistence.*.jar` files in
+`glassfish/modules` with the ones built here, under the same names. The distribution is not downloaded
+from a URL either - it is resolved from the Maven repository as
+`org.glassfish.main.distributions:glassfish:${glassfish.version}` and unpacked into
+`~/.eclipselinktests/glassfish9`, so a locally built GlassFish is used as it is.
+
+```
+mvn initialize -pl :org.eclipse.persistence.jpa.testapps -Pglassfish
+```
+
+That unpacks the server and applies the EclipseLink jars. Both steps run only for the aggregator, so they
+are not repeated for each test module.
+
+### Server, database and datasources
+
+The `glassfish` profile prepares the domain itself, once, from the aggregator, before the first test module
+deploys (all with `asadmin`, all idempotent):
+
+* `start-database` - GlassFish's own Derby, on port `${glassfish.db.port}` (1528), not Derby's default
+  1527. The Java SE test runs start their own Derby server on 1527 in every module, so with the two on
+  separate ports the Java SE and the in-container tests run in one build.
+* `restart-domain` - starts the domain, or restarts it so it loads the EclipseLink jars just copied into
+  `glassfish/modules`.
+* `add-resources` with [glassfish-resources.xml](glassfish-resources.xml) - the datasources the generated
+  server-side `persistence.xml` files expect: `jdbc/EclipseLinkDS`, `jdbc/EclipseLinkDS2`,
+  `jdbc/EclipseLinkDS3` and `jdbc/EclipseLinkXADS`, on the same in-memory Derby databases the Java SE tests
+  use. As in the WildFly setup, all but the first are XA datasources: the members of a composite
+  persistence unit each use a different one of them within a single JTA transaction, which GlassFish
+  rejects for more than one non-XA resource ("Local transaction already has 1 non-XA Resource").
+  Existing datasources are left alone, so the next step sets their port again.
+* `set` - the pools' `portNumber` (GlassFish's default `DerbyPool` included), and
+  `disable-nonportable-jndi-names`, see below.
+* `ping-connection-pool EclipseLinkPool` - so an unreachable database fails the build once, not every
+  test module.
+
+The domain and its database are left running afterwards; stop them with `asadmin stop-domain` and
+`asadmin stop-database`. A domain configured by hand for an earlier version of this README has a
+driver-based `EclipseLinkPool` with the port in its URL, which the `set` step cannot correct: delete it
+once (`asadmin delete-jdbc-resource jdbc/EclipseLinkDS`, then `asadmin delete-jdbc-connection-pool
+EclipseLinkPool`) and the next build recreates it.
+
+Composite persistence units also need two GlassFish 9 fixes, not yet in a released GlassFish:
+
+* `JPADeployer` eagerly created an `EntityManager` for every persistence unit at deploy time, including
+  composite members, which EclipseLink refuses to deploy on their own (`EclipseLink-28030`); that
+  exception escaped and aborted the loop over the remaining units, the composite among them.
+* `EntityManagerFactoryWrapper` resolved the unit of a `persistence-unit-ref` in the module of the
+  component doing the lookup rather than the one that declared it, so the `java:app` references the
+  composite members declare in their own `ejb-jar.xml` resolved to nothing from the composite module.
+
+Without them the three `composite.advanced` modules fail.
+
+### Running the tests
+
+```
+mvn verify -pl :org.eclipse.persistence.jpa.testapps -amd -Pglassfish
+```
+
+or, for the whole build, `mvn clean install -Pglassfish` from the repository root. Both run the Java SE
+and the in-container tests. Add `-Dse.test.skip=true` for the in-container tests alone, and
+`-Dignore.server.failures=true` to keep a module with failing tests from stopping the build: without it,
+the failure also skips the module's `post-integration-test`, leaving its application deployed.
+
+If a change to `etc/el-testjee.glassfish.properties` seems to have no effect, it has not reached the build
+yet: the values come from the `test-defaults` artifact, so `mvn -N install` has to regenerate it, and each
+module keeps an unpacked copy under `target/test-default-properties` that `dependency:unpack` will not
+overwrite for a snapshot. Replace that copy (or the module's `target`) after editing the file. A symptom of
+the stale copy is the client trying to reach the ORB on 4848 - the asadmin port - which hangs for 30
+seconds per test and then fails with `org.omg.CORBA.COMM_FAILURE: Connection abort`.
+
+Each module deploys its EAR with `asadmin deploy` in `pre-integration-test`, runs the server tests in
+`integration-test` and undeploys in `post-integration-test`. `cargo-maven3-plugin` is deliberately not
+used for this: its `glassfish9x` container looks for the admin CLI at `glassfish/modules/admin-cli.jar`,
+which GlassFish 9 moved to `glassfish/admin-cli.jar`.
+
+Besides the portable `java:global` names, GlassFish binds every remote bean under a non-portable global
+name derived from its remote interface, so two beans sharing one `@Remote` interface - the two `TestRunner`
+beans of the test framework, which every EJB jar of a composite EAR carries - fail to deploy with
+`NameAlreadyBoundException`. The `glassfish` profile therefore sets the EJB container property
+`disable-nonportable-jndi-names=true` on the domain (`asadmin set`, from the aggregator, before the first
+deploy), which leaves only the portable names; the test client looks beans up by those alone. When a
+single module is run without the aggregator in the reactor, set it once by hand:
+
+```
+$GF/bin/asadmin set configs.config.server-config.ejb-container.property.disable-nonportable-jndi-names=true
+```
+
+### How the test client reaches the server
+
+The tests are ordinary JUnit clients that look their in-container `TestRunner` bean up over JNDI; no
+GlassFish app client container is involved. The `glassfish` profile supplies what that needs:
+
+* `org.glassfish.main.appclient:gf-client-module` on the test classpath - **not** `gf-client`, which is
+  only the app client container launcher and carries no naming stack. `gf-client-module` brings
+  `glassfish-naming.jar`, whose `jndi.properties` declares the initial context factory, so
+  `new InitialContext()` needs no environment properties at all;
+* `org.glassfish.gmbal:gmbal`, because `gf-client-module` depends only on `gmbal-api-only` and the ORB
+  cannot start without the implementation;
+* `--add-opens=java.base/java.lang=ALL-UNNAMED`, for the EJB stub generator;
+* `org.omg.CORBA.ORBInitialHost`/`ORBInitialPort` pointing at the IIOP listener on **3700**.
+
+Both the portable `java:global/<app>/<module>/<Bean>!<interface>` form and JNDI enumeration of that context
+work, so the client code path is the same one WildFly uses.
 
 ## Add new server configuration
 
@@ -372,7 +503,7 @@ and `undeploy` to `post-integration-test` phase.
                 <dependency>
                     <groupId>org.wildfly</groupId>
                     <artifactId>wildfly-client-all</artifactId>
-                    <version>27.0.0.Alpha4</version>
+                    <version>${wildfly.version}</version>
                 </dependency>
             </dependencies>
         </dependencyManagement>
@@ -388,7 +519,7 @@ and `undeploy` to `post-integration-test` phase.
                 <plugin>
                     <groupId>org.wildfly.plugins</groupId>
                     <artifactId>wildfly-maven-plugin</artifactId>
-                    <version>2.1.0.Beta1</version>
+                    <version>6.0.1.Final</version>
                     <configuration>
                         <skip>${wildfly.deploy.skip}</skip>
                         <username>${wildfly.username}</username>

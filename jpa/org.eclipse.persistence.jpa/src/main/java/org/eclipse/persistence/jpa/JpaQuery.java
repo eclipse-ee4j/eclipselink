@@ -14,6 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jpa;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.QueryFlushMode;
+import jakarta.persistence.StatementOrTypedQuery;
+import jakarta.persistence.Timeout;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.metamodel.Type;
+
 import java.util.Collection;
 
 import org.eclipse.persistence.queries.Cursor;
@@ -25,7 +35,66 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * jakarta.persistence.Query and adds access to the underlying database query for EclipseLink specific
  * functionality.
  */
-public interface JpaQuery<X> extends jakarta.persistence.TypedQuery<X> {
+public interface JpaQuery<X> extends TypedQuery<X>, StatementOrTypedQuery {
+
+    @Nonnull
+    @Override
+    JpaQuery<X> setHint(@Nonnull String hintName, @Nullable Object value);
+
+    @Nonnull
+    @Override
+    <T> JpaQuery<X> setParameter(@Nonnull Parameter<T> parameter, @Nullable T value);
+
+    @Nonnull
+    @Override
+    JpaQuery<X> setParameter(@Nonnull String name, @Nullable Object value);
+
+    @Nonnull
+    @Override
+    <P> JpaQuery<X> setParameter(@Nonnull String name, @Nullable P value, @Nonnull Class<P> type);
+
+    @Nonnull
+    @Override
+    <P> JpaQuery<X> setParameter(@Nonnull String name, @Nullable P value, @Nonnull Type<P> type);
+
+    @Nonnull
+    @Override
+    <P> JpaQuery<X> setConvertedParameter(@Nonnull String name, @Nullable P value,
+                                                    @Nonnull Class<? extends AttributeConverter<P, ?>> converter);
+
+    @Nonnull
+    @Override
+    JpaQuery<X> setParameter(int position, @Nullable Object value);
+
+    @Nonnull
+    @Override
+    <P> JpaQuery<X> setParameter(int position, @Nullable P value, @Nonnull Class<P> type);
+
+    @Nonnull
+    @Override
+    <P> JpaQuery<X> setParameter(int position, @Nullable P value, @Nonnull Type<P> type);
+
+    @Nonnull
+    @Override
+    <P> JpaQuery<X> setConvertedParameter(int position, @Nullable P value,
+                                                    @Nonnull Class<? extends AttributeConverter<P, ?>> converter);
+
+    @Nonnull
+    @Override
+    JpaQuery<X> setParameters(@Nonnull Object... arguments);
+
+    @Nonnull
+    @Override
+    JpaQuery<X> setQueryFlushMode(@Nonnull QueryFlushMode flushMode);
+
+    @Nonnull
+    @Override
+    JpaQuery<X> setTimeout(@Nullable Integer timeout);
+
+    @Nonnull
+    @Override
+    JpaQuery<X> setTimeout(@Nullable Timeout timeout);
+
 
     /**
      * PUBLIC:

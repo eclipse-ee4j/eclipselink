@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -384,12 +384,6 @@ public abstract class DirectAccessor extends MappingAccessor {
      */
     @Override
     protected boolean usesIndirection() {
-        String fetchType = getFetch();
-
-        if (fetchType == null) {
-            fetchType = getDefaultFetchType();
-        }
-
-        return fetchType.equals(JPA_FETCH_LAZY);
+        return JPA_FETCH_LAZY.equals(getEffectiveFetchType(getFetch()));
     }
 }

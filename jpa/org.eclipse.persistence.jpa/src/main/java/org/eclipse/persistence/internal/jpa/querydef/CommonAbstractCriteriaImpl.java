@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,11 +20,14 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.criteria.CommonAbstractCriteria;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
@@ -52,8 +55,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * @author Chris Delahunt
  * @since EclipseLink 2.5
  */
-public abstract class CommonAbstractCriteriaImpl<T>
-        implements CommonAbstractCriteria, Serializable, CriteriaSelectInternal<T> {
+public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCriteria, Serializable, CriteriaSelectInternal<T> {
 
     @Serial
     private static final long serialVersionUID = -2729946665208116620L;
@@ -152,7 +154,7 @@ public abstract class CommonAbstractCriteriaImpl<T>
      */
     public CommonAbstractCriteria where(Expression<Boolean> restriction) {
         findRootAndParameters(restriction);
-        this.where = restriction;
+        this.where = BooleanExpressionImpl.restriction(restriction);
         return this;
     }
 
@@ -179,7 +181,8 @@ public abstract class CommonAbstractCriteriaImpl<T>
      * @return the modified query
      * @since 5.0
      */
-    public CommonAbstractCriteria where(List<Predicate> restrictions) {
+    @Nonnull
+    public CommonAbstractCriteria where(@Nonnull List<? extends Expression<Boolean>> restrictions) {
         Predicate predicate = queryBuilder.and(restrictions);
         findRootAndParameters(predicate);
         where = predicate;
@@ -260,9 +263,13 @@ public abstract class CommonAbstractCriteriaImpl<T>
      * @return EclipseLink {@link DatabaseQuery}
      */
     protected DatabaseQuery translate(DatabaseQuery query) {
+        Map<String, ParameterExpression<?>> parameterMetadata = new HashMap<>();
         for (ParameterExpression<?> parameter : getParameters()) {
-            query.addArgument(((ParameterExpressionImpl<?>)parameter).getInternalName(), parameter.getJavaType());
+            String name = ((ParameterExpressionImpl<?>) parameter).getInternalName();
+            query.addArgument(name, parameter.getJavaType());
+            parameterMetadata.put(name, parameter);
         }
+        query.setProperty(ParameterExpressionImpl.QUERY_PARAMETERS_PROPERTY, Map.copyOf(parameterMetadata));
         if (this.where != null) {
             if (((InternalExpression) this.where).isJunction()) {
                 if (!((PredicateImpl) this.where).getJunctionValue()) {

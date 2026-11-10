@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,6 +47,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
@@ -1034,18 +1035,23 @@ public class IdentityMapManager implements Serializable, Cloneable {
             return null;
         }
 
-        Object lookupParameters;
-        if ((parameters == null) || parameters.isEmpty()) {
-            lookupParameters = CacheId.EMPTY;
-        } else {
-            lookupParameters = new CacheId(parameters.toArray());
-        }
-
-        CacheKey key = map.getCacheKey(lookupParameters, false);
+        CacheKey key = map.getCacheKey(queryResultKey(query, parameters), false);
         if ((key == null) || (shouldCheckExpiry && query.getQueryResultsCachePolicy().getCacheInvalidationPolicy().isInvalidated(key))) {
             return null;
         }
         return key.getObject();
+    }
+
+    /** Materialized report shapes share a named bucket, but never a result entry. */
+    private static Object queryResultKey(ReadQuery query, List parameters) {
+        CacheId arguments = parameters == null || parameters.isEmpty()
+                ? CacheId.EMPTY : new CacheId(parameters.toArray());
+        return query instanceof ReportQuery report
+                ? new ReportResultKey(arguments, report.getResultCacheShape()) : arguments;
+    }
+
+    private record ReportResultKey(CacheId arguments, Object shape) implements Serializable {
+        private static final long serialVersionUID = 1L;
     }
 
     /**
@@ -1415,7 +1421,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 if (map == null) {
                     int size = query.getQueryResultsCachePolicy().getMaximumCachedResults();
                     // PERF: If no parameters, then there can only be one result.
-                    if ((parameters == null) || parameters.isEmpty()) {
+                    if (!(query instanceof ReportQuery) && ((parameters == null) || parameters.isEmpty())) {
                         size = 1;
                     }
                     map = buildNewIdentityMap(query.getQueryResultsCachePolicy().getCacheType(), size, null, false);
@@ -1430,12 +1436,6 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 }
             }
         }
-        Object lookupParameters;
-        if ((parameters == null) || parameters.isEmpty()) {
-            lookupParameters = CacheId.EMPTY;
-        } else {
-            lookupParameters = new CacheId(parameters.toArray());
-        }
         long queryTime = 0;
         if (query.isObjectLevelReadQuery()) {
             queryTime = ((ObjectLevelReadQuery)query).getExecutionTime();
@@ -1447,7 +1447,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         if (results == null) {
             results = InvalidObject.instance();
         }
-        map.put(lookupParameters, results, null, queryTime);
+        map.put(queryResultKey(query, parameters), results, null, queryTime);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -216,14 +216,20 @@ public class AdvancedCriteriaQueryTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'").getResultList();
+            List<Employee> expected = em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'", Employee.class).getResultList();
+            assertEquals("Sales Reporting must have one leader.", 1, expected.size());
+            assertEquals("John", expected.get(0).getFirstName());
+            assertEquals("Way", expected.get(0).getLastName());
             Metamodel mm = em.getMetamodel();
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Project> spouse = cquery.from(Project.class);
             cquery.where(qbuilder.equal(spouse.get("name"), "Sales Reporting")).select(spouse.get("teamLeader"));
             TypedQuery<Employee> tquery = em.createQuery(cquery);
-            assertTrue("Did not find the correct leaders of Project Swirly Dirly.", tquery.getResultList().size() > 1);
+            List<Employee> actual = tquery.getResultList();
+            assertEquals("Incorrect leader count for Sales Reporting.", expected.size(), actual.size());
+            assertEquals("Incorrect leaders for Sales Reporting.",
+                    expected.stream().map(Employee::getId).toList(), actual.stream().map(Employee::getId).toList());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -1290,7 +1296,7 @@ public class AdvancedCriteriaQueryTest extends JUnitTestCase {
             Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
 
             Root<Employee> sub2Employee = subQuery2.from(Employee.class);
-            Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
+            Join<Project, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
 
             subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
             subQuery1.where(builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects)));
@@ -1344,7 +1350,7 @@ public class AdvancedCriteriaQueryTest extends JUnitTestCase {
             Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
 
             Root<Employee> sub2Employee = subQuery2.from(Employee.class);
-            Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
+            Join<Project, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
 
             subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
             subQuery1.where(builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects)));
@@ -1391,7 +1397,7 @@ public class AdvancedCriteriaQueryTest extends JUnitTestCase {
             Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
 
             Root<Employee> sub2Employee = subQuery2.from(Employee.class);
-            Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
+            Join<Project, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
 
             subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
             Predicate notSalesReporting = builder.not(builder.equal(builder.literal("Sales Reporting"), sub1Project.get("name")));
@@ -1443,7 +1449,7 @@ public class AdvancedCriteriaQueryTest extends JUnitTestCase {
             Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
 
             Root<Employee> sub2Employee = subQuery2.from(Employee.class);
-            Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
+            Join<Project, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
 
             subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
             Predicate oneEqualsOne = builder.equal(builder.literal(1), builder.literal(1));
@@ -1920,7 +1926,7 @@ public class AdvancedCriteriaQueryTest extends JUnitTestCase {
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Employee> customer = cquery.from(Employee.class);
             Path<Object> pathToIgnore = customer.get("manager").get("address");
-            Join<Object, Object> manager = customer.join("manager", JoinType.LEFT);
+            Join<Employee, Object> manager = customer.join("manager", JoinType.LEFT);
 
             TypedQuery<Employee> tquery = em.createQuery(cquery);
             List<Employee> result = tquery.getResultList();

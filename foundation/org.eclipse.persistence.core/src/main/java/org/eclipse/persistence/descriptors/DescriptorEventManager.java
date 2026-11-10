@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ package org.eclipse.persistence.descriptors;
 import org.eclipse.persistence.core.descriptors.CoreDescriptorEventManager;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -63,6 +64,8 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     protected transient List<DescriptorEventListener> defaultEventListeners;
     protected transient List<DescriptorEventListener> entityListenerEventListeners;
     protected transient DescriptorEventListener entityEventListener;
+    protected transient List<DescriptorEventListener> discoveredEventListeners;
+    protected transient List<DescriptorEventListener> packageEventListeners;
     /**
      * Listeners that are fired after all other listeners are fired
      */
@@ -81,6 +84,9 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /** PERF: Cache if any events listener exist. */
     protected boolean hasAnyEventListeners;
+
+    /** Monotonic activation only; no factory or application listener is retained. */
+    private volatile boolean hasProgrammaticEventListeners;
     public static final int PreWriteEvent = 0;
     public static final int PostWriteEvent = 1;
     public static final int PreDeleteEvent = 2;
@@ -104,7 +110,14 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public static final int PreRemoveEvent = 16;
     public static final int PreUpdateWithChangesEvent = 17;
 
-    protected static final int NumberOfEvents = 18;
+    // Jakarta Persistence database operations and managed lifecycle events.
+    public static final int PreUpsertEvent = 18;
+    public static final int PostUpsertEvent = 19;
+    public static final int PreMergeEvent = 20;
+    public static final int PostPersistEvent = 21;
+    public static final int PostRemoveEvent = 22;
+
+    protected static final int NumberOfEvents = 23;
 
     /**
      * INTERNAL:
@@ -131,6 +144,28 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * EJB 3.0 support for lifecycle callback events defined on an entity
      * listener class.
      */
+    /**
+     * INTERNAL: Persistence-unit listeners discovered through annotations.
+     */
+    public void addDiscoveredEventListener(DescriptorEventListener listener) {
+        if (discoveredEventListeners == null) {
+            discoveredEventListeners = new CopyOnWriteArrayList<>();
+        }
+        discoveredEventListeners.add(listener);
+        setHasAnyEventListeners(true);
+    }
+
+    /**
+     * INTERNAL: Default listeners declared on a module or package.
+     */
+    public void addPackageEventListener(DescriptorEventListener listener) {
+        if (packageEventListeners == null) {
+            packageEventListeners = new CopyOnWriteArrayList<>();
+        }
+        packageEventListeners.add(listener);
+        setHasAnyEventListeners(true);
+    }
+
     public void addEntityListenerEventListener(DescriptorEventListener listener) {
         getEntityListenerEventListeners().add(listener);
     }
@@ -221,12 +256,119 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      */
     @Override
     public void executeEvent(DescriptorEvent event) throws DescriptorException {
+        int originalCode = event.getEventCode();
+        try {
+            executeEventInternal(event);
+            // Managed lifecycle callbacks follow successful database operations.
+            // A client-session write has no managed lifecycle to notify.
+            if (event.getSession().isUnitOfWork()) {
+                if (originalCode == PostInsertEvent) {
+                    event.setEventCode(PostPersistEvent);
+                    executeEventInternal(event);
+                } else if (originalCode == PostDeleteEvent) {
+                    event.setEventCode(PostRemoveEvent);
+                    executeEventInternal(event);
+                }
+            }
+        } finally {
+            event.setEventCode(originalCode);
+        }
+    }
+
+    /**
+     * INTERNAL: Preserve native cache refresh notifications while the managed
+     * target's JPA callbacks are deferred until after its state is merged.
+     */
+    public void executeRefreshSourceEvent(DescriptorEvent event) {
+        int originalCode = event.getEventCode();
+        try {
+            executeEventInternal(event, true);
+        } finally {
+            event.setEventCode(originalCode);
+        }
+    }
+
+    /**
+     * INTERNAL: Deliver only the completed managed target's JPA phase.
+     */
+    public void executeEntityRefreshEvent(DescriptorEvent event) {
+        int originalCode = event.getEventCode();
+        try {
+            event.getSession().startOperationProfile(SessionProfiler.DescriptorEvent);
+            event.setDescriptor(getDescriptor());
+            if (!"LOCK".equals(getEntityAgentOperation(event))) {
+                notifyEJB30Listeners(event);
+            }
+        } finally {
+            event.setEventCode(originalCode);
+            event.getSession().endOperationProfile(SessionProfiler.DescriptorEvent);
+        }
+    }
+
+    /**
+     * INTERNAL: Keep the native clone notification in its ordinary deferred
+     * position, while the refresh operation owns its separate JPA phase.
+     */
+    public DescriptorEvent createRefreshCloneEvent(DescriptorEvent event) {
+        DescriptorEvent nativeEvent = new NativeRefreshCloneEvent(event.getObject());
+        nativeEvent.setEventCode(event.getEventCode());
+        nativeEvent.setDescriptor(event.getDescriptor());
+        nativeEvent.setSession(event.getSession());
+        nativeEvent.setOriginalObject(event.getOriginalObject());
+        nativeEvent.setQuery(event.getQuery());
+        nativeEvent.setRecord(event.getRecord());
+        return nativeEvent;
+    }
+
+    private static final class NativeRefreshCloneEvent extends DescriptorEvent {
+        private NativeRefreshCloneEvent(Object entity) {
+            super(entity);
+        }
+    }
+
+    private Object getEntityAgentOperation(DescriptorEvent event) {
+        Object operation = event.getQuery() == null ? null
+                : event.getQuery().getProperty(EntityAgentProperties.OPERATION);
+        if (operation == null && Boolean.TRUE.equals(event.getSession().getProperty(EntityAgentProperties.ENTITY_AGENT))) {
+            // A descriptor custom query can replace the original query. The
+            // operation-scoped client marker survives that substitution.
+            operation = event.getSession().getProperty(EntityAgentProperties.OPERATION);
+        }
+        return operation;
+    }
+
+    private void executeEventInternal(DescriptorEvent event) throws DescriptorException {
+        executeEventInternal(event, false);
+    }
+
+    private void executeEventInternal(DescriptorEvent event, boolean refreshSource) throws DescriptorException {
         try {
             event.getSession().startOperationProfile(SessionProfiler.DescriptorEvent);
             // CR#3467758, ensure the descriptor is set on the event.
             event.setDescriptor(getDescriptor());
             notifyListeners(event);
-            notifyEJB30Listeners(event);
+            // A force-increment lock is not an application update operation.
+            // Preserve core descriptor notifications without entity callbacks or
+            // automatic validation for this internal version write.
+            boolean lockWrite = "LOCK".equals(getEntityAgentOperation(event));
+            if (!lockWrite && !refreshSource && !(event instanceof NativeRefreshCloneEvent)) {
+                int physicalCode = event.getEventCode();
+                try {
+                    // Only JPA callbacks and automatic validation use upsert
+                    // semantics. Native listeners and selectors observe the
+                    // physical insert/update operation that actually occurred.
+                    if ("UPSERT".equals(getEntityAgentOperation(event))) {
+                        if (physicalCode == PreInsertEvent || physicalCode == PreUpdateWithChangesEvent) {
+                            event.setEventCode(PreUpsertEvent);
+                        } else if (physicalCode == PostInsertEvent || physicalCode == PostUpdateEvent) {
+                            event.setEventCode(PostUpsertEvent);
+                        }
+                    }
+                    notifyEJB30Listeners(event);
+                } finally {
+                    event.setEventCode(physicalCode);
+                }
+            }
 
             if (event.getSource() instanceof DescriptorEventListener) {
                 // Allow the object itself to implement the interface.
@@ -513,7 +655,14 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         // Check listeners in case of collection added to directly as occurs
         // for aggregates that have a clone of the event manager but not the
         // listeners.
-        return hasAnyEventListeners || hasAnyListeners();
+        return hasProgrammaticEventListeners || hasAnyEventListeners || hasAnyListeners();
+    }
+
+    /**
+     * INTERNAL: Enable context callbacks, including for descriptors initialized earlier.
+     */
+    public void enableProgrammaticEventListeners() {
+        this.hasProgrammaticEventListeners = true;
     }
 
     protected boolean hasAnyListeners() {
@@ -565,7 +714,9 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         setHasAnyEventListeners(false);
         // Initialize the EJB 3.0 supported listeners.
         initializeEJB30EventManagers();
-        if (hasEntityEventListener() || hasEntityListenerEventListeners() || hasDefaultEventListeners() || hasInternalEventListeners()) {
+        if (hasEntityEventListener() || hasEntityListenerEventListeners() || hasDefaultEventListeners() || hasInternalEventListeners()
+                || (discoveredEventListeners != null && !discoveredEventListeners.isEmpty())
+                || (packageEventListeners != null && !packageEventListeners.isEmpty() && !excludeDefaultListeners)) {
             setHasAnyEventListeners(true);
         }
 
@@ -653,6 +804,18 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             }
         }
 
+        // Annotation-discovered listeners precede module/package defaults.
+        if (discoveredEventListeners != null) {
+            for (DescriptorEventListener listener : discoveredEventListeners) {
+                notifyListener(listener, event);
+            }
+        }
+        if (!excludeDefaultListeners && packageEventListeners != null) {
+            for (DescriptorEventListener listener : packageEventListeners) {
+                notifyListener(listener, event);
+            }
+        }
+
         // Step 2 - Notify the Entity Listener's first, top -> down.
         for (int index = entityListenerEventManagers.size() - 1; index >= 0; index--) {
             List<DescriptorEventListener> entityListenerEventListeners = entityListenerEventManagers.get(index).getEntityListenerEventListeners();
@@ -661,6 +824,12 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
                 DescriptorEventListener listener = entityListenerEventListeners.get(i);
                 notifyListener(listener, event);
             }
+        }
+
+        // Runtime listeners are direct associations, independent of metadata exclusions.
+        DescriptorEventListener contextListener = event.getSession().getEntityListener();
+        if (contextListener != null) {
+            notifyListener(contextListener, event);
         }
 
         // Step 3 - Notify the Entity event listeners. top -> down, unless
@@ -740,6 +909,21 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             break;
         case PreUpdateWithChangesEvent:
             listener.preUpdateWithChanges(event);
+            break;
+        case PreUpsertEvent:
+            listener.preUpsert(event);
+            break;
+        case PostUpsertEvent:
+            listener.postUpsert(event);
+            break;
+        case PreMergeEvent:
+            listener.preMerge(event);
+            break;
+        case PostPersistEvent:
+            listener.postPersist(event);
+            break;
+        case PostRemoveEvent:
+            listener.postRemove(event);
             break;
         default:
             throw DescriptorException.invalidDescriptorEventCode(event, getDescriptor());

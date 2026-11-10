@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
@@ -40,17 +41,12 @@ public class EntityClassListener<T> extends EntityListener<T> {
     }
 
     /**
-     * INTERNAL:
-     * For entity classes listener methods, they need to override listeners
-     * from mapped superclasses for the same method. So we need to override
-     * this method and make the override check instead of it throwing an
-     * exception for multiple lifecycle methods for the same event.
+     * INTERNAL: Overrides are filtered per method when invoking, because one
+     * overridden callback must not suppress other superclass callbacks.
      */
     @Override
-    public void addEventMethod(String event, Method method) {
-        if (! hasOverriddenEventMethod(method, event)) {
-            super.addEventMethod(event, method);
-        }
+    public boolean isOverriddenEvent(DescriptorEvent event, List<DescriptorEventManager> eventManagers) {
+        return false;
     }
 
     /**
@@ -73,6 +69,9 @@ public class EntityClassListener<T> extends EntityListener<T> {
 
             for (int i = eventMethods.size() - 1; i >= 0; i--) {
                 Method method = eventMethods.get(i);
+                if (isMethodOverridden(method, descriptorEvent.getObject().getClass())) {
+                    continue;
+                }
                 Object[] objectList = {};
                 invokeMethod(method, descriptorEvent.getObject(), objectList);
             }

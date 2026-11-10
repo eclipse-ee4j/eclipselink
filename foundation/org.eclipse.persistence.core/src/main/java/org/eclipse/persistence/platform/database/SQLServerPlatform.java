@@ -13,6 +13,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     The DISTINCT and statement-state adaptation was developed with assistance from OpenAI Codex.
 //     09/14/2011-2.3.1 Guy Pelletier
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 //     02/19/2015 - Rick Curtis
@@ -57,7 +58,6 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -79,6 +79,9 @@ public class SQLServerPlatform extends DatabasePlatform {
     
     /** MSSQL-specific JDBC type constants */
     private static final int DATETIMEOFFSET_TYPE = -155;
+
+    private static final String STRING_LENGTH_PREFIX = "CONVERT(int, LEN(CONVERT(nvarchar(max), ";
+    private static final String STRING_LENGTH_SUFFIX = ") + N'#') - 1)";
     
     /** Support for sequence objects and OFFSET FETCH NEXT added in SQL Server 2012 */
     private boolean isVersion11OrHigher;
@@ -93,6 +96,12 @@ public class SQLServerPlatform extends DatabasePlatform {
         this.pingSQL = "SELECT 1";
         setStoredProcedureTerminationToken(" go");
         this.supportsReturnGeneratedKeys = true;
+    }
+
+    @Override
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        // Microsoft JDBC xopenStates may report 42000 for these duplicate codes.
+        return exception.getErrorCode() == 2601 || exception.getErrorCode() == 2627 || super.isUniqueConstraintViolation(exception);
     }
 
     @Override
@@ -542,7 +551,7 @@ public class SQLServerPlatform extends DatabasePlatform {
         addOperator(locateOperator());
         addOperator(locate2Operator());
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ceil, "CEILING"));
-        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "LEN"));
+        addOperator(lengthOperator());
         addOperator(modOperator());
         addOperator(ExpressionOperator.simpleAggregate(ExpressionOperator.StandardDeviation, "STDEV", "standardDeviation"));
         addOperator(trimOperator());
@@ -661,22 +670,21 @@ public class SQLServerPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Build Trim operator.
+     * Use native character trimming, available since SQL Server 2017.
      */
     protected static ExpressionOperator trim2Operator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim2);
-        List<String> v = new ArrayList<>(5);
-        v.add("RTRIM(");
-        v.add(" FROM LTRIM(");
+        List<String> v = new ArrayList<>(3);
+        v.add("TRIM(");
         v.add(" FROM ");
-        v.add("))");
+        v.add(")");
         exOperator.printsAs(v);
-        int[] argumentIndices = new int[3];
+        exOperator.bePrefix();
+        int[] argumentIndices = new int[2];
         argumentIndices[0] = 1;
-        argumentIndices[1] = 1;
-        argumentIndices[2] = 0;
+        argumentIndices[1] = 0;
         exOperator.setArgumentIndices(argumentIndices);
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
@@ -735,6 +743,20 @@ public class SQLServerPlatform extends DatabasePlatform {
     }
 
     /**
+     * Count trailing spaces using a nonspace sentinel. Convert before appending
+     * so a bounded-width input cannot truncate the sentinel, and retain the
+     * Integer result type even though LEN over nvarchar(max) returns bigint.
+     * Guard null separately because older servers may concatenate it as empty.
+     */
+    protected static ExpressionOperator lengthOperator() {
+        ExpressionOperator result = ExpressionOperator.length();
+        result.printsAs(List.of("CASE WHEN ", " IS NULL THEN CAST(NULL AS INTEGER) ELSE "
+                + STRING_LENGTH_PREFIX, STRING_LENGTH_SUFFIX + " END"));
+        result.setArgumentIndices(new int[]{0, 0});
+        return result;
+    }
+
+    /**
      * Override the default SubstringSingleArg operator.
      */
     protected static ExpressionOperator singleArgumentSubstringOperator() {
@@ -744,8 +766,8 @@ public class SQLServerPlatform extends DatabasePlatform {
         List<String> v = new ArrayList<>();
         v.add("SUBSTRING(");
         v.add(",");
-        v.add(", LEN(");
-        v.add("))");
+        v.add(", " + STRING_LENGTH_PREFIX);
+        v.add(STRING_LENGTH_SUFFIX + ")");
         result.printsAs(v);
         int[] indices = new int[3];
         indices[0] = 0;
@@ -1062,78 +1084,106 @@ public class SQLServerPlatform extends DatabasePlatform {
         writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields, this);
     }
 
+    /**
+     * INTERNAL:
+     * FETCH NEXT takes a row count rather than the index of the final row.
+     */
+    @Override
+    public int computeMaxRowsForSQL(int firstResultIndex, int maxResults) {
+        return isVersion11OrHigher && shouldUseRownumFiltering()
+                ? maxResults - Math.max(0, firstResultIndex) : maxResults;
+    }
+
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
-        // SQL Server does not support NULLS FIRST / NULLS LAST syntax. Rewrite each such ORDER BY
-        // expression to the equivalent CASE workaround before printing:
-        //   col NULLS FIRST  →  (CASE WHEN col IS NULL THEN 0 ELSE 1 END), col
-        //   col NULLS LAST   →  (CASE WHEN col IS NULL THEN 1 ELSE 0 END), col
-        List<Expression> orderBy = statement.getOrderByExpressions();
-        for (int i = 0; i < orderBy.size(); i++) {
-            Expression expr = orderBy.get(i);
-            if (expr instanceof FunctionExpression funcExpr) {
-                int selector = funcExpr.getOperator().getSelector();
-                if (selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
-                    // The base may be wrapped in an ASC/DESC FunctionExpression
-                    // The CASE predicate must use the bare field (no ASC/DESC keyword), while
-                    // the second sort term keeps the original ASC/DESC wrapper.
-                    Expression sortExpr = funcExpr.getBaseExpression();   // may be ASC/DESC or bare field
-                    Expression fieldExpr = sortExpr;                       // field for the CASE predicate
-                    if (sortExpr instanceof FunctionExpression sortFuncExpr) {
-                        int sortSelector = sortFuncExpr.getOperator().getSelector();
-                        if (sortSelector == ExpressionOperator.Ascending || sortSelector == ExpressionOperator.Descending) {
-                            fieldExpr = sortFuncExpr.getBaseExpression();  // unwrap to bare field
+        List<?> originalFields = statement.getFields();
+        int originalFieldCount = originalFields.size();
+        List<Expression> additionalFields = new ArrayList<>();
+        List<Expression> originalOrderBy = statement.getOrderByExpressions();
+        List<Expression> orderBy = new ArrayList<>(originalOrderBy);
+        statement.setOrderByExpressions(orderBy);
+        try {
+            // SQL Server does not support NULLS FIRST / NULLS LAST syntax. Rewrite each such ORDER BY
+            // expression to the equivalent CASE workaround before printing:
+            //   col NULLS FIRST  →  (CASE WHEN col IS NULL THEN 0 ELSE 1 END), col
+            //   col NULLS LAST   →  (CASE WHEN col IS NULL THEN 1 ELSE 0 END), col
+            for (int i = 0; i < orderBy.size(); i++) {
+                Expression expr = orderBy.get(i);
+                if (expr instanceof FunctionExpression funcExpr) {
+                    int selector = funcExpr.getOperator().getSelector();
+                    if (selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
+                        // The base may be wrapped in an ASC/DESC FunctionExpression
+                        // The CASE predicate must use the bare field (no ASC/DESC keyword), while
+                        // the second sort term keeps the original ASC/DESC wrapper.
+                        Expression sortExpr = funcExpr.getBaseExpression();   // may be ASC/DESC or bare field
+                        Expression fieldExpr = sortExpr;                       // field for the CASE predicate
+                        if (sortExpr instanceof FunctionExpression sortFuncExpr) {
+                            int sortSelector = sortFuncExpr.getOperator().getSelector();
+                            if (sortSelector == ExpressionOperator.Ascending || sortSelector == ExpressionOperator.Descending) {
+                                fieldExpr = sortFuncExpr.getBaseExpression();  // unwrap to bare field
+                            }
+                        }
+                        // NULLS FIRST: nulls sort before non-nulls (null → 0, non-null → 1)
+                        // NULLS LAST:  nulls sort after  non-nulls (null → 1, non-null → 0)
+                        String nullValue    = (selector == ExpressionOperator.NullsFirst) ? "0" : "1";
+                        String nonNullValue = (selector == ExpressionOperator.NullsFirst) ? "1" : "0";
+                        // Use bare fieldExpr in the CASE predicate; keep sortExpr (with ASC/DESC) as the second term
+                        Expression rank = fieldExpr.sql("(CASE WHEN ? IS NULL THEN " + nullValue
+                                + " ELSE " + nonNullValue + " END)", List.of());
+                        orderBy.set(i, rank);
+                        orderBy.add(++i, sortExpr);
+                        if (statement.shouldDistinctBeUsed()) {
+                            // Keep the same scalar rank in the projection and ordering.
+                            additionalFields.add(rank);
                         }
                     }
-                    // NULLS FIRST: nulls sort before non-nulls (null → 0, non-null → 1)
-                    // NULLS LAST:  nulls sort after  non-nulls (null → 1, non-null → 0)
-                    String nullValue    = (selector == ExpressionOperator.NullsFirst) ? "0" : "1";
-                    String nonNullValue = (selector == ExpressionOperator.NullsFirst) ? "1" : "0";
-                    // Use bare fieldExpr in the CASE predicate; keep sortExpr (with ASC/DESC) as the second term
-                    String caseSql = "(CASE WHEN ? IS NULL THEN " + nullValue + " ELSE " + nonNullValue + " END), ?";
-                    orderBy.set(i, fieldExpr.sql(caseSql, Arrays.asList(sortExpr)));
                 }
             }
-        }
 
+            statement.getFields().addAll(additionalFields);
+            // OFFSET/FETCH requires ORDER BY even when the query has no requested ordering.
+            if (shouldPrintOffsetFetch(statement) && orderBy.isEmpty()) {
+                orderBy.add(statement.getBuilder().literal("ROW_NUMBER() OVER (ORDER BY (SELECT null))"));
+            }
+            super.printSQLSelectStatement(call, printer, statement);
+            int additionalFieldCount = statement.getFields().size() - originalFieldCount;
+            if (additionalFieldCount > 0) {
+                // Every appended rank/sort key is scalar; original entity selections may expand.
+                call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFieldCount));
+            }
+        } finally {
+            // Preserve both lists and their elements for reuse, including failed rendering.
+            try {
+                while (originalFields.size() > originalFieldCount) {
+                    originalFields.remove(originalFields.size() - 1);
+                }
+            } finally {
+                statement.setOrderByExpressions(originalOrderBy);
+            }
+        }
+    }
+
+    private boolean shouldPrintOffsetFetch(SQLSelectStatement statement) {
         ReadQuery query = statement.getQuery();
-        if (query == null || !isVersion11OrHigher || !shouldUseRownumFiltering()) {
-            super.printSQLSelectStatement(call, printer, statement);
+        return query != null && isVersion11OrHigher && shouldUseRownumFiltering()
+                && (query.getMaxRows() > 0 || query.getFirstResult() > 0);
+    }
+
+    @Override
+    public void printSQLOrderByClauseTail(ExpressionSQLPrinter printer, SQLSelectStatement statement) throws IOException {
+        if (!shouldPrintOffsetFetch(statement)) {
             return;
         }
-        
-        int max = Math.max(0, query.getMaxRows());
-        int first = Math.max(0, query.getFirstResult());
-        
-        if (max == 0 && first == 0) {
-            super.printSQLSelectStatement(call, printer, statement);
-            return;
+        printer.getWriter().write(" OFFSET ");
+        statement.getBuilder().getParameter(DatabaseCall.FIRSTRESULT_FIELD).printSQL(printer);
+        printer.getWriter().write(" ROWS");
+        if (statement.getQuery().getMaxRows() > 0) {
+            printer.getWriter().write(" FETCH NEXT ");
+            statement.getBuilder().getParameter(DatabaseCall.MAXROW_FIELD).printSQL(printer);
+            printer.getWriter().write(" ROWS ONLY");
         }
-        
-        // OFFSET + FETCH NEXT requires ORDER BY, so add an ordering if there are none
-        // this SQL will satisfy the query parser without actually changing the ordering of the rows
-        if (orderBy.isEmpty()) {
-            orderBy.add(statement.getBuilder().literal("ROW_NUMBER() OVER (ORDER BY (SELECT null))"));
-        }
-        
-        // decide exact syntax to use, depending on whether a limit is specified (could just have an offset)
-        String offsetFetchSql;
-        List<?> offsetFetchArgs;
-        if (max == 0) {
-            offsetFetchSql = "? OFFSET ? ROWS";
-            offsetFetchArgs = Arrays.asList(first);
-        } else {
-            offsetFetchSql = "? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-            offsetFetchArgs = Arrays.asList(first, max - first);
-        }
-        
-        // append to the last ORDER BY clause
-        orderBy.add(orderBy.remove(orderBy.size() - 1).sql(offsetFetchSql, offsetFetchArgs));
-        
-        super.printSQLSelectStatement(call, printer, statement);
-        
-        call.setIgnoreFirstRowSetting(true);
-        call.setIgnoreMaxResultsSetting(true);
+        printer.getCall().setIgnoreFirstRowSetting(true);
+        printer.getCall().setIgnoreMaxResultsSetting(true);
     }
 
     @Override
@@ -1186,6 +1236,12 @@ public class SQLServerPlatform extends DatabasePlatform {
         }
 
         super.setParameterValueInDatabaseCall(parameter, statement, name, session);
+    }
+
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
     }
 
 }

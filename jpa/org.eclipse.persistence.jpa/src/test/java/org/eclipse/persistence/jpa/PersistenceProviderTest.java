@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,14 +16,18 @@ import java.util.Map;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PersistenceProviderTest {
 
@@ -224,6 +229,42 @@ public class PersistenceProviderTest {
         assertFalse(result);
     }
 
+    @Test
+    void schemaProviderRejectionDoesNotInitializeThePersistenceUnit() {
+        PersistenceProvider provider = new PersistenceProvider() {
+            @Override
+            public JPAInitializer getInitializer(String name, Map properties) {
+                throw new AssertionError("A rejected provider must not discover or reserve the unit");
+            }
+        };
+        assertFalse(provider.generateSchema(new PersistenceConfiguration("rejected-schema")
+                .provider(Unsupported.class.getName())));
+        assertFalse(provider.generateSchema(new PersistenceConfiguration("rejected-schema")
+                .provider(PersistenceProvider.class.getName())
+                .property(PersistenceUnitProperties.PROVIDER, Unsupported.class)));
+    }
+
+    @Test
+    void schemaProviderSelectionRetainsAliasesAndPropertyPrecedence() {
+        RuntimeException accepted = new IllegalStateException("Selected provider reached initialization");
+        PersistenceProvider provider = new PersistenceProvider() {
+            @Override
+            public JPAInitializer getInitializer(String name, Map properties) {
+                throw accepted;
+            }
+        };
+        for (PersistenceConfiguration configuration : java.util.List.of(
+                new PersistenceConfiguration("schema-provider"),
+                new PersistenceConfiguration("schema-provider").provider(PersistenceProvider.class.getName()),
+                new PersistenceConfiguration("schema-provider").provider(EntityManagerFactoryProvider.class.getName()),
+                new PersistenceConfiguration("schema-provider").provider(Unsupported.class.getName())
+                        .property(PersistenceUnitProperties.PROVIDER, PersistenceProvider.class),
+                new PersistenceConfiguration("schema-provider").provider(Unsupported.class.getName())
+                        .property(PersistenceUnitProperties.PROVIDER, EntityManagerFactoryProvider.class.getName()))) {
+            assertSame(accepted, assertThrows(IllegalStateException.class, () -> provider.generateSchema(configuration)));
+        }
+    }
+
     // PersistenceProvider that shall fail the check
     private static final class Unsupported implements jakarta.persistence.spi.PersistenceProvider {
 
@@ -253,7 +294,21 @@ public class PersistenceProviderTest {
         }
 
         @Override
+        public boolean generateSchema(PersistenceConfiguration configuration) {
+            return false;
+        }
+
+        @Override
         public ProviderUtil getProviderUtil() {
+            return null;
+        }
+
+        @Override
+        public ClassTransformer getClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
+            return null;
+        }
+
+        public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
             return null;
         }
 

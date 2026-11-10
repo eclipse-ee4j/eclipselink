@@ -1663,6 +1663,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     /**
+     * Determines whether a <code><b>CASE</b></code> expression may omit its <code><b>ELSE</b></code> clause.
+     *
+     * @return <code>true</code> if the <code><b>ELSE</b></code> clause is optional; <code>false</code> otherwise
+     */
+    protected boolean isCaseElseOptional() {
+        return false;
+    }
+
+    /**
      * Determines whether the given {@link Expression} is a {@link CollectionExpression}.
      *
      * @param expression The {@link Expression} to verify
@@ -1804,6 +1813,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      * <code>false</code> otherwise
      */
     protected boolean isNumericLiteral(String text) {
+
+        // A 'bi' or 'bd' suffix makes the literal a BigInteger or a BigDecimal. Neither can be
+        // checked by parsing it as a double - the value may be larger than a double can hold, and
+        // the exactness of a BigDecimal is the reason for writing one in the first place - so the
+        // shape of the literal is matched instead
+        if (ExpressionTools.BIG_INTEGER_REGEXP.matcher(text).matches() ||
+            ExpressionTools.BIG_DECIMAL_REGEXP.matcher(text).matches()) {
+            return true;
+        }
 
         // The ending 'l' or 'L' for a long number has to be removed, Java will not parse it
         if (text.endsWith("l") || text.endsWith("L")) {
@@ -3228,7 +3246,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
             // Missing ELSE
             if (expression.hasWhenClauses() &&
-                    !expression.hasElse()) {
+                    !expression.hasElse() &&
+                    !isCaseElseOptional()) {
 
                 int startPosition = position(expression) +
                         4 /* CASE */ +
@@ -3257,8 +3276,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 addProblem(expression, startPosition, CaseExpression_MissingElseExpression);
             }
             // Missing END
-            else if (expression.hasElseExpression() &&
-                    !expression.hasEnd()) {
+            else if (!expression.hasEnd() &&
+                    (expression.hasElseExpression() || isCaseElseOptional() && !expression.hasElse())) {
 
                 int startPosition = position(expression) +
                         4 /* CASE */ +
@@ -3267,7 +3286,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                         (expression.hasSpaceAfterCaseOperand() ? 1 : 0) +
                         length(expression.getWhenClauses()) +
                         (expression.hasSpaceAfterWhenClauses() ? 1 : 0) +
-                        4 /* ELSE */ +
+                        (expression.hasElse() ? 4 /* ELSE */ : 0) +
                         (expression.hasSpaceAfterElse() ? 1 : 0) +
                         length(expression.getElseExpression()) +
                         (expression.hasSpaceAfterElseExpression() ? 1 : 0);

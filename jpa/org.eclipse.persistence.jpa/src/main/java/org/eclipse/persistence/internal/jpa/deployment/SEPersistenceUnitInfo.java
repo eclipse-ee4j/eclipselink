@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,23 +16,28 @@
 //       - 277039: JPA 2.0 Cache Usage Settings
 package org.eclipse.persistence.internal.jpa.deployment;
 
+import jakarta.persistence.FetchType;
+import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.SchemaManagementAction;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.ValidationMode;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import jakarta.persistence.PersistenceConfiguration;
-import jakarta.persistence.PersistenceUnitTransactionType;
-import jakarta.persistence.SharedCacheMode;
-import jakarta.persistence.ValidationMode;
-import jakarta.persistence.spi.ClassTransformer;
-import jakarta.persistence.spi.PersistenceUnitInfo;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 
@@ -55,12 +60,14 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     protected List<String> mappingFiles;
     private List<String> qualifierAnnNames;
     private String scopeAnnName;
+    private FetchType defaultToOneFetchType = FetchType.EAGER;
 
     // names of jars specified in persistence.xml. they are later on used
     // to build jar-file URL.
     private final Collection<String> jarFiles = new ArrayList<>();
     protected List<URL> jarFileUrls;
     protected List<String> managedClassNames;
+    protected List<String> managedPackageDescriptors = new ArrayList<>();
     // persistence.xml root URL
     protected URL persistenceUnitRootUrl;
     // PersistenceConfiguration hash of programmatically defined PU, value is null for PU defined in persistence.xml
@@ -100,6 +107,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      * @param rootURL root {@link URL} of the persistence unit
      */
     public SEPersistenceUnitInfo(PersistenceConfiguration configuration, URL rootURL) {
+        schemaVersion = "4.0";
         persistenceUnitName = configuration.name();
         persistenceProviderClassName = configuration.provider();
         if (configuration.jtaDataSource() != null && !configuration.jtaDataSource().isEmpty()) {
@@ -110,35 +118,50 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         }
         cacheMode = configuration.sharedCacheMode();
         validationMode = configuration.validationMode();
+        defaultToOneFetchType = configuration.defaultToOneFetchType();
         persistenceUnitTransactionType = configuration.transactionType();
-        mappingFiles = configuration.mappingFiles();
+        mappingFiles = new ArrayList<>(configuration.mappingFiles());
         managedClassNames = configuration.managedClasses()
                 .stream()
                 .map(Class::getName)
                 .toList();
+        setManagedPackageDescriptors(configuration.managedPackageDescriptors());
         properties = new Properties();
         properties.putAll(configuration.properties());
-        if (properties.contains(PersistenceUnitProperties.CLASSLOADER)) {
+        addSchemaAction(properties, PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
+                configuration.schemaManagementDatabaseAction());
+        addSchemaAction(properties, PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION,
+                configuration.schemaManagementScriptsAction());
+        if (properties.containsKey(PersistenceUnitProperties.CLASSLOADER)) {
             realClassLoader = (ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER);
         } else {
             realClassLoader = Thread.currentThread().getContextClassLoader();
         }
         persistenceUnitRootUrl = rootURL;
-        configHash = Integer.toString(persistenceConfigurationHashCode(configuration));
+        configHash = Integer.toString(persistenceConfigurationHashCode(configuration, properties));
+    }
+
+    private static void addSchemaAction(Properties properties, String name, SchemaManagementAction action) {
+        // NONE is also the API default. Preserve absent-property system fallback and load-script behavior.
+        if (action != SchemaManagementAction.NONE) {
+            properties.putIfAbsent(name, action.name().toLowerCase(Locale.ROOT).replace('_', '-'));
+        }
     }
 
     // TODO: Remove when fixed by implementing hashCode in jakarta.persistence API
-    private static int persistenceConfigurationHashCode(PersistenceConfiguration configuration) {
+    private static int persistenceConfigurationHashCode(PersistenceConfiguration configuration, Properties properties) {
         return Objects.hash(configuration.name(),
                                 configuration.provider(),
                                 configuration.jtaDataSource(),
                                 configuration.nonJtaDataSource(),
                                 configuration.sharedCacheMode(),
                                 configuration.validationMode(),
+                                configuration.defaultToOneFetchType(),
                                 configuration.transactionType(),
                                 configuration.managedClasses(),
+                                new LinkedHashSet<>(configuration.managedPackageDescriptors()),
                                 configuration.mappingFiles(),
-                                configuration.properties());
+                                properties);
     }
 
     /**
@@ -209,32 +232,15 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      * @return The transaction type of the entity managers created
      *         by the EntityManagerFactory.
      * @deprecated Use {@link PersistenceUnitTransactionType}
-     *             instead of {@link jakarta.persistence.spi.PersistenceUnitTransactionType}
+     *             instead of {@link jakarta.persistence.PersistenceUnitTransactionType}
      */
     @Override
     @Deprecated
     @SuppressWarnings("removal")
-    public jakarta.persistence.spi.PersistenceUnitTransactionType getTransactionType() {
+    public jakarta.persistence.PersistenceUnitTransactionType getTransactionType() {
         return switch (persistenceUnitTransactionType) {
-            case JTA -> jakarta.persistence.spi.PersistenceUnitTransactionType.JTA;
-            case RESOURCE_LOCAL -> jakarta.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCAL;
-        };
-    }
-
-    /**
-     * Specify the transaction type of the persistence unit.
-     *
-     * @param transactionType the transaction type of the entity managers
-     *                        created by the EntityManagerFactory.
-     * @deprecated Use {@link PersistenceUnitTransactionType}
-     *             instead of {@link jakarta.persistence.spi.PersistenceUnitTransactionType}
-     */
-    @Deprecated
-    @SuppressWarnings("removal")
-    public void setTransactionType(jakarta.persistence.spi.PersistenceUnitTransactionType transactionType) {
-        persistenceUnitTransactionType = switch (transactionType) {
-            case JTA -> PersistenceUnitTransactionType.JTA;
-            case RESOURCE_LOCAL -> PersistenceUnitTransactionType.RESOURCE_LOCAL;
+            case JTA -> jakarta.persistence.PersistenceUnitTransactionType.JTA;
+            case RESOURCE_LOCAL -> jakarta.persistence.PersistenceUnitTransactionType.RESOURCE_LOCAL;
         };
     }
 
@@ -499,5 +505,57 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     @Override
     public ValidationMode getValidationMode() {
         return validationMode;
+    }
+
+    @Override
+    public List<String> getAllClassNames() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public FetchType getDefaultToOneFetchType() {
+        return defaultToOneFetchType;
+    }
+
+    public void setDefaultToOneFetchType(FetchType defaultToOneFetchType) {
+        if (defaultToOneFetchType != FetchType.LAZY && defaultToOneFetchType != FetchType.EAGER) {
+            throw new IllegalArgumentException("The default to-one fetch type must be LAZY or EAGER");
+        }
+        this.defaultToOneFetchType = defaultToOneFetchType;
+    }
+
+    @Override
+    public List<String> getManagedPackageDescriptors() {
+        return List.copyOf(new LinkedHashSet<>(managedPackageDescriptors));
+    }
+
+    public void setManagedPackageDescriptors(List<String> packageNames) {
+        managedPackageDescriptors = new ArrayList<>(new LinkedHashSet<>(packageNames));
+    }
+
+    public void addManagedPackageDescriptor(String packageName) {
+        if (!managedPackageDescriptors.contains(packageName)) {
+            managedPackageDescriptors.add(packageName);
+        }
+    }
+
+    @Override
+    public List<String> getManagedModuleDescriptors() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getAllPackageDescriptors() {
+        LinkedHashSet<String> packageNames = new LinkedHashSet<>(managedPackageDescriptors);
+        packageNames.addAll(PersistenceUnitProcessor.getDiscoveredPackageDescriptors(this));
+        return List.copyOf(packageNames);
+    }
+
+    @Override
+    public List<String> getAllModuleDescriptors() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

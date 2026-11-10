@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class EntityResult extends SQLResult {
     /** Stores the class name of result  */
     protected String entityClassName;
     protected transient Class<?> entityClass;
+    protected String lockMode = "NONE";
 
     /** Stores the list of FieldResult */
     protected Map fieldResults;
@@ -70,6 +71,21 @@ public class EntityResult extends SQLResult {
         if (this.entityClassName == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_entity_result"));
         }
+    }
+
+    /** INTERNAL: Return the initialized entity class used by this mapping. */
+    public Class<?> getEntityClass() {
+        return entityClass;
+    }
+
+    /** INTERNAL: Return the Jakarta lock mode declared by the result mapping. */
+    public String getLockMode() {
+        return lockMode;
+    }
+
+    /** INTERNAL: Preserve the declared lock mode for handler-owned execution. */
+    public void setLockMode(String lockMode) {
+        this.lockMode = lockMode == null ? "NONE" : lockMode;
     }
 
     public void addFieldResult(FieldResult fieldResult){

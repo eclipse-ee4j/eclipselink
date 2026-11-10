@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2022 IBM Corporation. All rights reserved.
  *
@@ -39,6 +40,11 @@ public class InvalidNamedQueryTest extends JUnitTestCase {
     }
 
     public void testInvalidNamedQuery() {
+        // Java SE only: on the server the invalid persistence unit is not deployed at all, as the server deploys
+        // every unit when it deploys the application, which would fail on this one (see resources-ejb).
+        if (isOnServer()) {
+            return;
+        }
         try {
             EntityManagerFactory emf = getEntityManagerFactory("invalid-named-query");
             EntityManager em = emf.createEntityManager();

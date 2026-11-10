@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,10 +73,15 @@ public class EntityManagerTest extends JUnitTestCase {
             query.setLockMode(LockModeType.OPTIMISTIC);
             Employee emp = (Employee)query.getSingleResult();
             commitTransaction(em);
-            try{
-                em.getLockMode(emp);
-                fail("TransactionRequiredException not thrown for getLockMode() with no transction open.");
-            } catch (TransactionRequiredException e){}
+            if (isOnServer() && isJTA()) {
+                // The transaction-scoped persistence context ended with the transaction, so emp is detached
+                try {
+                    em.getLockMode(emp);
+                    fail("IllegalArgumentException not thrown for getLockMode() of an entity detached by the commit.");
+                } catch (IllegalArgumentException e) {}
+            } else {
+                assertEquals(LockModeType.NONE, em.getLockMode(emp));
+            }
             clearCache();
             try{
                 em.find(Employee.class, emp.getId(), LockModeType.OPTIMISTIC);

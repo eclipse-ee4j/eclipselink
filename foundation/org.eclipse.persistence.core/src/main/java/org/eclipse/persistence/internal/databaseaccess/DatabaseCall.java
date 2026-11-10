@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2025 Contributors to the Eclipse Foundation.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -110,6 +110,9 @@ public abstract class DatabaseCall extends DatasourceCall {
      *  Indicate this call should return generated keys. Only supported for INSERT calls.
      */
     protected boolean shouldReturnGeneratedKeys;
+
+    // The qualified identity table for an immediate SQL Server assigned-id insert.
+    private String identityInsertTable;
 
     // The returned fields.
     transient protected Vector<DatabaseField> fields;
@@ -1161,8 +1164,12 @@ public abstract class DatabaseCall extends DatasourceCall {
                         // If the value is null, the field is passed as the value so the type can be obtained from the field.
                         if ((translatedValue == null) && (field != null)) {
                             if (!this.query.hasNullableArguments() || !this.query.getNullableArguments().contains(field)) {
-                                DatabaseField fieldFromRow = translationRow.getField(field);
-                                translatedValue = chooseMostSpecificFieldForNullBinding(field, fieldFromRow);
+                                if (parameter instanceof ParameterExpression expression) {
+                                    translatedValue = expression.getNullValueField(translationRow);
+                                } else {
+                                    DatabaseField fieldFromRow = translationRow.getField(field);
+                                    translatedValue = chooseMostSpecificFieldForNullBinding(field, fieldFromRow);
+                                }
                                 // The field from the row is used, as the calls field may not have the type,
                                 // but if the field is missing the calls field may also have the type.
                                 if (translatedValue == null) {
@@ -1295,7 +1302,30 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Some queries, such as DDL are not compatible.
      */
     public boolean isBatchExecutionSupported() {
-        return isBatchExecutionSupported;
+        return isBatchExecutionSupported && identityInsertTable == null;
+    }
+
+    /**
+     * Keep assigned identity inserts in a prepared server-side scope, including
+     * when ordinary queries have explicitly disabled parameter binding.
+     */
+    @Override
+    public boolean usesBinding(DatabasePlatform databasePlatform) {
+        return identityInsertTable != null || super.usesBinding(databasePlatform);
+    }
+
+    /**
+     * INTERNAL: Return the identity table whose setting brackets this JDBC call.
+     */
+    public String getIdentityInsertTable() {
+        return identityInsertTable;
+    }
+
+    /**
+     * INTERNAL: Set a platform-quoted table name for assigned identity insertion.
+     */
+    public void setIdentityInsertTable(String identityInsertTable) {
+        this.identityInsertTable = identityInsertTable;
     }
 
     /**

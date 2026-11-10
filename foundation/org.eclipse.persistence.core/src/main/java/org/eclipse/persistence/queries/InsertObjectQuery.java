@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
@@ -17,6 +18,7 @@ package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.NativeSequence;
@@ -118,8 +120,13 @@ public class InsertObjectQuery extends WriteObjectQuery {
             this.name = "insert" + this.descriptor.getJavaClass().getSimpleName();
         }
 
+        if ("UPSERT".equals(getProperty(EntityAgentProperties.OPERATION))) {
+            setShouldReturnGeneratedKeys(false);
+        }
+
         // Insert queries may need to use generated keys. Determine here if the underlying sequence for the object will want to.
-        if(this.descriptor.usesSequenceNumbers()) {
+        if (this.descriptor.usesSequenceNumbers()
+                && !"UPSERT".equals(getProperty(EntityAgentProperties.OPERATION))) {
             Sequence sequence = this.descriptor.getSequence();
             if(sequence.isNative() && ((NativeSequence)sequence).shouldUseGeneratedKeysIfPlatformSupports()) {
                 setShouldReturnGeneratedKeys(true);

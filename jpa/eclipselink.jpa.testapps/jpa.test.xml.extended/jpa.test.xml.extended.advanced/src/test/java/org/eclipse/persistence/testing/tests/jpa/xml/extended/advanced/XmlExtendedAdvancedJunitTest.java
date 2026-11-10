@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -67,6 +68,12 @@ public class XmlExtendedAdvancedJunitTest extends XmlAdvancedJunitTest {
         assertNotNull("Delete queries default redirector was not set on decriptor", descriptor.getDefaultDeleteObjectQueryRedirector());
     }
     public void testForExceptionsFromInterceptors() {
+        if (isOnServer()) {
+            // The exception is thrown while the commit merges into the shared cache. With JTA that happens in the
+            // afterCompletion callback, after the outcome of the transaction has been decided, so the transaction
+            // manager only logs it and nothing reaches the application to test for.
+            return;
+        }
         ClassDescriptor descriptor = getPersistenceUnitServerSession().getDescriptor(Address.class);
         CacheAuditor interceptor = (CacheAuditor) getPersistenceUnitServerSession().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
         interceptor.setShouldThrow(true);
@@ -80,11 +87,16 @@ public class XmlExtendedAdvancedJunitTest extends XmlAdvancedJunitTest {
             em.persist(addr);
             commitTransaction(em);
             beginTransaction(em);
-            em.remove(addr);
+            // found again: on the server the persistence context ends with each transaction
+            em.remove(em.find(Address.class, addr.getId()));
             commitTransaction(em);
             fail("There was no Optimistic Lock Exception");
-        } catch (RollbackException e) {
-            assertTrue("Not caused by OptimisticLockException", (e.getCause() instanceof jakarta.persistence.OptimisticLockException));
+        } catch (RuntimeException e) {
+            // A failing JTA commit on the server is reported by the transaction manager, which wraps it differently
+            if (!isOnServer() && !(e instanceof RollbackException)) {
+                throw e;
+            }
+            assertTrue("Not caused by OptimisticLockException: " + e, isCausedByOptimisticLock(e));
 
         }finally{
             interceptor.setShouldThrow(false);
@@ -94,6 +106,16 @@ public class XmlExtendedAdvancedJunitTest extends XmlAdvancedJunitTest {
 
             closeEntityManager(em);
         }
+    }
+
+    private static boolean isCausedByOptimisticLock(Throwable e) {
+        for (Throwable cause = e.getCause(); cause != null; cause = cause.getCause()) {
+            if (cause instanceof jakarta.persistence.OptimisticLockException
+                    || cause instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void testCacheAccessAppendLock() {
@@ -113,15 +135,19 @@ public class XmlExtendedAdvancedJunitTest extends XmlAdvancedJunitTest {
         CacheAuditor interceptor = (CacheAuditor) getPersistenceUnitServerSession().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
         interceptor.resetAccessCount();
         try{
+            // read within the transaction: on the server the persistence context ends with each transaction
+            beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
             address2 = em.find(Address.class, address2.getId());
             interceptor.remove(address2.getId(), address2);
-            beginTransaction(em);
             emp.setAddress(address2);
             commitTransaction(em);
             assertTrue("AppendLock identified as merge", interceptor.getLastAcquireNoWait() != null && !interceptor.getLastAcquireNoWait());
         }finally{
             interceptor.resetAccessCount();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
     }

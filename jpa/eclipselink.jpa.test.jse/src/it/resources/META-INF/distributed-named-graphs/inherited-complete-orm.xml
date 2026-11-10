@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+-->
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_4_0.xsd"
+        version="4.0">
+    <entity class="org.eclipse.persistence.jpa.namedgraphs.model.DistributedGraphSpecialChild"
+            name="DngSpecial" access="FIELD" metadata-complete="true">
+        <table name="JPA_DNG_SPECIAL"/>
+        <named-entity-graph name="DngInherited">
+            <named-attribute-node name="detail"/>
+            <named-attribute-node name="special"/>
+        </named-entity-graph>
+        <named-entity-graph name="DngSpecial">
+            <named-attribute-node name="special"/>
+        </named-entity-graph>
+        <attributes>
+            <basic name="special"/>
+        </attributes>
+    </entity>
+    <entity class="org.eclipse.persistence.jpa.namedgraphs.model.PropertyGraphRoot"
+            name="DngProperty" access="PROPERTY" metadata-complete="true">
+        <table name="JPA_DNG_PROPERTY"/>
+        <named-entity-graph name="DngProperty">
+            <named-attribute-node name="inheritedTarget"/>
+            <named-attribute-node name="target"/>
+        </named-entity-graph>
+        <attributes>
+            <id name="id"/>
+            <basic name="label"/>
+            <many-to-one name="target" fetch="LAZY">
+                <join-column name="TARGET_ID"/>
+            </many-to-one>
+            <many-to-one name="explicitTarget" access="FIELD" fetch="LAZY">
+                <join-column name="EXPLICIT_ID"/>
+            </many-to-one>
+            <transient name="ignored"/>
+        </attributes>
+    </entity>
+</entity-mappings>

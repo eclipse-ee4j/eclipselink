@@ -16,6 +16,17 @@
 //       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
 package org.eclipse.persistence.mappings;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -50,16 +61,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.CopyOnWriteArrayList;
+import static org.eclipse.persistence.internal.queries.ContainerPolicy.copyMapDataToRow;
 
 /**
  * <p><b>Purpose</b>: This mapping is used to represent the
@@ -72,6 +74,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @since TOPLink/Java 1.0
  */
 public class OneToManyMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping {
+
+    private static final long serialVersionUID = 1L;
 
     /** Used for data modification events. */
     protected static final String PostInsert = "postInsert";
@@ -121,7 +125,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      **/
     protected DataModifyQuery addTargetQuery;
     protected boolean hasCustomAddTargetQuery;
-    protected Boolean shouldDeferInserts = null;
+    protected Boolean shouldDeferInserts;
 
     /**
      * Query used to update a single target row changing its foreign key value from the one pointing to the source to null.
@@ -955,7 +959,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                     AbstractSession session = query.getSession();
 
                     AbstractRecord databaseRow = referenceDesc.getObjectBuilder().buildRow(keyRow, objectAdded, session, WriteType.INSERT);
-                    ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
+                    copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
                     if(listOrderField != null && extraData != null) {
                         databaseRow.put(listOrderField, extraData.get(listOrderField));
                     }
@@ -1091,7 +1095,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                             Object wrappedObject = cp.nextEntry(iter, query.getSession());
                             Object object = cp.unwrapIteratorResult(wrappedObject);
                             AbstractRecord databaseRow = referenceDesc.getObjectBuilder().buildRow(row, object, session, WriteType.INSERT);
-                            ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, session), databaseRow);
+                            copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, session), databaseRow);
                             if (listOrderField != null) {
                                 databaseRow.put(listOrderField, objectIndex++);
                             }
@@ -1513,9 +1517,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
-        ContainerPolicy cp = getContainerPolicy();
-        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        if (cp.isEmpty(objects)) {
+        ContainerPolicy containerPolicy = getContainerPolicy();
+        Object collectionAttributeValue = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+        if (containerPolicy.isEmpty(collectionAttributeValue)) {
             return;
         }
 
@@ -1526,21 +1530,36 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         // Extract target field and its value. Construct insert statement and execute it
         int size = targetPrimaryKeyFields.size();
         int objectIndex = 0;
-        for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
+        for (Object collectionValuesIterator = containerPolicy.iteratorFor(collectionAttributeValue); containerPolicy.hasNext(collectionValuesIterator);) {
             AbstractRecord databaseRow = new DatabaseRecord();
             databaseRow.mergeFrom(keyRow);
-            Object wrappedObject = cp.nextEntry(iter, query.getSession());
-            Object object = cp.unwrapIteratorResult(wrappedObject);
-            for(int index = 0; index < size; index++) {
+            Object wrappedObject = containerPolicy.nextEntry(collectionValuesIterator, query.getSession());
+            Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
+
+            for (int index = 0; index < size; index++) {
                 DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-                Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetPrimaryKey, query.getSession());
+
+                Object targetKeyValue =
+                    getReferenceDescriptor()
+                        .getObjectBuilder()
+                        .extractValueFromObjectForField(
+                            object,
+                            targetPrimaryKey,
+                            query.getSession());
+
                 databaseRow.put(targetPrimaryKey, targetKeyValue);
             }
-            ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
-            if(listOrderField != null) {
+
+            copyMapDataToRow(
+                containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()),
+                databaseRow);
+
+            if (listOrderField != null) {
                 databaseRow.put(listOrderField, objectIndex++);
             }
-            query.getSession().executeQuery(addTargetQuery, databaseRow);
+
+            query.getSession()
+                 .executeQuery(addTargetQuery, databaseRow);
         }
     }
 
@@ -1561,7 +1580,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy containerPolicy = getContainerPolicy();
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = buildKeyRowForTargetUpdate(query);
 
@@ -1569,16 +1588,20 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         int size = targetPrimaryKeyFields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(cp.unwrapIteratorResult(objectAdded), targetPrimaryKey, query.getSession());
+            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(containerPolicy.unwrapIteratorResult(objectAdded), targetPrimaryKey, query.getSession());
             databaseRow.put(targetPrimaryKey, targetKeyValue);
         }
 
-        ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
-        if(listOrderField != null && extraData != null) {
+        copyMapDataToRow(
+            containerPolicy.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()),
+            databaseRow);
+
+        if (listOrderField != null && extraData != null) {
             databaseRow.put(listOrderField, extraData.get(listOrderField));
         }
 
-        query.getSession().executeQuery(addTargetQuery, databaseRow);
+        query.getSession()
+             .executeQuery(addTargetQuery, databaseRow);
     }
 
     /**
@@ -1593,6 +1616,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         if (this.isReadOnly) {
             return;
         }
+
         AbstractSession session = query.getSession();
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), session);
         AbstractRecord translationRow = new DatabaseRecord();
@@ -1608,7 +1632,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             // Need to set this value to null in the modify row.
             modifyRow.add(targetForeignKey, null);
         }
-        if(listOrderField != null) {
+        if (listOrderField != null) {
             modifyRow.add(listOrderField, null);
         }
 
@@ -1620,6 +1644,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(cp.unwrapIteratorResult(objectRemoved), targetPrimaryKey, session);
             translationRow.add(targetPrimaryKey, targetKeyValue);
         }
+
         // Need a different modify row than translation row, as the same field has different values in each.
         DataModifyQuery removeQuery = (DataModifyQuery)this.removeTargetQuery.clone();
         removeQuery.setModifyRow(modifyRow);
@@ -1653,7 +1678,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             // Need to set this value to null in the modify row.
             modifyRow.add(targetForeignKey, null);
         }
-        if(listOrderField != null) {
+        if (listOrderField != null) {
             modifyRow.add(listOrderField, null);
         }
 

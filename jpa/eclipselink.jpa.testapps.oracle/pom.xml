@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -13,24 +14,35 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
         <groupId>org.eclipse.persistence</groupId>
-        <version>5.0.3-SNAPSHOT</version>
+        <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
+        <version>6.0.0-SNAPSHOT</version>
         <relativePath>../eclipselink.jpa.testapps/pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-
     <artifactId>org.eclipse.persistence.jpa.testapps.oracle</artifactId>
+    <packaging>pom</packaging>
 
     <name>Persistence TestApps - Oracle DB</name>
 
-    <properties>
+    <modules>
+        <module>jpa.test.oracle.customfeatures</module>
+        <module>jpa.test.oracle.dcn</module>
+        <module>jpa.test.oracle.partitioned</module>
+        <module>jpa.test.oracle.plsql</module>
+        <module>jpa.test.oracle.proxyauthentication</module>
+        <module>jpa.test.oracle.timestamptz</module>
+    </modules>
 
+    <properties>
+        <!-- Like default-test below, the server tests only run with the oracle profile: they need an Oracle
+             database (with -Pglassfish, the GlassFish data sources must then point to one too). Skips the
+             deployment as well. -->
+        <server.test.skip>true</server.test.skip>
     </properties>
 
     <dependencies>
@@ -89,15 +101,6 @@
         </dependency>
     </dependencies>
 
-    <modules>
-        <module>jpa.test.oracle.customfeatures</module>
-        <module>jpa.test.oracle.dcn</module>
-        <module>jpa.test.oracle.partitioned</module>
-        <module>jpa.test.oracle.plsql</module>
-        <module>jpa.test.oracle.proxyauthentication</module>
-        <module>jpa.test.oracle.timestamptz</module>
-    </modules>
-
     <build>
         <plugins>
             <plugin>
@@ -116,6 +119,9 @@
     <profiles>
         <profile>
             <id>oracle</id>
+            <properties>
+                <server.test.skip>false</server.test.skip>
+            </properties>
             <build>
                 <plugins>
                     <plugin>

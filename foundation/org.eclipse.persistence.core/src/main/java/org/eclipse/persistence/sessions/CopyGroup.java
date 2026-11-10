@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ package org.eclipse.persistence.sessions;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
 
 import java.util.IdentityHashMap;
@@ -122,6 +123,25 @@ public class CopyGroup extends AttributeGroup {
      */
     public Map getCopies() {
         return copies;
+    }
+
+    /**
+     * INTERNAL:
+     * Allow a specialized detached-copy policy to preserve an unfetched attribute.
+     * Return true only when the policy has installed the attribute on the copy.
+     * Ordinary copies continue to use the mapping's existing copy behavior.
+     */
+    public boolean copyUnfetchedAttribute(DatabaseMapping mapping, Object original, Object copy) {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Return a destination supplied by a specialized detached-copy policy, or
+     * null to use the descriptor's normal cloning policy.
+     */
+    public Object createCopy(Object original) {
+        return null;
     }
 
     /**

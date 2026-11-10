@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -13,15 +14,15 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
         <groupId>org.eclipse.persistence</groupId>
-        <version>5.0.3-SNAPSHOT</version>
+        <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
+        <version>6.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>org.eclipse.persistence.jpa.testapps.metamodel.aspectj</artifactId>
 
@@ -106,6 +107,22 @@
                     <execution>
                         <id>package-model</id>
                         <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>eclipselink-testbuild-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>package-server-tests</id>
+                        <configuration>
+                            <!-- The aspects woven into the entity classes need the AspectJ runtime, which an
+                                 application server does not provide -->
+                            <libs>
+                                <lib>org.aspectj:aspectjrt</lib>
+                            </libs>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

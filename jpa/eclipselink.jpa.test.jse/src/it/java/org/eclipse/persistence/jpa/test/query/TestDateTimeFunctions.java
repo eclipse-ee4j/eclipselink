@@ -552,8 +552,6 @@ public class TestDateTimeFunctions {
 
         // Derby does not support SECOND fractions
         Assume.assumeFalse(platform.isDerby());
-        // H2 TIME type does not preserve sub-second precision
-        Assume.assumeFalse(platform.isH2());
 
         final EntityManager em = emf.createEntityManager();
         try {
@@ -652,9 +650,6 @@ public class TestDateTimeFunctions {
     // Test 3. JPQL EXTRACT(WEEK FROM date) to check whether ISO_WEEK is used in MS SQL - issue 1550
     @Test
     public void testIssue1550ExtractIsoWeek() {
-        DatabasePlatform platform = emf.unwrap(Session.class).getPlatform();
-        // H2 returns ISO week 23 for 2022-06-07 but this test expects 24 (MS SQL ISO week)
-        Assume.assumeFalse(platform.isH2());
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -767,8 +762,6 @@ public class TestDateTimeFunctions {
         // DB2 does not support SECOND fractions for the LocalTime mapped to TIME type
         // See issue 2555
         Assume.assumeFalse(platform.isDB2());
-        // H2 TIME type does not preserve sub-second precision
-        Assume.assumeFalse(platform.isH2());
 
         final EntityManager em = emf.createEntityManager();
         try {
@@ -815,12 +808,12 @@ public class TestDateTimeFunctions {
     // Bug 1: H2 rejects EXTRACT(DATE/TIME FROM col) with
     //   "Invalid value 'DATE'/'TIME' for parameter 'date-time field' [90008-224]"
     //   because H2's EXTRACT() only accepts single-component fields.
-    //   Fix: H2ExtractOperator rewrites to CAST(col AS DATE) / CAST(col AS TIME).
+    //   Fix: H2ExtractOperator rewrites to CAST(col AS DATE) / CAST(col AS TIME(9)).
     //
     // Bug 2: Even after Bug 1, queries returned 0 rows because the base DatabasePlatform
     //   binds LocalTime as setTimestamp(epoch + time) = '1970-01-01 14:30:25',
-    //   which never equals the TIME result of CAST(col AS TIME).
-    //   Fix: H2Platform.setParameterValueInDatabaseCall overrides to use setTime().
+    //   which never equals the TIME result of CAST(col AS TIME(9)).
+    //   Fix: H2Platform.setParameterValueInDatabaseCall overrides to use JDBC 4.2 setObject(LocalTime).
 
 
     /**
@@ -861,8 +854,8 @@ public class TestDateTimeFunctions {
 
     /**
      * H2 regression: EXTRACT(TIME FROM datetimeValue) in WHERE clause with LocalTime parameter.
-     * Verifies that H2Platform correctly emits CAST(col AS TIME) and binds the LocalTime
-     * parameter via setTime() (not setTimestamp), returning only rows whose datetime time-part matches.
+     * Verifies that H2Platform correctly emits CAST(col AS TIME(9)) and binds the LocalTime
+     * parameter as a JDBC TIME value, returning only rows whose datetime time-part matches.
      */
     @Test
     public void testH2ExtractTimeFromDateTimeInWhereClause() {
@@ -891,6 +884,28 @@ public class TestDateTimeFunctions {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+            em.close();
+        }
+    }
+
+    @Test
+    public void testH2ExtractTimePreservesFractionInWhereClause() {
+        DatabasePlatform platform = emf.unwrap(Session.class).getPlatform();
+        Assume.assumeTrue("H2-specific regression test", platform.isH2());
+
+        final EntityManager em = emf.createEntityManager();
+        try {
+            LocalDateTime stored = em.createQuery(
+                    "SELECT e.datetimeValue FROM DateTimeQueryEntity e WHERE e.id = 4", LocalDateTime.class)
+                    .getSingleResult();
+            assertTrue("The stored timestamp must retain fractional seconds", stored.getNano() > 0);
+            List<DateTimeQueryEntity> result = em.createQuery(
+                    "SELECT e FROM DateTimeQueryEntity e WHERE EXTRACT(TIME FROM e.datetimeValue) = :time",
+                    DateTimeQueryEntity.class)
+                    .setParameter("time", stored.toLocalTime()).getResultList();
+            assertEquals(1, result.size());
+            assertEquals(Integer.valueOf(4), result.get(0).getId());
+        } finally {
             em.close();
         }
     }

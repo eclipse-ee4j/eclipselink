@@ -22,12 +22,12 @@
 
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>eclipselink-tck</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>EclipseLink Jakarta Persistence TCK</name>
 
     <!--
-        Runs the Jakarta Persistence 3.2 TCK against EclipseLink straight from Maven.
+        Runs the Jakarta Persistence TCK against EclipseLink straight from Maven.
 
         Deliberately not a module of the EclipseLink reactor: it needs a database and
         takes minutes, so a plain "mvn install" at the root should not drag it in. Build
@@ -40,17 +40,13 @@
         this runs against a released version just as happily as against the local
         snapshot:
 
-            mvn clean install -Ppostgres-start,test1,test2 -Declipselink.version=5.0.1
+            mvn clean install -Ppostgres-start,test1,test2 -Declipselink.version=5.0.0
 
         The predecessor of this runner unpacked a whole GlassFish distribution, copied
         the EclipseLink jars over the top of the ones inside it, and then pointed the
         test classpath at that directory. GlassFish was never started - it served only
         as an archive of jars. Everything it supplied is available from Maven, so this
         runner resolves it directly and the distribution is gone.
-
-        The 6.0 branch carries the same three modules pointed at the Jakarta
-        Persistence 4.0 TCK. Only one of the two can run at a time: both bind
-        PostgreSQL to port 5432 and name the container eclipselink-tck-postgres.
     -->
     <modules>
         <module>eclipselink-tck-install</module>

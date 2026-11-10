@@ -16,11 +16,14 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.List;
+
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
@@ -74,8 +77,18 @@ public class ListJoinImpl<Z, X>  extends JoinImpl<Z, X> implements ListJoin<Z, X
     }
 
     @Override
-    public ListJoinImpl<Z, X> on(Predicate... restrictions) {
+    public ListJoinImpl<Z, X> on(BooleanExpression... restrictions) {
         return (ListJoinImpl<Z, X>)super.on(restrictions);
+    }
+
+    @Override
+    public ListJoinImpl<Z, X> on(List<? extends Expression<Boolean>> restrictions) {
+        return (ListJoinImpl<Z, X>)super.on(restrictions);
+    }
+
+    @Override
+    public <T extends X> ListJoin<Z, T> treat(@Nonnull Class<T> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

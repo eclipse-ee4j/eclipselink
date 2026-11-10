@@ -15,6 +15,7 @@
 //       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
@@ -24,8 +25,10 @@ import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
 
 import java.io.Serial;
+import java.util.List;
 
 /**
  * <p>
@@ -53,22 +56,23 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     public Root<T> from(Class<T> entityClass) {
-        return this.internalFrom(entityClass);
+        return internalFrom(entityClass);
     }
 
     @Override
     public Root<T> from(EntityType<T> entity) {
-        return this.internalFrom(entity);
+        return internalFrom(entity);
     }
 
     @Override
     public Root<T> getRoot() {
-        if (this.root == null) {
+        if (root == null) {
             if (getResultType() !=null) {
                 return this.from(getResultType());
             }
         }
-        return this.root;
+
+        return root;
     }
 
     @Override
@@ -82,25 +86,36 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     }
 
     @Override
+    public CriteriaDelete<T> where(BooleanExpression... restrictions) {
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    @Override
+    public CriteriaDelete<T> where(List<? extends Expression<Boolean>> restrictions) {
+        return (CriteriaDelete<T>)super.where(restrictions);
+    }
+
+    @Override
     protected void integrateRoot(RootImpl root) {
-        if (this.root !=root) {
-            this.root =root;
+        if (this.root != root) {
+            this.root = root;
         }
     }
 
     @Override
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
-        if (this.root == null) {
+        if (root == null) {
             return new ExpressionBuilder();
-        } else {
-            return ((RootImpl)this.root).getCurrentNode();
         }
+
+        return ((RootImpl) root).getCurrentNode();
     }
 
     @Override
     protected DatabaseQuery getDatabaseQuery() {
-        org.eclipse.persistence.queries.DeleteAllQuery query = new org.eclipse.persistence.queries.DeleteAllQuery(this.queryType, getBaseExpression());
+        DeleteAllQuery query = new DeleteAllQuery(queryType, getBaseExpression());
         query.setShouldDeferExecutionInUOW(false);
         return query;
     }
+
 }

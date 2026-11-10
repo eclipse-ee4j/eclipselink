@@ -30,7 +30,6 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,9 +50,6 @@ public class TestDerbyDateLiteral {
 
     @Test
     public void testRealLogPathBetweenDateLiteralsCoercesToTimestamp() {
-        DatabasePlatform platform = (DatabasePlatform) emf.unwrap(EntityManagerFactoryImpl.class)
-                .getDatabaseSession().getDatasourcePlatform();
-
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,8 @@
 //       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
 package org.eclipse.persistence.internal.helper;
 
+import java.io.Serializable;
+
 //javase imports
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -28,8 +30,6 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-
-import java.io.Serializable;
 
 import static java.lang.Integer.MIN_VALUE;
 
@@ -43,6 +43,9 @@ import static java.lang.Integer.MIN_VALUE;
  * @see DatabaseTable
  */
 public class DatabaseField implements Cloneable, Serializable, CoreField  {
+
+    private static final long serialVersionUID = 1L;
+
     /** Variables used for generating DDL **/
     protected int scale;
     protected int length;
@@ -80,6 +83,9 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      * PERF: Allow direct variable access from getObject.
      */
     public int sqlType;
+
+    /** Default false also preserves caching for fields from older serialized streams. */
+    private boolean sqlTypeCachingDisabled;
 
     /**
      * Store normal index of field in result set to optimize performance.
@@ -410,6 +416,16 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      */
     public int getSqlType() {
         return sqlType;
+    }
+
+    /** Whether result-set metadata may be cached for subsequent executions. */
+    public boolean shouldCacheSqlType() {
+        return !sqlTypeCachingDisabled;
+    }
+
+    /** Whether result-set metadata may be cached for subsequent executions. */
+    public void setShouldCacheSqlType(boolean shouldCacheSqlType) {
+        sqlTypeCachingDisabled = !shouldCacheSqlType;
     }
 
     /**

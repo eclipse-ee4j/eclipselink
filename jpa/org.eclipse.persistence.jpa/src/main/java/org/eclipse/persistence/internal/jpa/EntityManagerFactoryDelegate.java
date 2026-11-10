@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -35,17 +36,17 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Cache;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityHandler;
+import jakarta.persistence.EntityListenerRegistration;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManager.CreationOption;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.FlushModeType;
@@ -54,17 +55,37 @@ import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
 import jakarta.persistence.SchemaManager;
+import jakarta.persistence.Statement;
+import jakarta.persistence.StatementReference;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.sql.ResultSetMapping;
+
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerRegistry;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListener;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListenerRegistry;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -75,11 +96,16 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.transaction.AbstractTransactionController;
+
+import static java.util.Collections.emptyMap;
+import static org.eclipse.persistence.internal.jpa.OptionUtils.parseCreateOptions;
 
 /**
  * <p>
@@ -100,16 +126,25 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  *
  */
 public class EntityManagerFactoryDelegate implements EntityManagerFactory, PersistenceUnitUtil, JpaEntityManagerFactory {
+
     /** Reference to Cache Interface. */
     protected Cache myCache;
+
     /** Reference to the ServerSession for this deployment. */
     protected volatile AbstractSession session;
+
     /** EntityManagerSetupImpl that deployed this factory. */
     protected EntityManagerSetupImpl setupImpl;
+
     /** Stores if closed has been called. */
-    protected boolean isOpen = true;
+    protected volatile boolean isOpen = true;
+
+    /** Stable factory registrations, with dispatch lifetime local to this delegate. */
+    private final EntityListenerRegistry entityListenerRegistry;
+    private final DescriptorEventListener entityListener;
+
     /** Persistence unit properties from create factory. */
-    protected Map properties;
+    protected Map<String, Object> properties;
 
     /**
      * INTERNAL: The following properties passed to createEMF cached and
@@ -159,10 +194,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     protected boolean commitWithoutPersistRules;
 
     /** Pointer to the EntityManagerFactoryImpl that created me */
-    protected JpaEntityManagerFactory owner = null;
+    protected JpaEntityManagerFactory owner;
 
     /** Persistence unit schema manager. */
-    private SchemaManagerImpl schemaManager = null;
+    private SchemaManagerImpl schemaManager;
 
     /**
      * Will return an instance of the Factory. Should only be called by
@@ -172,13 +207,20 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public EntityManagerFactoryDelegate(AbstractSession databaseSession, JpaEntityManagerFactory owner) {
         this.session = databaseSession;
         this.owner = owner;
+        this.entityListenerRegistry = owner instanceof EntityManagerFactoryImpl factory
+                ? factory.getEntityListenerRegistry() : new EntityListenerRegistry();
+        this.entityListener = entityListenerRegistry.createDispatcher(() -> !isOpen);
         processProperties(databaseSession.getProperties());
+        entityListenerRegistry.trackSession(databaseSession);
     }
 
-    public EntityManagerFactoryDelegate(EntityManagerSetupImpl setupImpl, Map properties, JpaEntityManagerFactory owner) {
+    public EntityManagerFactoryDelegate(EntityManagerSetupImpl setupImpl, Map<String, Object> properties, JpaEntityManagerFactory owner) {
         this.setupImpl = setupImpl;
         this.owner = owner;
         this.properties = properties;
+        this.entityListenerRegistry = owner instanceof EntityManagerFactoryImpl factory
+                ? factory.getEntityListenerRegistry() : new EntityListenerRegistry();
+        this.entityListener = entityListenerRegistry.createDispatcher(() -> !isOpen);
     }
 
     /**
@@ -189,6 +231,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public EntityManagerFactoryDelegate(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors, JpaEntityManagerFactory owner) {
         this.properties = properties;
         this.owner = owner;
+        this.entityListenerRegistry = owner instanceof EntityManagerFactoryImpl factory
+                ? factory.getEntityListenerRegistry() : new EntityListenerRegistry();
+        this.entityListener = entityListenerRegistry.createDispatcher(() -> !isOpen);
 
         SEPersistenceUnitInfo info = new SEPersistenceUnitInfo();
         info.setClassLoader((ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER));
@@ -218,33 +263,50 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * construction
      */
     public AbstractSession getAbstractSession() {
-        if (this.session == null) {
+        if (session == null) {
             // PERF: Avoid synchronization.
             synchronized (this) {
                 // DCL ok as isLoggedIn is volatile boolean, set after login is
                 // complete.
-                if (this.session == null) {
+                if (session == null) {
                     ClassLoader realLoader = setupImpl.getPersistenceUnitInfo().getClassLoader();
                     // splitProperties[0] contains
                     // supportedNonServerSessionProperties; [1] - all the rest.
                     Map[] splitProperties = EntityManagerFactoryProvider.splitSpecifiedProperties(properties, supportedNonServerSessionProperties);
                     Map serverSessionProperties = splitProperties[1];
+
                     // the call to setupImpl.deploy() finishes the session creation
                     AbstractSession tempSession = setupImpl.deploy(realLoader, serverSessionProperties);
+
                     // discard all but non server session properties from server
                     // session properties.
                     Map<String, Object> tempProperties = EntityManagerFactoryProvider.keepSpecifiedProperties(tempSession.getProperties(), supportedNonServerSessionProperties);
+
                     // keep only non server session properties - the rest will
                     // be either cached in the server session or ignored
                     properties = splitProperties[0];
+
                     // properties override server session properties
                     Map propertiesToProcess = EntityManagerFactoryProvider.mergeMaps(properties, tempProperties);
                     processProperties(propertiesToProcess);
-                    this.session = tempSession;
+                    entityListenerRegistry.trackSession(tempSession);
+                    session = tempSession;
                 }
             }
         }
-        return this.session;
+
+        return session;
+    }
+
+    /** Bind only an owned context; shared server sessions never carry an owner. */
+    void bindEntityListener(AbstractSession context) {
+        context.setEntityListener(entityListener);
+        entityListenerRegistry.trackSession(context);
+        if (context.isBroker()) {
+            for (AbstractSession member : ((SessionBroker) context).getSessionsByName().values()) {
+                bindEntityListener(member);
+            }
+        }
     }
 
     /**
@@ -286,18 +348,45 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * will return <code>false</code>.
      */
     @Override
-    public synchronized void close() {
+    public void close() {
+        if (owner instanceof EntityManagerFactoryImpl factory) {
+            // Enter the public owner before taking the delegate monitor. The
+            // owner also closes this delegate, so the reverse order can deadlock.
+            factory.close(this);
+        } else {
+            synchronized (this) {
+                close(true);
+            }
+        }
+    }
+
+    /** The public owner has already dispatched its lifecycle notification. */
+    synchronized void closeFromFactory() {
+        close(true);
+    }
+
+    /** A failed replacement must not close the registry of the restored factory. */
+    synchronized void closeForMetadataRefresh() {
+        close(false);
+    }
+
+    private void close(boolean closeRegistry) {
         verifyOpen();
         isOpen = false;
+        Throwable failure = null;
+        if (closeRegistry) {
+            failure = PersistenceUnitListenerRegistry.cleanup(failure, entityListenerRegistry::close);
+        }
         // Do not invalidate the metaModel field
         // (a reopened emf will re-populate the same metaModel)
         // (a new persistence unit will generate a new metaModel)
         if (setupImpl != null) {
             // 260511 null check so that closing an EM
             // created from the constructor no longer throws a NPE
-            setupImpl.undeploy();
+            failure = PersistenceUnitListenerRegistry.cleanup(failure, setupImpl::undeploy);
         }
         owner = null;
+        PersistenceUnitListenerRegistry.rethrow(failure);
     }
 
     /**
@@ -309,10 +398,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         return isOpen;
     }
 
-    /**
-     * PUBLIC: Returns an EntityManager for this deployment.
-     */
-    @Override
     public EntityManager createEntityManager() {
         return createEntityManagerImpl(null, null);
     }
@@ -321,22 +406,18 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     @Override
-    public EntityManager createEntityManager(Map properties) {
+    public EntityManager createEntityManager(@Nullable Map<?, ?> properties) {
         return createEntityManagerImpl(properties, null);
     }
 
     @Override
-    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        return createEntityManagerImpl(map, SynchronizationType.SYNCHRONIZED);
+    public EntityManager createEntityManager(@Nonnull SynchronizationType synchronizationType, @Nullable Map<?, ?> properties) {
+        return createEntityManagerImpl(properties, synchronizationType);
     }
 
-    @Override
-    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
-        return createEntityManagerImpl(null, synchronizationType);
-    }
-
-    protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType) {
+    protected EntityManagerImpl createEntityManagerImpl(@Nullable Map<?, ?> properties, SynchronizationType syncType) {
         verifyOpen();
+
         AbstractSession session = getAbstractSession();
         if (session.isDatabaseSession()) {
             DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)session;
@@ -351,10 +432,17 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 }
             }
         }
+
         if (syncType != null && !session.hasExternalTransactionController()){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("pu_configured_for_resource_local"));
         }
-        return new EntityManagerImpl(this, properties, syncType);
+
+        return new EntityManagerImpl(this, (Map<String, Object>) properties, syncType)
+                .completeCreation(getPersistenceUnitListeners());
+    }
+
+    private PersistenceUnitListenerRegistry getPersistenceUnitListeners() {
+        return owner instanceof EntityManagerFactoryImpl factory ? factory.getPersistenceUnitListeners() : null;
     }
 
 
@@ -379,7 +467,18 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     @SuppressWarnings("removal")
     protected void finalize() throws Throwable {
         if (isOpen()) {
-            close();
+            EntityManagerFactoryImpl factory = owner instanceof EntityManagerFactoryImpl candidate
+                    && candidate.isCurrentDelegate(this) ? candidate : null;
+            try {
+                synchronized (this) {
+                    // Finalization is silent, including for the current delegate.
+                    close(!(owner instanceof EntityManagerFactoryImpl) || factory != null);
+                }
+            } finally {
+                if (factory != null) {
+                    factory.releasePersistenceUnitListeners();
+                }
+            }
         }
     }
 
@@ -391,18 +490,20 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (name == null) {
             return null;
         }
+
         if (properties != null) {
             Object value = properties.get(name);
             if (value != null) {
                 return value;
             }
         }
+
         AbstractSession tempSession = this.session;
-        if (tempSession != null) {
-            return tempSession.getProperty(name);
-        } else {
+        if (tempSession == null) {
             return null;
         }
+
+        return tempSession.getProperty(name);
     }
 
     /**
@@ -420,30 +521,37 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (beginEarlyTransactionProperty != null) {
             this.beginEarlyTransaction = "true".equalsIgnoreCase(beginEarlyTransactionProperty);
         }
+
         String referenceMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, properties, this.session, true);
         if (referenceMode != null) {
             this.referenceMode = ReferenceMode.valueOf(referenceMode);
         }
+
         String flushMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, properties, this.session, true);
         if (flushMode != null) {
             this.flushMode = FlushModeType.valueOf(flushMode);
         }
+
         String closeOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, properties, this.session, true);
         if (closeOnCommit != null) {
             this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
         }
+
         String persistOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, properties, this.session, true);
         if (persistOnCommit != null) {
             this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
         }
+
         String commitWithoutPersist = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, properties, this.session, true);
         if (commitWithoutPersist != null) {
             this.commitWithoutPersistRules = "true".equalsIgnoreCase(commitWithoutPersist);
         }
+
         String shouldValidateExistence = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.VALIDATE_EXISTENCE, properties, this.session, true);
         if (shouldValidateExistence != null) {
             this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
         }
+
         String shouldOrderUpdates = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.ORDER_UPDATES, properties, this.session, true);
         if (shouldOrderUpdates != null) {
             if ("true".equalsIgnoreCase(shouldOrderUpdates)) {
@@ -452,10 +560,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 this.commitOrder = CommitOrderType.NONE;
             }
         }
+
         String commitOrder = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, properties, this.session, true);
         if (commitOrder != null) {
             this.commitOrder = CommitOrderType.valueOf(commitOrder.toUpperCase(Locale.ROOT));
         }
+
         String flushClearCache = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.FLUSH_CLEAR_CACHE, properties, this.session, true);
         if (flushClearCache != null) {
             this.flushClearCache = flushClearCache;
@@ -563,6 +673,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     @Override
     @SuppressWarnings("removal")
     public PersistenceUnitTransactionType getTransactionType() {
+        if (setupImpl == null) {
+            return session.hasExternalTransactionController()
+                    ? PersistenceUnitTransactionType.JTA : PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        }
         // Temporary mapping between old and new PersistenceUnitTransactionType
         return switch (setupImpl.getPersistenceUnitInfo().getTransactionType()) {
             case JTA -> PersistenceUnitTransactionType.JTA;
@@ -769,7 +883,11 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public String getName() {
-        return setupImpl.getPersistenceUnitInfo().getPersistenceUnitName();
+        if (setupImpl != null) {
+            return setupImpl.getPersistenceUnitInfo().getPersistenceUnitName();
+        }
+        Object name = session.getProperty(PersistenceUnitListener.NAME_PROPERTY);
+        return name instanceof String persistenceUnitName ? persistenceUnitName : session.getName();
     }
 
     @Override
@@ -870,8 +988,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         try (EntityManager em = createEntityManager()) {
             switch (getTransactionType()) {
                 case JTA:
-                    em.joinTransaction();
-                    work.accept(em);
+                    applyInJtaTransaction(em, entityManager -> {
+                        work.accept(entityManager);
+                        return null;
+                    });
                     return;
                 case RESOURCE_LOCAL:
                     EntityTransaction et = em.getTransaction();
@@ -899,8 +1019,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         try (EntityManager em = createEntityManager()) {
             switch (getTransactionType()) {
                 case JTA:
-                    em.joinTransaction();
-                    return work.apply(em);
+                    return applyInJtaTransaction(em, work);
                 case RESOURCE_LOCAL:
                     EntityTransaction et = em.getTransaction();
                     et.begin();
@@ -918,6 +1037,241 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 default:
                     throw new IllegalStateException(
                             "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
+            }
+        }
+    }
+
+    /**
+     * Applies the work of {@link #runInTransaction} or {@link #callInTransaction} for a JTA persistence unit:
+     * within the JTA transaction associated with the caller, which is marked for rollback when the work throws,
+     * or else within a new one, committed when the work completes and rolled back when it throws.
+     */
+    private <R> R applyInJtaTransaction(EntityManager em, Function<EntityManager, R> work) {
+        AbstractSession session = getAbstractSession();
+        ExternalTransactionController controller = session.getExternalTransactionController();
+        if (!(controller instanceof AbstractTransactionController transactionController)) {
+            // No way to find out about, let alone start, a JTA transaction: joining fails if there is none
+            em.joinTransaction();
+            return work.apply(em);
+        }
+
+        if (transactionController.getTransaction() != null) {
+            em.joinTransaction();
+            try {
+                return work.apply(em);
+            } catch (RuntimeException | Error e) {
+                controller.markTransactionForRollback();
+                throw e;
+            }
+        }
+
+        controller.beginTransaction(session);
+        R result;
+        try {
+            em.joinTransaction();
+            result = work.apply(em);
+        } catch (RuntimeException | Error e) {
+            controller.rollbackTransaction(session);
+            throw e;
+        }
+        controller.commitTransaction(session);
+        return result;
+    }
+
+    @Override
+    public EntityManager createEntityManager(CreationOption... options) {
+        var creationOptions = parseCreateOptions(options);
+
+        return createEntityManagerImpl(creationOptions.properties(), creationOptions.synchronizationType());
+    }
+
+    @Override
+    public EntityAgent createEntityAgent(jakarta.persistence.EntityAgent.CreationOption... options) {
+        verifyOpen();
+        return new EntityAgentImpl(this, parseAgentCreationOptions(options)).completeCreation(getPersistenceUnitListeners());
+    }
+
+    @Override
+    public EntityAgent createEntityAgent(Map<?, ?> properties) {
+        verifyOpen();
+        return new EntityAgentImpl(this, properties).completeCreation(getPersistenceUnitListeners());
+    }
+
+    /**
+     * Translate an agent's creation options into the properties an entity manager is created with.
+     * <p>
+     * {@link jakarta.persistence.EntityAgent.CreationOption} is an open interface, so a provider may
+     * define its own; the specification itself defines only the two cache modes. Anything else is
+     * refused rather than ignored, so that an option a caller expects to take effect cannot pass
+     * silently.
+     */
+    private Map<String, Object> parseAgentCreationOptions(jakarta.persistence.EntityAgent.CreationOption... options) {
+        if (options == null || options.length == 0) {
+            return null;
+        }
+
+        Map<String, Object> properties = new HashMap<>();
+
+        for (jakarta.persistence.EntityAgent.CreationOption option : options) {
+            switch (option) {
+                case CacheRetrieveMode retrieveMode -> OptionUtils.setCacheRetrieveMode(properties, retrieveMode);
+                case CacheStoreMode storeMode -> OptionUtils.setCacheStoreMode(properties, storeMode);
+                default -> throw new IllegalArgumentException(
+                        "Unknown entity agent creation option [" + option + "].");
+            }
+        }
+
+        return properties;
+    }
+
+    @Override
+    public <R> TypedQueryReference<R> addNamedQuery(String name, TypedQuery<R> query) {
+        addNamedQuery(name, (Query) query);
+
+        DatabaseQuery databaseQuery = query.unwrap(DatabaseQuery.class);
+
+        Map<String, Object> hints = QueryHintsHandler.get(databaseQuery);
+
+        return AugmentedQueryReference.owned(new TypedQueryReferenceImpl<>(
+            name,
+            (Class<? extends R>) EJBQueryImpl.queryResultType(databaseQuery), hints != null ? hints : emptyMap(),
+            query.getOptions(), null), getAbstractSession());
+    }
+
+    @Override
+    public StatementReference addNamedStatement(String name, Statement statement) {
+        verifyOpen();
+        if (name == null || statement == null) {
+            throw new IllegalArgumentException("Statement name and statement must not be null");
+        }
+        addNamedQuery(name, statement);
+        return AugmentedQueryReference.owned(new StatementReferenceImpl(name, statement.getHints(), statement.getOptions()), getAbstractSession());
+    }
+
+    @Override
+    public Map<String, StatementReference> getNamedStatements() {
+        verifyOpen();
+        Map<String, StatementReference> result = new HashMap<>();
+        getAbstractSession().getQueries().forEach((name, queries) -> {
+            for (DatabaseQuery query : queries) {
+                if (query.isModifyQuery()) {
+                    result.put(name, AugmentedQueryReference.owned(new StatementReferenceImpl(name, QueryHintsHandler.get(query), java.util.Set.of()), getAbstractSession()));
+                    break;
+                }
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public <R> Map<String, ResultSetMapping<R>> getResultSetMappings(Class<R> resultType) {
+        verifyOpen();
+        Objects.requireNonNull(resultType);
+        Map<String, ResultSetMapping<R>> result = new HashMap<>();
+        getAbstractSession().getProject().getSQLResultSetMappings().forEach((name, mapping) -> {
+            ResultSetMapping<?> typed = ResultSetMappingTranslator.toJakartaMapping(mapping, getAbstractSession());
+            if (resultType == Object.class || resultType == typed.type()) {
+                @SuppressWarnings("unchecked") ResultSetMapping<R> compatible = (ResultSetMapping<R>) typed;
+                result.put(name, compatible);
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public synchronized <E> EntityListenerRegistration addListener(Class<E> entityType, Class<? extends Annotation> callbackType, Consumer<? super E> listener) {
+        verifyOpen();
+        return entityListenerRegistry.register(entityType, callbackType, listener);
+    }
+
+    @Override
+    public <H extends EntityHandler> void runInTransaction(Class<H> handlerClass, Consumer<H> work) {
+        callInTransaction(handlerClass, handler -> {
+            work.accept(handler);
+            return null;
+        });
+    }
+
+    /**
+     * Execute work with the requested handler, preserving caller-owned JTA transactions.
+     */
+    @Override
+    public <R, H extends EntityHandler> R callInTransaction(Class<H> handlerClass, Function<H, R> work) {
+        verifyOpen();
+        if (handlerClass == null || work == null) {
+            throw new IllegalArgumentException("Handler type and work must not be null");
+        }
+        if (handlerClass == EntityManager.class) {
+            return callInTransaction(entityManager -> work.apply(handlerClass.cast(entityManager)));
+        }
+        if (handlerClass != EntityAgent.class) {
+            throw new IllegalArgumentException("Unsupported entity handler type: " + handlerClass.getName());
+        }
+        EntityAgentImpl agent = new EntityAgentImpl(this, null).completeCreation(getPersistenceUnitListeners());
+        Throwable primary = null;
+        try {
+            if (getTransactionType() == PersistenceUnitTransactionType.JTA) {
+                ExternalTransactionController controller = getAbstractSession().getExternalTransactionController();
+                if (!(controller instanceof AbstractTransactionController transactions)) {
+                    throw new PersistenceException("No Jakarta Transactions controller is configured");
+                }
+                boolean owned = transactions.getTransaction() == null;
+                if (owned) {
+                    controller.beginTransaction(agent.getSession());
+                }
+                try {
+                    agent.joinTransaction();
+                    R result = work.apply(handlerClass.cast(agent));
+                    if (owned) {
+                        controller.commitTransaction(agent.getSession());
+                    }
+                    return result;
+                } catch (RuntimeException | Error failure) {
+                    try {
+                        if (owned) {
+                            controller.rollbackTransaction(agent.getSession());
+                        } else {
+                            controller.markTransactionForRollback();
+                        }
+                    } catch (RuntimeException | Error cleanup) {
+                        if (failure != cleanup) {
+                            failure.addSuppressed(cleanup);
+                        }
+                    }
+                    throw failure;
+                }
+            }
+            EntityTransaction transaction = agent.getTransaction();
+            transaction.begin();
+            try {
+                R result = work.apply(handlerClass.cast(agent));
+                transaction.commit();
+                return result;
+            } catch (RuntimeException | Error failure) {
+                try {
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                } catch (RuntimeException | Error cleanup) {
+                    if (failure != cleanup) {
+                        failure.addSuppressed(cleanup);
+                    }
+                }
+                throw failure;
+            }
+        } catch (RuntimeException | Error failure) {
+            primary = failure;
+            throw failure;
+        } finally {
+            try {
+                agent.close();
+            } catch (RuntimeException | Error cleanup) {
+                if (primary == null) {
+                    throw cleanup;
+                }
+                if (primary != cleanup) {
+                    primary.addSuppressed(cleanup);
+                }
             }
         }
     }
