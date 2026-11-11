@@ -166,6 +166,7 @@ public class DynamicTestHelper {
             }
 
             // Not used, added in Jakarta Persistence 4.0
+            @Override
             public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
                 return null;
             }
