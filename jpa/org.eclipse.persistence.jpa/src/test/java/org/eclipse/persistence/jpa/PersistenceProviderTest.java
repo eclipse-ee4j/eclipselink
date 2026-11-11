@@ -308,6 +308,7 @@ public class PersistenceProviderTest {
             return null;
         }
 
+        @Override
         public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
             return null;
         }

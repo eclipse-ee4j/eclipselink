@@ -715,9 +715,8 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * EclipseLink does not enhance client classes, the classes that merely use the entities of a
      * persistence unit, so there is no such transformer: the specification allows {@code null} for
      * exactly this case.
-     * <p>
-     * Added to the API after 4.0.0-M7, so it carries no {@code @Override} to keep compiling against M7.
      */
+    @Override
     public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
         return null;
     }
