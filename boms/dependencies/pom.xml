@@ -51,19 +51,19 @@
         <ws-rs.version>4.0.0</ws-rs.version>
 
         <!--Implementations-->
-        <asm.version>9.10.1</asm.version>
+        <asm.version>9.11.1</asm.version>
         <angus-activation.version>2.1.0-M1</angus-activation.version>
         <angus-mail.version>2.1.0-M1</angus-mail.version>
         <jaxb.version>4.0.9</jaxb.version>
         <jaxwsrt.version>4.0.5</jaxwsrt.version>
         <ant.version>1.10.18</ant.version>
-        <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
+        <apache.felix.framework.version>8.0.0</apache.felix.framework.version>
         <parsson.version>1.1.9</parsson.version>
         <org.glassfish.corba.version>6.0.0-M1</org.glassfish.corba.version>
         <jgroups.version>5.5.7.Final</jgroups.version> <!-- Java library for reliable group communication, mainly used to build clusters of JVMs. -->
-        <slf4j.version>2.0.18</slf4j.version>
+        <slf4j.version>2.0.20</slf4j.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
-        <mongodb.version>5.13.0</mongodb.version>
+        <mongodb.version>5.14.0</mongodb.version>
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
         <oracle.nosql.sdk.version>5.4.24</oracle.nosql.sdk.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version> <!-- Upgrading will miss: com.oracle.database.observability:dms:jar -->
@@ -86,21 +86,21 @@
         <!--GlassFish remote EJB client needs the gmbal implementation, gf-client-module brings only gmbal-api-only-->
         <gmbal.version>4.1.2</gmbal.version>
         <jmh.version>1.37</jmh.version>
-        <springframework.version>7.0.9</springframework.version>
-        <hibernate.version>9.1.4.Final</hibernate.version>
-        <aspectj.version>1.9.25.1</aspectj.version>
+        <springframework.version>7.0.10</springframework.version>
+        <hibernate.version>9.1.6.Final</hibernate.version>
+        <aspectj.version>1.9.27</aspectj.version>
         <exam.version>4.14.0</exam.version>
-        <logback.version>1.6.4</logback.version>
+        <logback.version>1.6.6</logback.version>
         <osgi.version>6.0.0</osgi.version>
 
         <!--JDBC Drivers-->
         <h2.version>2.5.252</h2.version>
-        <mysql.version>26.7.0</mysql.version>
-        <mariadb.version>3.5.10</mariadb.version>
+        <mysql.version>26.10.0</mysql.version>
+        <mariadb.version>4.0.0</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>12.1.5.0</db2.version>
-        <mssql.version>13.6.0.jre11</mssql.version>
-        <pgsql.version>42.7.13</pgsql.version>
+        <mssql.version>13.6.2.jre11</mssql.version>
+        <pgsql.version>42.7.14</pgsql.version>
     </properties>
 
     <dependencyManagement>

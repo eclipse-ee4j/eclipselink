@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.jboss</groupId>
             <artifactId>jboss-transaction-spi</artifactId>
-            <version>8.0.0.Final</version>
+            <version>9.0.0.Final</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion>
