@@ -122,7 +122,7 @@ spec:
                 container('el-build') {
                     sh """
                         echo '-[ EclipseLink Build ]-----------------------------------------------------------'
-                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.distribution.tests' -DskipTests -Pstaging
+                        etc/jenkins/mvn_retry.sh -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.distribution.tests' -DskipTests -Pstaging
                     """
                 }
             }
@@ -134,7 +134,7 @@ spec:
                     steps {
                         container('el-build') {
                             sh """
-                                mvn -B -V verify -pl :org.eclipse.persistence.core.test -P staging,test-core-lrg,mysql
+                                etc/jenkins/mvn_retry.sh -B -V verify -pl :org.eclipse.persistence.core.test -P staging,test-core-lrg,mysql
                             """
                         }
                     }
@@ -143,7 +143,7 @@ spec:
                     steps {
                         container('el-build') {
                             sh """
-                                mvn -B -V verify -pl :org.eclipse.persistence.oxm.test -P staging,test-core-lrg
+                                etc/jenkins/mvn_retry.sh -B -V verify -pl :org.eclipse.persistence.oxm.test -P staging,test-core-lrg
                             """
                         }
                     }
@@ -152,7 +152,7 @@ spec:
                     steps {
                         container('el-build') {
                             sh """
-                                mvn -B -V test -pl :org.eclipse.persistence.moxy -P staging,test-moxy-lrg
+                                etc/jenkins/mvn_retry.sh -B -V test -pl :org.eclipse.persistence.moxy -P staging,test-moxy-lrg
                             """
                         }
                     }
@@ -164,8 +164,8 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.test -P staging,mysql
-                                mvn -B -V -amd verify -pl :org.eclipse.persistence.jpa.testapps -P staging,mysql;
+                                etc/jenkins/mvn_retry.sh -B -V verify -pl :org.eclipse.persistence.jpa.test -P staging,mysql
+                                etc/jenkins/mvn_retry.sh -B -V -amd verify -pl :org.eclipse.persistence.jpa.testapps -P staging,mysql;
                             """
                 }
             }
@@ -174,7 +174,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn -B -V verify -pl :org.eclipse.persistence.sdo -P staging,test-sdo
+                                etc/jenkins/mvn_retry.sh -B -V verify -pl :org.eclipse.persistence.sdo -P staging,test-sdo
                             """
                 }
             }
@@ -183,7 +183,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn -B -V verify -pl :org.eclipse.persistence.corba -P staging,mysql
+                                etc/jenkins/mvn_retry.sh -B -V verify -pl :org.eclipse.persistence.corba -P staging,mysql
                             """
                 }
             }
@@ -192,8 +192,8 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn -B -V clean install -pl :eclipselink -P staging
-                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.jpa.spring.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution.tests -P staging,mysql;
+                                etc/jenkins/mvn_retry.sh -B -V clean install -pl :eclipselink -P staging
+                                etc/jenkins/mvn_retry.sh -B -V verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.jpa.spring.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution.tests -P staging,mysql;
                             """
                 }
             }
@@ -202,7 +202,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn -B -V package -DskipTests -Pstaging,oss-release
+                                etc/jenkins/mvn_retry.sh -B -V package -DskipTests -Pstaging,oss-release
                             """
                 }
             }
