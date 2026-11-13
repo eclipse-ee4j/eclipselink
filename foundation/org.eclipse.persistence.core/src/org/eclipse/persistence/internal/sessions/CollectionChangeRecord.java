@@ -435,6 +435,17 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
 
         setAddObjectList(addList);
         setRemoveObjectList(removeList);
+
+        // Attribute change tracking: the OrderedChangeObjects must reference the same
+        // ObjectChangeSet instances as the add/remove lists, which are identity maps.
+        if (this.orderedChangeObjectList != null && !this.orderedChangeObjectList.isEmpty()) {
+            List<OrderedChangeObject> orderedChangeSets = new ArrayList<>(this.orderedChangeObjectList.size());
+            for (OrderedChangeObject changeObject : this.orderedChangeObjectList) {
+                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(changeObject.getChangeSet(), mergeFromChangeSet);
+                orderedChangeSets.add(new OrderedChangeObject(changeObject.getChangeType(), changeObject.getIndex(), localChangeSet, changeObject.getAddedOrRemovedObject()));
+            }
+            setOrderedChangeObjectList(orderedChangeSets);
+        }
     }
 
     /**
