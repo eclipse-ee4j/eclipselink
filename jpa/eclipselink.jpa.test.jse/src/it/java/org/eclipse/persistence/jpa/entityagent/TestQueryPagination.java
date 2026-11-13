@@ -12,6 +12,7 @@
 package org.eclipse.persistence.jpa.entityagent;
 
 import jakarta.persistence.EntityAgent;
+import jakarta.persistence.EntityHandler;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.FlushModeType;
@@ -31,6 +32,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.jpa.entityagent.model.AgentQueryCodeConverter;
@@ -41,6 +43,7 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventManager;
@@ -64,6 +67,9 @@ public class TestQueryPagination {
     private static final String QUERY = "select r from AgentQueryRecord r where r.id >= :minimum order by r.id";
     private static final String NAMED_QUERY = "EAQuery.pagination";
     private static final String PRESET_QUERY = "EAQuery.presetPagination";
+    private static final String PRESET_NATIVE_QUERY = "EAQuery.presetNativePagination";
+    private static final String NATIVE_IDS = "SELECT ID FROM EA_QUERY_RECORD WHERE ID >= ?1 ORDER BY ID";
+    private static final String NATIVE_RECORDS = "SELECT ID, TITLE, CODE, VERSION, GROUP_ID FROM EA_QUERY_RECORD WHERE ID >= ?1 ORDER BY ID";
 
     @Emf(createTables = DDLGen.DROP_CREATE,
             classes = {AgentQueryRecord.class, AgentQueryGroup.class, AgentQueryCodeConverter.class},
@@ -84,6 +90,8 @@ public class TestQueryPagination {
         try (EntityManager em = emf.createEntityManager()) {
             emf.addNamedQuery(NAMED_QUERY, em.createQuery(QUERY, AgentQueryRecord.class));
             emf.addNamedQuery(PRESET_QUERY, em.createQuery(QUERY, AgentQueryRecord.class)
+                    .setFirstResult(1).setMaxResults(1));
+            emf.addNamedQuery(PRESET_NATIVE_QUERY, em.createNativeQuery(NATIVE_RECORDS, AgentQueryRecord.class)
                     .setFirstResult(1).setMaxResults(1));
         }
     }
@@ -238,6 +246,87 @@ public class TestQueryPagination {
     }
 
     @Test
+    public void entityManagerNativeQueryResetsOffset() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNativeOffsetReset(() -> em.createNativeQuery(NATIVE_IDS));
+            assertNativeOffsetReset(() -> em.createNativeQuery(NATIVE_IDS, Integer.class));
+            assertNativeOffsetReset(() -> em.createNativeQuery(NATIVE_RECORDS, AgentQueryRecord.class));
+            assertNativeOffsetReset(() -> em.createNativeQuery(NATIVE_RECORDS, "EAQuery.recordMapping"));
+        }
+    }
+
+    @Test
+    public void entityAgentNativeQueryResetsOffset() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertNativeOffsetReset(() -> agent.createNativeQuery(NATIVE_IDS));
+            assertNativeOffsetReset(() -> agent.createNativeQuery(NATIVE_IDS, Integer.class));
+            assertNativeOffsetReset(() -> agent.createNativeQuery(NATIVE_RECORDS, AgentQueryRecord.class));
+            assertNativeOffsetReset(() -> agent.createNativeQuery(NATIVE_RECORDS, "EAQuery.recordMapping"));
+        }
+    }
+
+    @Test
+    public void entityManagerNativeConversionRetainsOffsetReset() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNativeConversionRetainsOffsetReset(() -> em.createNativeQuery(NATIVE_RECORDS));
+        }
+    }
+
+    @Test
+    public void entityAgentNativeConversionRetainsOffsetReset() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertNativeConversionRetainsOffsetReset(() -> agent.createNativeQuery(NATIVE_RECORDS));
+        }
+    }
+
+    @Test
+    public void entityManagerNamedNativeAndReferenceOffsetsAreIndependent() {
+        TypedQueryReference<AgentQueryRecord> reference = emf.getNamedQueries(AgentQueryRecord.class).get(PRESET_NATIVE_QUERY);
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNativeSiblingOffsets(() -> em.createNamedQuery(PRESET_NATIVE_QUERY, AgentQueryRecord.class),
+                    () -> em.createQuery(reference));
+        }
+    }
+
+    @Test
+    public void entityAgentNamedNativeAndReferenceOffsetsAreIndependent() {
+        TypedQueryReference<AgentQueryRecord> reference = emf.getNamedQueries(AgentQueryRecord.class).get(PRESET_NATIVE_QUERY);
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertNativeSiblingOffsets(() -> agent.createNamedQuery(PRESET_NATIVE_QUERY, AgentQueryRecord.class),
+                    () -> agent.createQuery(reference));
+        }
+    }
+
+    @Test
+    public void namedNativeRegistrationPreservesDirectCallOffset() {
+        try (EntityManager em = emf.createEntityManager(); EntityAgent agent = emf.createEntityAgent()) {
+            for (EntityHandler handler : List.of(em, agent)) {
+                for (boolean typed : List.of(false, true)) {
+                    assertNativeRegistrationOffset(handler, typed, false, false);
+                    assertNativeRegistrationOffset(handler, typed, true, false);
+                    assertNativeRegistrationOffset(handler, typed, false, true);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void entityManagerNativeCountAfterPagedExecution() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNativeCountAfterPage(() -> em.createNativeQuery(NATIVE_IDS, Integer.class));
+            assertNativeCountAfterPage(() -> em.createNativeQuery(NATIVE_RECORDS, AgentQueryRecord.class));
+        }
+    }
+
+    @Test
+    public void entityAgentNativeCountAfterPagedExecution() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertNativeCountAfterPage(() -> agent.createNativeQuery(NATIVE_IDS, Integer.class));
+            assertNativeCountAfterPage(() -> agent.createNativeQuery(NATIVE_RECORDS, AgentQueryRecord.class));
+        }
+    }
+
+    @Test
     public void entityManagerZeroLimitPreservesValidation() {
         TypedQuery<AgentQueryRecord> closed;
         try (EntityManager em = emf.createEntityManager()) {
@@ -360,6 +449,153 @@ public class TestQueryPagination {
             } finally {
                 em.getTransaction().rollback();
             }
+        }
+    }
+
+    private void assertNativeRegistrationOffset(EntityHandler handler, boolean typed,
+                                                boolean executeSource, boolean explicitZero) {
+        String sql = "SELECT ID FROM EA_QUERY_RECORD ORDER BY ID";
+        TypedQuery<Integer> typedSource = typed ? handler.createNativeQuery(sql, Integer.class) : null;
+        Query source = typed ? typedSource : handler.createNativeQuery(sql);
+        ReadQuery read = source.unwrap(ReadQuery.class);
+        DatabaseCall call = read.getCall();
+        call.setFirstResult(1);
+        call.setIsResultSetScrollable(true);
+        call.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+        call.setResultSetConcurrency(ResultSet.CONCUR_READ_ONLY);
+        assertEquals(0, source.getFirstResult());
+        assertEquals(0, read.getFirstResult());
+        if (executeSource) {
+            assertResetIds(source, List.of(2, 3));
+        }
+        if (explicitZero) {
+            // Registration must copy the wrapper's zero before execution propagates it to the core query.
+            source.setFirstResult(0);
+        }
+        String name = "EAQuery.directCallOffset";
+        TypedQueryReference<Integer> reference = null;
+        if (typed) {
+            reference = emf.addNamedQuery(name, typedSource);
+        } else {
+            emf.addNamedQuery(name, source);
+        }
+
+        List<Integer> expected = explicitZero ? List.of(1, 2, 3) : List.of(2, 3);
+        Query named = handler.createNamedQuery(name);
+        Query sibling = handler.createNamedQuery(name);
+        Query referenced = reference == null ? null : handler.createQuery(reference);
+        assertResetIds(named, expected);
+        assertResetIds(source, expected);
+        assertResetIds(sibling, expected);
+        if (referenced != null) {
+            assertResetIds(referenced, expected);
+        }
+
+        named.setFirstResult(explicitZero ? 2 : 0);
+        assertResetIds(named, explicitZero ? List.of(3) : List.of(1, 2, 3));
+        assertResetIds(source, expected);
+        assertResetIds(sibling, expected);
+        assertResetIds(handler.createNamedQuery(name), expected);
+        if (reference != null) {
+            assertResetIds(referenced, expected);
+            assertResetIds(handler.createQuery(reference), expected);
+        }
+    }
+
+    private void assertNativeOffsetReset(Supplier<? extends Query> createQuery) {
+        for (boolean bind : List.of(true, false)) {
+            Query query = configureResetQuery(createQuery.get(), bind, true);
+            assertResetPage(query, 1, 1, List.of(2));
+            assertResetPage(query, 0, 1, List.of(1));
+            assertResetPage(query, 1, 1, List.of(2));
+            query.setFirstResult(0).setParameter(1, 3);
+            assertResetIds(query, List.of(3));
+            query.setParameter(1, 1);
+            assertResetPage(query, 0, 1, List.of(1));
+            assertResetPage(query, 0, 1, List.of(1));
+            assertResetPage(query, 2, 1, List.of(3));
+            assertResetPage(query, 1, 1, List.of(2));
+            assertResetPage(query, 0, Integer.MAX_VALUE, List.of(1, 2, 3));
+            assertResetPage(query, 1, Integer.MAX_VALUE, List.of(2, 3));
+            assertResetPage(query, 0, Integer.MAX_VALUE, List.of(1, 2, 3));
+            assertResetPage(query, 0, 0, List.of());
+            assertResetPage(query, 0, 2, List.of(1, 2));
+            assertResetPage(query, 1, 0, List.of());
+            assertResetPage(query, 0, Integer.MAX_VALUE, List.of(1, 2, 3));
+
+            assertResetPage(query, 1, 1, List.of(2));
+            query.setFirstResult(0);
+            assertEquals(1, resetResultId(query.getSingleResult()));
+            assertEquals(1, resetResultId(query.getSingleResultOrNull()));
+            try (var results = query.getResultStream()) {
+                assertEquals(List.of(1), results.map(this::resetResultId).toList());
+            }
+            assertEquals(0, query.getFirstResult());
+            assertEquals(1, query.getMaxResults());
+        }
+    }
+
+    private void assertNativeConversionRetainsOffsetReset(Supplier<StatementOrTypedQuery> createQuery) {
+        for (boolean bind : List.of(true, false)) {
+            for (boolean mapped : List.of(false, true)) {
+                StatementOrTypedQuery source = createQuery.get();
+                configureResetQuery(source, bind, true).setFirstResult(1).setMaxResults(1);
+                // The projection fixes ID as the first column of this untyped row.
+                assertEquals(2, ((Number) ((Object[]) source.getSingleResult())[0]).intValue());
+                source.setFirstResult(0);
+                Query converted = mapped ? source.withResultSetMapping(
+                        emf.getResultSetMappings(AgentQueryRecord.class).get("EAQuery.recordMapping"))
+                        : source.ofType(AgentQueryRecord.class);
+                assertEquals(0, converted.getFirstResult());
+                assertEquals(1, converted.getMaxResults());
+                assertResetIds(converted, List.of(1));
+                assertResetPage(converted, 1, 1, List.of(2));
+                converted.setFirstResult(0).setParameter(1, 3);
+                assertResetIds(converted, List.of(3));
+            }
+        }
+    }
+
+    private void assertNativeSiblingOffsets(Supplier<? extends Query> createNamed,
+                                             Supplier<? extends Query> createReference) {
+        for (boolean bind : List.of(true, false)) {
+            Query query = configureResetQuery(createNamed.get(), bind, true);
+            Query sibling = configureResetQuery(createNamed.get(), bind, true);
+            Query reference = configureResetQuery(createReference.get(), bind, true);
+            assertResetDefaults(query, true);
+            query.setFirstResult(0);
+            assertResetIds(query, List.of(1));
+            assertResetDefaults(sibling, true);
+            assertResetDefaults(reference, true);
+            reference.setFirstResult(0);
+            assertResetIds(reference, List.of(1));
+            assertResetDefaults(sibling, true);
+            assertResetDefaults(configureResetQuery(createNamed.get(), bind, true), true);
+            assertResetDefaults(configureResetQuery(createReference.get(), bind, true), true);
+            query.setParameter(1, 3);
+            assertResetIds(query, List.of(3));
+            assertResetIds(reference, List.of(1));
+        }
+    }
+
+    private void assertNativeCountAfterPage(Supplier<? extends TypedQuery<?>> createQuery) {
+        for (boolean bind : List.of(true, false)) {
+            TypedQuery<?> query = createQuery.get();
+            configureResetQuery(query, bind, true);
+            assertResetPage(query, 1, 1, List.of(2));
+            assertEquals(3L, query.getResultCount());
+            assertEquals(1, query.getFirstResult());
+            assertEquals(1, query.getMaxResults());
+            assertEquals(1, query.getParameterValue(1));
+            assertResetIds(query, List.of(2));
+            query.setParameter(1, 3);
+            assertEquals(1L, query.getResultCount());
+            assertEquals(1, query.getFirstResult());
+            assertEquals(1, query.getMaxResults());
+            assertEquals(3, query.getParameterValue(1));
+            assertResetIds(query, List.of());
+            query.setParameter(1, 1);
+            assertResetIds(query, List.of(2));
         }
     }
 
@@ -486,8 +722,11 @@ public class TestQueryPagination {
     private void assertResetIds(Query query, List<Integer> expected) {
         List<?> rows = query.getResultList();
         assertEquals("first=" + query.getFirstResult() + ", maximum=" + query.getMaxResults(), expected,
-                rows.stream().map(row -> row instanceof AgentQueryRecord record
-                        ? record.id : ((Number) row).intValue()).toList());
+                rows.stream().map(this::resetResultId).toList());
+    }
+
+    private int resetResultId(Object row) {
+        return row instanceof AgentQueryRecord record ? record.id : ((Number) row).intValue();
     }
 
     private boolean requireNativeReturning() {

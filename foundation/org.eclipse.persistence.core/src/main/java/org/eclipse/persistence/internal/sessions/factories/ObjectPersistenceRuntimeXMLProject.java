@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -160,6 +160,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaFileReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -1547,10 +1548,28 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
         XMLDirectMapping firstResultMapping = new XMLDirectMapping();
         firstResultMapping.setAttributeName("firstResult");
-        firstResultMapping.setGetMethodName("getFirstResult");
-        firstResultMapping.setSetMethodName("setFirstResult");
+        firstResultMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
+            public Object getAttributeValueFromObject(Object object) {
+                ReadQuery query = (ReadQuery)object;
+                if (!query.isFirstResultSet() && query.getFirstResult() == 0) {
+                    return null;
+                }
+                return query.getFirstResult();
+            }
+
+            @Override
+            public void setAttributeValueInObject(Object object, Object value) {
+                if (value != null) {
+                    ((ReadQuery)object).setFirstResult((Integer)value);
+                }
+            }
+        });
+        firstResultMapping.setAttributeClassification(Integer.class);
         firstResultMapping.setXPath(getPrimaryNamespaceXPath() + "first-result/text()");
         firstResultMapping.setNullValue(0);
+        firstResultMapping.setNullValueMarshalled(true);
+        ((NullPolicy)firstResultMapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         descriptor.addMapping(firstResultMapping);
         XMLDirectMapping fetchSizeMapping = new XMLDirectMapping();
         fetchSizeMapping.setAttributeName("fetchSize");
