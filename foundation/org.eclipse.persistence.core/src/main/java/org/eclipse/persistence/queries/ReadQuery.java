@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,11 +39,16 @@ import java.util.List;
  */
 public abstract class ReadQuery extends DatabaseQuery {
 
+    private static final long serialVersionUID = -1076104486010025988L;
+
     /** Used for retrieve limited rows through the query. */
     protected int maxRows;
 
     /** Used to start query results at a specific result */
     protected int firstResult;
+
+    /** Distinguishes an explicit zero from an untouched call-level offset. */
+    private boolean isFirstResultSet;
 
     /* used on read queries to stamp the object to determine the last time it was refreshed to
      * reduce work and prevent infinite recursion on Refreshes
@@ -174,6 +179,14 @@ public abstract class ReadQuery extends DatabaseQuery {
 
     /**
      * INTERNAL:
+     * Return whether the first result was explicitly set on this query.
+     */
+    public boolean isFirstResultSet() {
+        return isFirstResultSet;
+    }
+
+    /**
+     * INTERNAL:
      * This method is used to get the time in millis that this query is being executed at.
      * it is set just prior to executing the SQL and will be used to determine which objects should be refreshed.
      * CR #4365
@@ -296,6 +309,7 @@ public abstract class ReadQuery extends DatabaseQuery {
             ReadQuery readQuery = (ReadQuery)query;
             this.fetchSize = readQuery.fetchSize;
             this.firstResult = readQuery.firstResult;
+            this.isFirstResultSet = readQuery.isFirstResultSet;
             this.maxRows = readQuery.maxRows;
             this.queryResultCachingPolicy = readQuery.queryResultCachingPolicy;
         }
@@ -390,7 +404,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      * Otherwise by it will use the JDBC absolute to skip the firstResult number of rows.
      */
     public void setFirstResult(int firstResult) {
-        if (isPrepared() && this.firstResult != firstResult) {
+        if (isPrepared() && (this.firstResult != firstResult || !this.isFirstResultSet)) {
             if (getCall()!=null && getCall().shouldIgnoreFirstRowSetting()) {
                 // Don't need to reprepare as firstResult is already built into the sql if ignoreFirstRowMaxResultsSettings is set,
                 // firstResult is just a query parameter.
@@ -399,6 +413,7 @@ public abstract class ReadQuery extends DatabaseQuery {
             }
         }
         this.firstResult = firstResult;
+        this.isFirstResultSet = true;
         this.shouldCloneCall = true;
     }
 

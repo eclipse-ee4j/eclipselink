@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -182,8 +182,10 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             // Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
             // We should check FirstRow and MaxResults separately.
             if (!call.shouldIgnoreFirstRowSetting()){
-                if (readQuery.getFirstResult() != 0) {
+                if (readQuery.isFirstResultSet() || readQuery.getFirstResult() != 0) {
                     call.setFirstResult(readQuery.getFirstResult());
+                }
+                if (readQuery.getFirstResult() != 0) {
                     call.setIsResultSetScrollable(true);
                     call.setResultSetType(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
                     call.setResultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY);
