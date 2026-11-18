@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
     protected void cleanupDeadCacheKeys() {
         Reference reference = referenceQueue.poll();
         while ( reference != null) {
-            CacheKey key = ((QueueableWeakCacheKey.CacheKeyReference) reference.get()).getOwner();
+            CacheKey key = ((QueueableWeakCacheKey.CacheKeyReference) reference).getOwner();
             remove(key);
             reference = referenceQueue.poll();
         }
