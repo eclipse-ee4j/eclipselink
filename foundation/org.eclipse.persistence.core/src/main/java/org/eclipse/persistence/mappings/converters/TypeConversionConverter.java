@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.Session;
 
@@ -242,7 +243,13 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
                 setObjectClass(directMapping.getAttributeClassification());
             }
         } else if (getMapping().isDirectCollectionMapping()) {
-            ((DirectCollectionMapping) getMapping()).setAttributeClassification(getObjectClass());
+            DirectCollectionMapping collectionMapping = (DirectCollectionMapping) getMapping();
+            // A map's key-only converter must not replace its value's Java type.
+            boolean keyOnly = collectionMapping instanceof DirectMapMapping mapMapping
+                    && mapMapping.getKeyConverter() == this && mapMapping.getValueConverter() != this;
+            if (!keyOnly) {
+                collectionMapping.setAttributeClassification(getObjectClass());
+            }
         }
     }
 

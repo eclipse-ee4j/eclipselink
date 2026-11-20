@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,6 +137,7 @@ import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
@@ -197,6 +198,17 @@ final class TypeResolver extends JPQLFunctionsAbstractBuilder implements Eclipse
      */
     TypeResolver(JPQLQueryContext queryContext) {
         super(queryContext);
+    }
+
+    /** Returns the value or element type denoted by a basic collection join alias. */
+    private Class<?> calculateCollectionValueType(DirectCollectionMapping mapping) {
+        Class<?> valueType = mapping instanceof DirectMapMapping mapMapping
+                ? mapMapping.getValueClass() : null;
+        if (valueType == null) {
+            // Standard converters retain their domain type in the element classification.
+            valueType = mapping.getAttributeClassification();
+        }
+        return valueType != null ? valueType : mapping.getDirectField().getType();
     }
 
     /**
@@ -776,6 +788,14 @@ final class TypeResolver extends JPQLFunctionsAbstractBuilder implements Eclipse
     @Override
     public void visit(IdentificationVariable expression) {
 
+        if (!expression.isVirtual()) {
+            Declaration declaration = queryContext.findDeclaration(expression.getVariableName());
+            if (declaration != null && declaration.getMapping() instanceof DirectCollectionMapping mapping) {
+                type = calculateCollectionValueType(mapping);
+                return;
+            }
+        }
+
         PathResolver resolver = pathResolver();
 
         DatabaseMapping oldMapping    = resolver.mapping;
@@ -1257,13 +1277,7 @@ final class TypeResolver extends JPQLFunctionsAbstractBuilder implements Eclipse
         DatabaseMapping mapping = declaration.getMapping();
 
         if (mapping.isDirectMapMapping()) {
-
-            DirectMapMapping mapMapping = (DirectMapMapping) mapping;
-            type = mapMapping.getValueClass();
-
-            if (type == null) {
-                type = mapMapping.getDirectField().getType();
-            }
+            type = calculateCollectionValueType((DirectMapMapping) mapping);
         }
         else {
             type = calculateMappingType(declaration.getMapping());
