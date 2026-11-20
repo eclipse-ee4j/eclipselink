@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -878,9 +878,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_AvgFunction_InvalidExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT AVG(e) FROM Employee e";
+        String jpqlQuery  = "SELECT AVG((e.name, e.age)) FROM Employee e";
         int startPosition = "SELECT AVG(".length();
-        int endPosition   = "SELECT AVG(e".length();
+        int endPosition   = "SELECT AVG((e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -3629,9 +3629,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_LocateExpression_InvalidThirdExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT e FROM Employee e WHERE LOCATE(e.name, 'JPQL', e)";
+        String jpqlQuery  = "SELECT e FROM Employee e WHERE LOCATE(e.name, 'JPQL', (e.name, e.age))";
         int startPosition = "SELECT e FROM Employee e WHERE LOCATE(e.name, 'JPQL', ".length();
-        int endPosition   = startPosition + 1;
+        int endPosition   = startPosition + "(e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -4027,9 +4027,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_MaxFunction_InvalidExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT MAX(e) FROM Employee e";
+        String jpqlQuery  = "SELECT MAX((e.name, e.age)) FROM Employee e";
         int startPosition = "SELECT MAX(".length();
-        int endPosition   = "SELECT MAX(e".length();
+        int endPosition   = "SELECT MAX((e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -4146,9 +4146,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_MinFunction_InvalidExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT MIN(e) FROM Employee e";
+        String jpqlQuery  = "SELECT MIN((e.name, e.age)) FROM Employee e";
         int startPosition = "SELECT MIN(".length();
-        int endPosition   = "SELECT MIN(e".length();
+        int endPosition   = "SELECT MIN((e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -4486,9 +4486,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_NullIfExpression_InvalidFirstExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT NULLIF(e, 4 + e.age) FROM Employee e";
+        String jpqlQuery  = "SELECT NULLIF((e.name, e.age), 4 + e.age) FROM Employee e";
         int startPosition = "SELECT NULLIF(".length();
-        int endPosition   = "SELECT NULLIF(e".length();
+        int endPosition   = "SELECT NULLIF((e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -4503,9 +4503,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_NullIfExpression_InvalidSecondExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT NULLIF('JPQL', e) FROM Employee e";
+        String jpqlQuery  = "SELECT NULLIF('JPQL', (e.name, e.age)) FROM Employee e";
         int startPosition = "SELECT NULLIF('JPQL', ".length();
-        int endPosition   = "SELECT NULLIF('JPQL', e".length();
+        int endPosition   = "SELECT NULLIF('JPQL', (e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -5699,9 +5699,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_SubstringExpression_InvalidFirstExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT e FROM Employee e WHERE SUBSTRING(e, 0, 1)";
+        String jpqlQuery  = "SELECT e FROM Employee e WHERE SUBSTRING((e.name, e.age), 0, 1)";
         int startPosition = "SELECT e FROM Employee e WHERE SUBSTRING(".length();
-        int endPosition   = startPosition + 1;
+        int endPosition   = startPosition + "(e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -5716,9 +5716,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_SubstringExpression_InvalidSecondExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, e, 1)";
+        String jpqlQuery  = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, (e.name, e.age), 1)";
         int startPosition = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, ".length();
-        int endPosition   = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, e".length();
+        int endPosition   = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, (e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -5733,9 +5733,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_SubstringExpression_InvalidThirdExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, e)";
+        String jpqlQuery  = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, (e.name, e.age))";
         int startPosition = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, ".length();
-        int endPosition   = startPosition + 1;
+        int endPosition   = startPosition + "(e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -5936,9 +5936,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_SumFunction_InvalidExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT SUM(e) FROM Employee e";
+        String jpqlQuery  = "SELECT SUM((e.name, e.age)) FROM Employee e";
         int startPosition = "SELECT SUM(".length();
-        int endPosition   = "SELECT SUM(e".length();
+        int endPosition   = "SELECT SUM((e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
@@ -6055,9 +6055,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_TrimExpression_InvalidExpression() throws Exception {
 
-        String jpqlQuery  = "SELECT e FROM Employee e WHERE TRIM(e) = 'JPQL'";
+        String jpqlQuery  = "SELECT e FROM Employee e WHERE TRIM((e.name, e.age)) = 'JPQL'";
         int startPosition = "SELECT e FROM Employee e WHERE TRIM(".length();
-        int endPosition   = startPosition + 1;
+        int endPosition   = startPosition + "(e.name, e.age)".length();
 
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
