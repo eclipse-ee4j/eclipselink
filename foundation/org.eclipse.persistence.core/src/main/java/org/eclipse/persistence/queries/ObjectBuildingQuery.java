@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public static final short NO_LOCK = 0;
     public static final short LOCK = 1;
     public static final short LOCK_NOWAIT = 2;
+    public static final short LOCK_SHARED = 3;
     // allow pessimistic locking policy to be used
     public static final short DEFAULT_LOCK_MODE = -1;
 

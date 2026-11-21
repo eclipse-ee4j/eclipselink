@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1570,6 +1570,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
+    }
+
+    /**
+     * Returns the string used for shared (read) locking.
+     * Defaults to {@link #getSelectForUpdateString()} for backward compatibility.
+     * Platforms that support shared locks (e.g. MySQL, PostgreSQL) should override
+     * this to return their native shared lock syntax (e.g. " FOR SHARE").
+     */
+    public String getSelectForShareString() {
+        return getSelectForUpdateString();
     }
 
     /**
