@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -3244,13 +3244,15 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         query = em.createQuery("Select b from Buyer b join b.creditLines l where Key(l) <> ''");
         query.getResultList();
         query = em.createQuery("Select b from Buyer b join b.creditLines l where l in :arg");
-        List<Integer> args = new ArrayList<>();
-        args.add(0);
+        List<Long> args = new ArrayList<>();
+        args.add(0L);
         query.setParameter("arg", args);
         query.getResultList();
-        query = em.createQuery("Select b from Buyer b join b.creditLines l where l = :arg");
-        query.setParameter("arg", args);
-        query.getResultList();
+        Query scalarQuery = em.createQuery("Select b from Buyer b join b.creditLines l where l = :arg");
+        Assert.assertEquals(Long.class, scalarQuery.getParameter("arg").getParameterType());
+        Assert.assertThrows(IllegalArgumentException.class, () -> scalarQuery.setParameter("arg", args));
+        scalarQuery.setParameter("arg", 0L);
+        scalarQuery.getResultList();
         query = em.createQuery("select c from Buyer c join c.creditLines cc where key(cc) = :attrKey and value(cc) = :attrValue");
         query.setParameter("attrKey",   "test");
         query.setParameter("attrValue", 0);

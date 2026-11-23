@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -441,6 +441,7 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
         addChildBNF(SingleValuedPathExpressionBNF.ID,     QualifiedIdentificationVariableBNF.ID);
         addChildBNF(SingleValuedPathExpressionBNF.ID,     SingleValuedObjectPathExpressionBNF.ID);
         addChildBNF(StateFieldPathExpressionBNF.ID,       GeneralIdentificationVariableBNF.ID);
+        addChildBNF(StateFieldPathExpressionBNF.ID,       IdentificationVariableBNF.ID);
         addChildBNF(StringPrimaryBNF.ID,                  CaseExpressionBNF.ID);
     }
 
