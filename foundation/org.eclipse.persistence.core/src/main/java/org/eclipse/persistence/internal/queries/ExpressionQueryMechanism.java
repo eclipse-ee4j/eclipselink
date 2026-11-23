@@ -265,6 +265,12 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (query.hasOrderByExpressions()) {
             selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(), clonedExpressions));
         }
+        if (!isSubSelect && !query.isReportQuery() && query.hasJoining()) {
+            List<Expression> joinedOrderings = query.getJoinedAttributeManager().buildOrderingsOfJoinedCollections();
+            if (!joinedOrderings.isEmpty()) {
+                selectStatement.setJoinedOrderByExpressions(cloneExpressions(joinedOrderings, clonedExpressions));
+            }
+        }
         if (query.hasNonFetchJoinedAttributeExpressions()) {
             selectStatement.setNonSelectFields(cloneExpressions(query.getNonFetchJoinAttributeExpressions(), clonedExpressions));
         }

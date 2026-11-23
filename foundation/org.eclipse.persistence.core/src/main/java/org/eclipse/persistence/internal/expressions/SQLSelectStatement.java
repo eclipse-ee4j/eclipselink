@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
@@ -102,6 +103,9 @@ public class SQLSelectStatement extends SQLStatement {
 
     /** Order by clause for read all queries. */
     protected List<Expression> orderByExpressions;
+
+    /** Orderings of joined collections, appended to the order by expressions after their normalization. */
+    protected List<Expression> joinedOrderByExpressions;
 
     /** Physical SQL positions of projected subquery sort keys, recomputed when fields print. */
     private transient Map<Expression, Integer> orderBySelectPositions;
@@ -1509,6 +1513,9 @@ public class SQLSelectStatement extends SQLStatement {
         if (hasOrderByExpressions()) {
             normalizeOrderBy(builder, allExpressions, clonedExpressions, session);
         }
+        if (this.joinedOrderByExpressions != null) {
+            this.joinedOrderByExpressions = normalizeOrderBy(this.joinedOrderByExpressions, builder, allExpressions, clonedExpressions, session);
+        }
 
         // Process outer join by expressions.
         if (hasOuterJoinExpressions()) {
@@ -1628,6 +1635,10 @@ public class SQLSelectStatement extends SQLStatement {
         // Assign all table aliases.
         assignAliases(allExpressions);
 
+        if (this.joinedOrderByExpressions != null) {
+            appendJoinedOrderByExpressions();
+        }
+
         // If this is data level then the tables must be set manually.
         if (descriptor == null) {
             computeTablesFromTables();
@@ -1688,8 +1699,17 @@ public class SQLSelectStatement extends SQLStatement {
      * Order by the objects primary key or all fields for aggregates.
      */
     protected void normalizeOrderBy(Expression builder, List<Expression> allExpressions, Map<Expression, Expression> clonedExpressions, AbstractSession session) {
-        List<Expression> newOrderBys = new ArrayList<>(this.orderByExpressions.size());
-        for (Expression orderBy : this.orderByExpressions) {
+        this.orderByExpressions = normalizeOrderBy(this.orderByExpressions, builder, allExpressions, clonedExpressions, session);
+    }
+
+    /**
+     * Return the given orderings normalized, with an ordering by a non basic mapping replaced by the orderings of its
+     * fields.
+     */
+    private List<Expression> normalizeOrderBy(List<Expression> expressions, Expression builder, List<Expression> allExpressions,
+            Map<Expression, Expression> clonedExpressions, AbstractSession session) {
+        List<Expression> newOrderBys = new ArrayList<>(expressions.size());
+        for (Expression orderBy : expressions) {
             orderBy = rebuildExpression(orderBy, builder, clonedExpressions);
             Expression base = orderBy;
             Boolean asc = null;
@@ -1750,7 +1770,39 @@ public class SQLSelectStatement extends SQLStatement {
             newOrderBys.add(orderBy);
             allExpressions.add(orderBy);
         }
-        this.orderByExpressions = newOrderBys;
+        return newOrderBys;
+    }
+
+    /**
+     * Append each ordering of a joined collection to the order by expressions, unless the order by expressions already
+     * order by its aliased field, because a database may reject a repeated column in the order by.
+     */
+    private void appendJoinedOrderByExpressions() {
+        Set<DatabaseField> orderedFields = new HashSet<>();
+        List<Expression> orderBys = new ArrayList<>(hasOrderByExpressions() ? getOrderByExpressions() : List.of());
+        for (Expression orderBy : orderBys) {
+            DatabaseField field = getOrderedAliasedField(orderBy);
+            if (field != null) {
+                orderedFields.add(field);
+            }
+        }
+        for (Expression joinedOrderBy : this.joinedOrderByExpressions) {
+            DatabaseField field = getOrderedAliasedField(joinedOrderBy);
+            if (field == null || orderedFields.add(field)) {
+                orderBys.add(joinedOrderBy);
+            }
+        }
+        setOrderByExpressions(orderBys);
+        this.joinedOrderByExpressions = null;
+    }
+
+    /**
+     * Return the aliased field which the given normalized ordering orders by, or null when it orders by something else
+     * than a field.
+     */
+    private static DatabaseField getOrderedAliasedField(Expression orderBy) {
+        Expression value = orderByValue(orderBy);
+        return value instanceof DataExpression data && data.getField() != null ? data.getAliasedField() : null;
     }
 
     /**
@@ -2070,6 +2122,15 @@ public class SQLSelectStatement extends SQLStatement {
 
     public void setLockingClause(ForUpdateClause lockingClause) {
         this.forUpdateClause = lockingClause;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the orderings of joined collections, which are appended to the order by expressions when this statement is
+     * normalized, unless the order by expressions already order by their field.
+     */
+    public void setJoinedOrderByExpressions(List<Expression> joinedOrderByExpressions) {
+        this.joinedOrderByExpressions = joinedOrderByExpressions;
     }
 
     public void setOrderByExpressions(List<Expression> orderByExpressions) {
