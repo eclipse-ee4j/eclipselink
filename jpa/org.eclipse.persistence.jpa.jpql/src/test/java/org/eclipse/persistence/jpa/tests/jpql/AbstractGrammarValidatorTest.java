@@ -842,6 +842,27 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     }
 
     @Test
+    public final void test_ArithmeticExpression_MissingRightExpression_Chained() throws Exception {
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age - 30 -";
+        testHasProblem(validate(jpqlQuery), ArithmeticExpression_MissingRightExpression,
+                jpqlQuery.length(), jpqlQuery.length());
+    }
+
+    @Test
+    public final void test_ArithmeticExpression_MissingRightExpression_GroupedChain() throws Exception {
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age - (30 -";
+        testHasProblem(validate(jpqlQuery), ArithmeticExpression_MissingRightExpression,
+                jpqlQuery.length(), jpqlQuery.length());
+    }
+
+    @Test
+    public final void test_ArithmeticFactor_MissingExpression_Chained() throws Exception {
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age - 30 + -";
+        testHasProblem(validate(jpqlQuery), ArithmeticFactor_MissingExpression,
+                jpqlQuery.length(), jpqlQuery.length());
+    }
+
+    @Test
     public final void test_ArithmeticFactor_MissingExpression_1() throws Exception {
 
         String jpqlQuery  = "SELECT e FROM Employee e WHERE -";

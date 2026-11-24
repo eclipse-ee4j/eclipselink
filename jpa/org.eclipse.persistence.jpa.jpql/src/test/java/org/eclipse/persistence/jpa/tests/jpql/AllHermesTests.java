@@ -40,6 +40,7 @@ import org.junit.runners.Suite.SuiteClasses;
     AllGrammarValidatorTests.class,
     CaseWithoutElseGrammarTest.class,
     MapJoinAliasGrammarTest.class,
+    ArithmeticAssociativityTest.class,
     AllHermesTests.HermesDefaultTestSuite.class,
     AllHermesTests.HermesEclipseLinkTestSuite.class
 })

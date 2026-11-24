@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public final class SqrtExpressionTest extends JPQLParserTest {
         SelectStatementTester selectStatement = selectStatement(
             select(variable("e")),
             from("Employee", "e"),
-            where(sqrt(path("e.age").add(numeric(100).subtract(avg(path("e.age"))))))
+            where(sqrt(path("e.age").add(numeric(100)).subtract(avg(path("e.age")))))
         );
 
         testQuery(jpqlQuery, selectStatement);
