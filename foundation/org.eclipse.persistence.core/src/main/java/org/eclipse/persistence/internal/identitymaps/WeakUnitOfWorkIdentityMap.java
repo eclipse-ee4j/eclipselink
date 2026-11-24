@@ -44,8 +44,12 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
     protected void cleanupDeadCacheKeys() {
         Reference reference = referenceQueue.poll();
         while ( reference != null) {
-            CacheKey key = ((QueueableWeakCacheKey.CacheKeyReference) reference).getOwner();
-            remove(key);
+            QueueableWeakCacheKey owner = ((QueueableWeakCacheKey.CacheKeyReference) reference).getOwner();
+            QueueableWeakCacheKey key = (QueueableWeakCacheKey) getCacheKey(owner.getKey(), false);
+            // Cloned keys can share a reference, but repopulated or replaced entries have a different one.
+            if (key != null && key.reference == reference) {
+                remove(key);
+            }
             reference = referenceQueue.poll();
         }
     }
