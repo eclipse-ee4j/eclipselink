@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -530,7 +530,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     reportQuery = new TupleQuery(this.selection == null ? new ArrayList<>() : this.selection.getCompoundSelectionItems());
                 } else {
                     reportQuery = new ReportQuery();
-                    reportQuery.setShouldReturnWithoutReportQueryResult(true);
+                    if (Object[].class.equals(this.queryType)) {
+                        // An explicitly requested array must retain its shape for a single selection.
+                        reportQuery.setReturnType(ReportQuery.ShouldReturnArray);
+                    } else {
+                        reportQuery.setShouldReturnWithoutReportQueryResult(true);
+                    }
                 }
                 reportQuery.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
                 for (Selection nested : this.selection.getCompoundSelectionItems()) {

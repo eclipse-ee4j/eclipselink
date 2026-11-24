@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2025 Contributors to the Eclipse Foundation.
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2022, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Parameter;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -76,13 +77,13 @@ public class TestQueryOrderBy {
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
 
             query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
 
             // equivalent CriteriaBuilder
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -95,7 +96,7 @@ public class TestQueryOrderBy {
             query = em.createQuery(cquery);
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -128,13 +129,13 @@ public class TestQueryOrderBy {
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
 
             query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
 
             // equivalent CriteriaBuilder
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -147,7 +148,7 @@ public class TestQueryOrderBy {
             query = em.createQuery(cquery);
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -174,7 +175,7 @@ public class TestQueryOrderBy {
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
             if (platform.isDB2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1", _sql.remove(0));
@@ -188,12 +189,12 @@ public class TestQueryOrderBy {
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
             
             if (platform.isDB2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
-            } else if (platform.isDB2Z() || platform.isDerby()) {
+            } else if (platform.isDB2Z() || platform.isDerby() || platform.isH2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
@@ -210,12 +211,12 @@ public class TestQueryOrderBy {
             query = em.createQuery(cquery);
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
             
             if (platform.isDB2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
-            } else if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            } else if (platform.isDB2Z() || platform.isDB2() || platform.isDerby() || platform.isH2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
@@ -252,7 +253,7 @@ public class TestQueryOrderBy {
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1", _sql2.remove(0));
@@ -264,9 +265,9 @@ public class TestQueryOrderBy {
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby() || platform.isH2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql2.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql2.remove(0));
@@ -283,9 +284,9 @@ public class TestQueryOrderBy {
             query = em.createQuery(cquery);
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby() || platform.isH2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql2.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql2.remove(0));
@@ -322,14 +323,14 @@ public class TestQueryOrderBy {
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
 
             query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY ?1 ASC", Integer.class);
             query.setParameter(1, 1);
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
 
             // equivalent CriteriaBuilder
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -344,7 +345,7 @@ public class TestQueryOrderBy {
             query.setParameter(checkParam1, 1);
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(4, dto01.size());
+            assertValues(dto01, 17, 29, 45, 83);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -378,7 +379,7 @@ public class TestQueryOrderBy {
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1", _sql.remove(0));
@@ -392,13 +393,18 @@ public class TestQueryOrderBy {
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isH2()) {
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
+            } else if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
+
+            assertFilterRebinding(query, query.getParameter(1, String.class), platform, _sql,
+                    platform.isH2());
 
             // equivalent CriteriaBuilder
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -415,13 +421,17 @@ public class TestQueryOrderBy {
             query.setParameter(intParam2, 1);
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isH2()) {
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
+            } else if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
+            assertFilterRebinding(query, strParam1, platform, _sql,
+                    platform.isH2());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -449,7 +459,7 @@ public class TestQueryOrderBy {
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
             
             if (platform.isDB2Z() || platform.isDerby()) {
@@ -465,16 +475,19 @@ public class TestQueryOrderBy {
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
             
-            if (platform.isDB2Z() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby() || platform.isH2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
             } else if (platform.isDB2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
+
+            assertFilterRebinding(query, query.getParameter(1, String.class), platform, _sql,
+                    platform.isH2() || platform.isDB2Z() || platform.isDerby());
 
             // equivalent CriteriaBuilder
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -489,16 +502,18 @@ public class TestQueryOrderBy {
             query.setParameter(strParam1, "B");
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql.size());
             
-            if (platform.isDB2Z() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby() || platform.isH2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
             } else if (platform.isDB2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
+            assertFilterRebinding(query, strParam1, platform, _sql,
+                    platform.isH2() || platform.isDB2Z() || platform.isDerby());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -532,7 +547,7 @@ public class TestQueryOrderBy {
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql2.size());
             if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1", _sql2.remove(0));
@@ -545,13 +560,16 @@ public class TestQueryOrderBy {
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql2.size());
-            if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDB2() || platform.isDerby() || platform.isH2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql2.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql2.remove(0));
             }
+
+            assertFilterRebinding(query, query.getParameter(1, String.class), platform, _sql2,
+                    platform.isH2() || platform.isDB2Z() || platform.isDerby() || platform.isDB2());
 
             // equivalent CriteriaBuilder
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -566,13 +584,15 @@ public class TestQueryOrderBy {
             query.setParameter(strParam1, "B");
             dto01 = query.getResultList();
             assertNotNull(dto01);
-            assertEquals(3, dto01.size());
+            assertValues(dto01, 17, 29, 83);
             assertEquals(1, _sql2.size());
-            if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDB2() || platform.isDerby() || platform.isH2()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql2.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql2.remove(0));
             }
+            assertFilterRebinding(query, strParam1, platform, _sql2,
+                    platform.isH2() || platform.isDB2Z() || platform.isDerby() || platform.isDB2());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -581,6 +601,73 @@ public class TestQueryOrderBy {
                 em.close();
             }
         }
+    }
+
+    @Test
+    public void testQueryOrderByMappedAttributes() {
+        if (emf == null) {
+            return;
+        }
+        if (!POPULATED) {
+            populate();
+        }
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Integer> query = em.createQuery(
+                    "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY t.itemInteger1 ASC", Integer.class);
+            assertEquals(List.of(17, 29, 45, 83), query.getResultList());
+            assertSQL(_sql, "SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 ORDER BY ITEM_INTEGER1 ASC");
+
+            query = em.createQuery(
+                    "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY t.itemInteger1 DESC", Integer.class);
+            assertEquals(List.of(83, 45, 29, 17), query.getResultList());
+            assertSQL(_sql, "SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 ORDER BY ITEM_INTEGER1 DESC");
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Integer> cquery = cb.createQuery(Integer.class);
+            Root<EntityTbl01> root = cquery.from(EntityTbl01.class);
+            cquery.select(root.get(EntityTbl01_.itemInteger1));
+            cquery.orderBy(cb.asc(root.get(EntityTbl01_.itemInteger1)));
+            assertEquals(List.of(17, 29, 45, 83), em.createQuery(cquery).getResultList());
+            assertSQL(_sql, "SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 ORDER BY ITEM_INTEGER1 ASC");
+
+            cquery.orderBy(cb.desc(root.get(EntityTbl01_.itemInteger1)));
+            assertEquals(List.of(83, 45, 29, 17), em.createQuery(cquery).getResultList());
+            assertSQL(_sql, "SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 ORDER BY ITEM_INTEGER1 DESC");
+        } finally {
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    private void assertValues(List<Integer> actual, Integer... expected) {
+        // A bound ORDER BY constant does not define row order, but must preserve every value.
+        assertEquals(List.of(expected), actual.stream().sorted().toList());
+    }
+
+    private void assertFilterRebinding(TypedQuery<Integer> query, Parameter<String> parameter,
+            Platform platform, List<String> sql, boolean inlineWhere) {
+        // WHERE binding also depends on the query's literals and factory configuration.
+        String order = platform.isH2() || platform.isDB2Z() || platform.isDB2() || platform.isDerby() ? "1" : "?";
+        for (String value : List.of("missing", "B")) {
+            query.setParameter(parameter, value);
+            List<Integer> results = query.getResultList();
+            if ("B".equals(value)) {
+                assertValues(results, 17, 29, 83);
+            } else {
+                assertEquals(List.of(), results);
+            }
+            String where = inlineWhere ? "'" + value + "'" : "?";
+            assertSQL(sql, "SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = "
+                    + where + ") ORDER BY " + order + " ASC");
+        }
+    }
+
+    private void assertSQL(List<String> sql, String expected) {
+        assertEquals(1, sql.size());
+        assertEquals(expected, sql.remove(0));
     }
 
     private void populate() {
