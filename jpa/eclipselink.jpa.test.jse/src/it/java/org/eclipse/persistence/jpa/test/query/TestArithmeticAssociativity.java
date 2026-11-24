@@ -16,6 +16,8 @@ import jakarta.persistence.EntityHandler;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -36,6 +38,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -387,6 +391,267 @@ public class TestArithmeticAssociativity {
     public void entityAgentMalformedArithmeticRemainsInvalid() {
         try (EntityAgent agent = emf.createEntityAgent()) {
             assertMalformedArithmetic(agent);
+        }
+    }
+
+    @Test
+    public void entityManagerNamedArithmeticParameterMetadata() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNamedArithmeticParameterMetadata(em);
+        }
+    }
+
+    @Test
+    public void entityAgentNamedArithmeticParameterMetadata() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertNamedArithmeticParameterMetadata(agent);
+        }
+    }
+
+    @Test
+    public void entityManagerPositionalArithmeticParameterMetadata() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertPositionalArithmeticParameterMetadata(em);
+        }
+    }
+
+    @Test
+    public void entityAgentPositionalArithmeticParameterMetadata() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertPositionalArithmeticParameterMetadata(agent);
+        }
+    }
+
+    @Test
+    public void entityManagerArithmeticParameterOperatorsAndGrouping() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertArithmeticParameterOperatorsAndGrouping(em);
+        }
+    }
+
+    @Test
+    public void entityAgentArithmeticParameterOperatorsAndGrouping() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertArithmeticParameterOperatorsAndGrouping(agent);
+        }
+    }
+
+    @Test
+    public void entityManagerArithmeticParameterNumericWitnesses() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertArithmeticParameterNumericWitnesses(em);
+        }
+    }
+
+    @Test
+    public void entityAgentArithmeticParameterNumericWitnesses() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertArithmeticParameterNumericWitnesses(agent);
+        }
+    }
+
+    @Test
+    public void entityManagerNamedQueryParameterMetadataRemainsStable() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertNamedQueryParameterMetadataRemainsStable(em);
+        }
+    }
+
+    @Test
+    public void entityAgentNamedQueryParameterMetadataRemainsStable() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertNamedQueryParameterMetadataRemainsStable(agent);
+        }
+    }
+
+    @Test
+    public void entityManagerArithmeticParameterFallbackAndRejection() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertArithmeticParameterFallbackAndRejection(em);
+        }
+    }
+
+    @Test
+    public void entityAgentArithmeticParameterFallbackAndRejection() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertArithmeticParameterFallbackAndRejection(agent);
+        }
+    }
+
+    private void assertNamedArithmeticParameterMetadata(EntityHandler handler) {
+        assertNamedMetadata(handler.createQuery("SELECT e.amount - 1 - :last" + FIRST), Integer.class, 5, 10, 94, 89);
+        assertNamedMetadata(handler.createQuery("SELECT e.amount - e.deduction - :last" + FIRST),
+                Integer.class, 5, 10, 65, 60);
+        assertNamedMetadata(handler.createQuery("SELECT e.amount - 1 - 2 - :last" + FIRST),
+                Integer.class, 5, 10, 92, 87);
+        assertRepeatedNullParameter(handler.createQuery("SELECT e.amount - 1 - :last" + FIRST
+                + " AND (e.amount > :last OR :last IS NULL)"));
+    }
+
+    private void assertPositionalArithmeticParameterMetadata(EntityHandler handler) {
+        for (String expression : List.of("e.amount - 1 - ?1", "e.amount - e.deduction - ?1")) {
+            Query query = handler.createQuery("SELECT " + expression + FIRST);
+            assertEquals(Integer.class, query.getParameter(1).getParameterType());
+            Parameter<Integer> parameter = query.getParameter(1, Integer.class);
+            assertEquals(Integer.valueOf(1), parameter.getPosition());
+            assertNull(parameter.getName());
+            assertParameterEnumeration(query, parameter);
+            assertFalse(query.isBound(parameter));
+            assertThrows(IllegalArgumentException.class, () -> query.getParameter(1, String.class));
+            assertNumber(expression.contains("e.deduction") ? 65 : 94,
+                    query.setParameter(parameter, 5).getSingleResult());
+            assertEquals(Integer.valueOf(5), query.getParameterValue(parameter));
+            query.setParameter(parameter, null);
+            assertTrue(query.isBound(parameter));
+            assertNull(query.getParameterValue(parameter));
+            assertNull(query.getSingleResult());
+            assertEquals(Integer.class, query.getParameter(1, Integer.class).getParameterType());
+            assertNumber(expression.contains("e.deduction") ? 60 : 89,
+                    query.setParameter(parameter, 10).getSingleResult());
+            assertEquals(Integer.valueOf(10), query.getParameterValue(parameter));
+            assertEquals(Integer.class, query.getParameter(1).getParameterType());
+        }
+    }
+
+    private void assertArithmeticParameterOperatorsAndGrouping(EntityHandler handler) {
+        String[] expressions = {"e.amount + 1 - :last", "e.amount - 1 + :last",
+                "e.amount * 2 - :last", "e.amount / 2 - :last", "e.amount * 2 * :last",
+                "e.amount / 2 / :last", "(e.amount - 1 - :last)", "e.amount - 1 - -:last",
+                "e.amount - (1 - :last)"};
+        int[] firstResults = {96, 104, 195, 45, 1000, 10, 94, 104, 104};
+        int[] reboundResults = {91, 109, 190, 40, 2000, 5, 89, 109, 109};
+        for (int index = 0; index < expressions.length; index++) {
+            assertNamedMetadata(handler.createQuery("SELECT " + expressions[index] + FIRST),
+                    Integer.class, 5, 10, firstResults[index], reboundResults[index]);
+        }
+    }
+
+    private void assertArithmeticParameterNumericWitnesses(EntityHandler handler) {
+        assertNamedMetadata(handler.createQuery("SELECT e.amount - 1 - :last" + FIRST), Integer.class, 5, 10, 94, 89);
+        assertNamedMetadata(handler.createQuery("SELECT e.amount - 1L - :last" + FIRST), Long.class, 5L, 10L, 94, 89);
+        assertNamedMetadata(handler.createQuery("SELECT 1L + e.amount - :last" + FIRST), Long.class, 5L, 10L, 96, 91);
+        assertNamedMetadata(handler.createQuery("SELECT e.amount - 1.5 - :last" + FIRST),
+                Double.class, 5.25, 10.5, 93.25, 88.0);
+        assertNamedMetadata(handler.createQuery("SELECT 1.5 + e.amount - :last" + FIRST),
+                Double.class, 5.25, 10.5, 96.25, 91.0);
+        assertNamedMetadata(handler.createQuery("SELECT ABS(e.amount) - 1 - :last" + FIRST),
+                Integer.class, 5, 10, 94, 89);
+        Query sum = handler.createQuery("SELECT SUM(e.amount) - 1 - :last" + FIRST);
+        assertNamedMetadata(sum, Long.class, 5L, 10L, 94, 89);
+        assertThrows(IllegalArgumentException.class, () -> sum.getParameter("last", Integer.class));
+        // Numeric value conversion remains supported even when typed lookup requires Long.
+        assertNumber(94, sum.setParameter("last", 5).getSingleResult());
+        assertNamedMetadata(handler.createQuery("SELECT e.nullableAmount - 1 - :last" + FIRST),
+                Integer.class, 5, 10, null, null);
+        assertNamedMetadata(handler.createQuery("SELECT e.nullableAmount - 1 - :last" + FROM + " WHERE e.id = 2"),
+                Integer.class, 5, 10, 1, -4);
+    }
+
+    private void assertNamedQueryParameterMetadataRemainsStable(EntityHandler handler) {
+        Query first = handler.createNamedQuery("ArithmeticEntity.parameterBalance");
+        Query second = handler.createNamedQuery("ArithmeticEntity.parameterBalance");
+        assertNamedMetadata(first, Integer.class, 5, 10, 65, 60);
+        assertNamedMetadata(second, Integer.class, 20, 30, 50, 40);
+        assertNumber(60, first.getSingleResult());
+        assertEquals(Integer.class, first.getParameter("last", Integer.class).getParameterType());
+    }
+
+    private void assertArithmeticParameterFallbackAndRejection(EntityHandler handler) {
+        Query multiple = handler.createQuery("SELECT e.amount - :first - :last" + FIRST);
+        assertEquals(Integer.class, multiple.getParameter("first").getParameterType());
+        assertEquals(Object.class, multiple.getParameter("last").getParameterType());
+        assertThrows(IllegalArgumentException.class, () -> multiple.getParameter("last", Integer.class));
+        assertEquals(2, multiple.getParameters().size());
+        multiple.setParameter(multiple.getParameter("first", Integer.class), 30);
+        assertNumber(65, multiple.setParameter("last", 5).getSingleResult());
+
+        Query parameterOnly = handler.createQuery("SELECT (:first - :last)" + FIRST);
+        assertEquals(Object.class, parameterOnly.getParameter("first").getParameterType());
+        assertEquals(Object.class, parameterOnly.getParameter("last").getParameterType());
+        assertNumber(25, parameterOnly.setParameter("first", 30).setParameter("last", 5).getSingleResult());
+
+        String[] expressions = {"(e.amount - 1) - :last", "-(e.amount - 1) - :last"};
+        int[] results = {94, -104};
+        for (int index = 0; index < expressions.length; index++) {
+            Query query = handler.createQuery("SELECT " + expressions[index] + FIRST);
+            assertEquals(Object.class, query.getParameter("last").getParameterType());
+            assertThrows(IllegalArgumentException.class, () -> query.getParameter("last", Integer.class));
+            assertNumber(results[index], query.setParameter("last", 5).getSingleResult());
+        }
+        assertRepeatedNullParameter(handler.createQuery("SELECT e.amount - 1 - :last" + FIRST
+                + " AND (:last IS NULL OR e.amount > :last)"));
+
+        Query comparison = handler.createQuery("SELECT e.amount" + FROM + " WHERE e.amount > :last AND e.id = 1");
+        assertEquals(Integer.class, comparison.getParameter("last").getParameterType());
+        Parameter<Integer> parameter = comparison.getParameter("last", Integer.class);
+        assertEquals("last", parameter.getName());
+        assertNull(parameter.getPosition());
+        assertParameterEnumeration(comparison, parameter);
+        assertFalse(comparison.isBound(parameter));
+        assertThrows(IllegalArgumentException.class, () -> comparison.getParameter("last", String.class));
+        assertNumber(100, comparison.setParameter(parameter, 5).getSingleResult());
+        assertTrue(comparison.isBound(parameter));
+        assertEquals(Integer.valueOf(5), comparison.getParameterValue(parameter));
+        comparison.setParameter(parameter, null);
+        assertTrue(comparison.isBound(parameter));
+        assertNull(comparison.getParameterValue(parameter));
+        assertTrue(comparison.getResultList().isEmpty());
+        assertEquals(Integer.class, comparison.getParameter("last", Integer.class).getParameterType());
+        assertNumber(100, comparison.setParameter(parameter, 10).getSingleResult());
+        assertEquals(Integer.valueOf(10), comparison.getParameterValue(parameter));
+        assertEquals(Integer.class, comparison.getParameter("last", Integer.class).getParameterType());
+        assertThrows(IllegalArgumentException.class, () -> comparison.setParameter("last", "invalid"));
+    }
+
+    private <T extends Number> void assertNamedMetadata(Query query, Class<T> type, T value, T rebound,
+            Number expected, Number reboundExpected) {
+        assertEquals(type, query.getParameter("last").getParameterType());
+        Parameter<T> parameter = query.getParameter("last", type);
+        assertEquals("last", parameter.getName());
+        assertNull(parameter.getPosition());
+        assertParameterEnumeration(query, parameter);
+        assertFalse(query.isBound(parameter));
+        assertThrows(IllegalArgumentException.class, () -> query.getParameter("last", String.class));
+        assertNumber(expected, query.setParameter(parameter, value).getSingleResult());
+        assertTrue(query.isBound(parameter));
+        assertEquals(value, query.getParameterValue(parameter));
+        query.setParameter(parameter, null);
+        assertTrue(query.isBound(parameter));
+        assertNull(query.getParameterValue(parameter));
+        assertNull(query.getSingleResult());
+        assertEquals(type, query.getParameter("last", type).getParameterType());
+        assertNumber(reboundExpected, query.setParameter(parameter, rebound).getSingleResult());
+        assertEquals(rebound, query.getParameterValue(parameter));
+        assertEquals(type, query.getParameter("last", type).getParameterType());
+    }
+
+    private void assertParameterEnumeration(Query query, Parameter<?> expected) {
+        assertEquals(1, query.getParameters().size());
+        Parameter<?> actual = query.getParameters().iterator().next();
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getPosition(), actual.getPosition());
+        assertEquals(expected.getParameterType(), actual.getParameterType());
+    }
+
+    private void assertRepeatedNullParameter(Query query) {
+        // Existing repeated-NULL metadata depends on occurrence order; binding and results remain stable.
+        Parameter<Object> parameter = query.getParameter("last", Object.class);
+        assertEquals("last", parameter.getName());
+        assertNull(parameter.getPosition());
+        assertParameterEnumeration(query, parameter);
+        assertFalse(query.isBound(parameter));
+        assertNumber(94, query.setParameter(parameter, 5).getSingleResult());
+        assertEquals(Integer.valueOf(5), query.getParameterValue(parameter));
+        assertNumber(89, query.setParameter(parameter, 10).getSingleResult());
+        assertEquals(Integer.valueOf(10), query.getParameterValue(parameter));
+    }
+
+    private void assertNumber(Number expected, Object actual) {
+        if (expected == null) {
+            assertNull(actual);
+        } else {
+            assertTrue("Expected a numeric result: " + actual, actual instanceof Number);
+            assertEquals(expected.doubleValue(), ((Number) actual).doubleValue(), 0.0);
         }
     }
 
