@@ -265,7 +265,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (query.hasOrderByExpressions()) {
             selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(), clonedExpressions));
         }
-        if (!isSubSelect && !query.isReportQuery() && query.hasJoining()) {
+        boolean isHierarchicalQuery = query.isReadAllQuery() && ((ReadAllQuery)query).hasHierarchicalExpressions();
+        if (!isSubSelect && !query.isReportQuery() && !isHierarchicalQuery && query.hasJoining()) {
             List<Expression> joinedOrderings = query.getJoinedAttributeManager().buildOrderingsOfJoinedCollections();
             if (!joinedOrderings.isEmpty()) {
                 selectStatement.setJoinedOrderByExpressions(cloneExpressions(joinedOrderings, clonedExpressions));
@@ -277,7 +278,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (query.hasUnionExpressions()) {
             selectStatement.setUnionExpressions(cloneExpressions(query.getUnionExpressions(), clonedExpressions));
         }
-        if (getQuery().isReadAllQuery() && ((ReadAllQuery)getQuery()).hasHierarchicalExpressions()) {
+        if (isHierarchicalQuery) {
             ReadAllQuery readAllquery = (ReadAllQuery)query;
             Expression startsWith = readAllquery.getStartWithExpression();
             if (startsWith != null) {
