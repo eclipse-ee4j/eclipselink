@@ -21,6 +21,8 @@ import jakarta.persistence.Table;
 @Table(name = "JPA_ARITHMETIC_ENTITY")
 @NamedQuery(name = "ArithmeticEntity.balance",
         query = "SELECT e.amount - 0 - e.deduction - e.adjustment FROM ArithmeticEntity e WHERE e.id = :id")
+@NamedQuery(name = "ArithmeticEntity.parameterBalance",
+        query = "SELECT e.amount - e.deduction - :last FROM ArithmeticEntity e WHERE e.id = 1")
 public class ArithmeticEntity {
 
     @Id
