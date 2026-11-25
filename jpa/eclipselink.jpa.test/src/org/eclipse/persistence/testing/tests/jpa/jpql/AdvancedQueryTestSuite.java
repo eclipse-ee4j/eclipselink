@@ -1216,7 +1216,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
 
                     Map<String, Object> em2LockProperties = new HashMap<>();
                     em2LockProperties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ, em2LockProperties);
+                    // PESSIMISTIC_READ is a shared lock on platforms that support it, so only a writer is blocked.
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, em2LockProperties);
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);

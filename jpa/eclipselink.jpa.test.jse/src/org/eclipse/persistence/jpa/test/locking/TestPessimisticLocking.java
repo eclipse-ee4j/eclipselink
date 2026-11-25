@@ -150,7 +150,7 @@ public class TestPessimisticLocking {
             Future<Boolean> result = executor.submit(new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
-                    em2.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(1).setFirstResult(5).getResultList();
+                    em2.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_WRITE).setMaxResults(1).setFirstResult(5).getResultList();
                     return true;
                 }
             });
