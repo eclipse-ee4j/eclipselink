@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -365,20 +365,20 @@ public class AdvancedQueryTest extends JUnitTestCase {
                 fail("Array result not correct: " + Arrays.toString(arrayResult));
             }
 
-            // Test single object, as value.
-            cq = qb.createQuery(Object[].class);
-            from = cq.from(Employee.class);
-            cq.multiselect(from.get("id"));
-            cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
-            query = em.createQuery(cq);
-            query.setParameter("id", employee.getId());
-            query.setParameter("firstName", employee.getFirstName());
-            Object valueResult = query.getSingleResult();
+            // An Object query with one selection returns a scalar value.
+            CriteriaQuery<Object> valueCq = qb.createQuery(Object.class);
+            from = valueCq.from(Employee.class);
+            valueCq.multiselect(from.get("id"));
+            valueCq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
+            TypedQuery<Object> valueQuery = em.createQuery(valueCq);
+            valueQuery.setParameter("id", employee.getId());
+            valueQuery.setParameter("firstName", employee.getFirstName());
+            Object valueResult = valueQuery.getSingleResult();
             if (! valueResult.equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
-            listResult = query.getResultList();
-            valueResult = listResult.get(0);
+            List<Object> valueResults = valueQuery.getResultList();
+            valueResult = valueResults.get(0);
             if (! valueResult.equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
