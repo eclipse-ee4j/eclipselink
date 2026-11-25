@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -182,6 +182,27 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
             startPosition,
             endPosition
         );
+    }
+
+    @Test
+    public final void test_ArithmeticExpression_MissingRightExpression_Chained() throws Exception {
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age - 30 -";
+        testHasProblem(validate(jpqlQuery), ArithmeticExpression_MissingRightExpression,
+                jpqlQuery.length(), jpqlQuery.length());
+    }
+
+    @Test
+    public final void test_ArithmeticExpression_MissingRightExpression_GroupedChain() throws Exception {
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age - (30 -";
+        testHasProblem(validate(jpqlQuery), ArithmeticExpression_MissingRightExpression,
+                jpqlQuery.length(), jpqlQuery.length());
+    }
+
+    @Test
+    public final void test_ArithmeticFactor_MissingExpression_Chained() throws Exception {
+        String jpqlQuery = "SELECT e FROM Employee e WHERE e.age - 30 + -";
+        testHasProblem(validate(jpqlQuery), ArithmeticFactor_MissingExpression,
+                jpqlQuery.length(), jpqlQuery.length());
     }
 
     @Test

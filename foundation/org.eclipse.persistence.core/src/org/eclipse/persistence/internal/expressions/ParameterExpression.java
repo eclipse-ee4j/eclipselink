@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -33,6 +33,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * Used for parameterized expressions, such as expression defined in mapping queries.
  */
 public class ParameterExpression extends BaseExpression {
+
+    private static final long serialVersionUID = -5914259908564788931L;
 
     /** The parameter field or name. */
     protected DatabaseField field;
@@ -310,6 +312,44 @@ public class ParameterExpression extends BaseExpression {
         }
 
         return value;
+    }
+
+    /**
+     * Preserve physical mapped type information when a converted parameter is null.
+     * A mapped field with unknown physical type returns null for a bare NULL literal;
+     * only unmapped parameters may fall back to row or parameter type information.
+     */
+    public DatabaseField getNullValueField(AbstractRecord translationRow) {
+        if (localBase instanceof DataExpression) {
+            DataExpression data = (DataExpression) localBase;
+            DatabaseField mappedField = data.getField();
+            if (mappedField != null) {
+                if ((mappedField.getType() != null && mappedField.getType() != Object.class)
+                        || mappedField.getSqlType() != DatabaseField.NULL_SQL_TYPE) {
+                    return mappedField.clone();
+                }
+                return null;
+            }
+        }
+        DatabaseField nullField = field.clone();
+        DatabaseField rowField = translationRow == null ? null : translationRow.getField(field);
+        if (rowField != null) {
+            // Duplicate argument names may have promoted metadata on the row.
+            if (rowField.getType() != null && rowField.getType() != Object.class) {
+                if (nullField.getType() != rowField.getType()) {
+                    nullField.setSqlType(rowField.getSqlType());
+                }
+                nullField.setType(rowField.getType());
+                nullField.setTypeName(rowField.getType().getName());
+            }
+            if (nullField.getSqlType() == DatabaseField.NULL_SQL_TYPE) {
+                nullField.setSqlType(rowField.getSqlType());
+            }
+        }
+        if ((nullField.getType() == null || nullField.getType() == Object.class) && type instanceof Class<?>) {
+            nullField.setType((Class<?>) type);
+        }
+        return nullField;
     }
 
     public boolean isParameterExpression() {

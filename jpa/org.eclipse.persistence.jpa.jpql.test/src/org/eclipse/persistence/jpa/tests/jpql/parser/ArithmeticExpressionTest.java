@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,9 +71,9 @@ public final class ArithmeticExpressionTest extends JPQLParserTest {
                     .divide(
                         numeric(2)
                     )
-                    .subtract(
-                        numeric(2)
-                    )
+                )
+                .subtract(
+                    numeric(2)
                 )
                 .equal(numeric(18))
             )
@@ -87,22 +87,22 @@ public final class ArithmeticExpressionTest extends JPQLParserTest {
 
         String query = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary + 10000 - 10000 / ?1 * ?2 >= 50000";
 
-        // (emp.salary) + ((10000) - ((10000 / ?1) * (?2))))
+        // (emp.salary + 10000) - ((10000 / ?1) * ?2)
         ExpressionTester selectStatement = selectStatement(
             select(object("emp")),
             from("Employee", "emp"),
             where(
                     path("emp.salary")
                 .add(
+                    numeric(10000)
+                )
+                .subtract(
                         numeric(10000)
-                    .subtract(
-                                numeric(10000)
-                            .divide(
-                                inputParameter("?1")
-                            )
-                        .multiply(
-                            inputParameter("?2")
-                        )
+                    .divide(
+                        inputParameter("?1")
+                    )
+                    .multiply(
+                        inputParameter("?2")
                     )
                 )
                 .greaterThanOrEqual(numeric(50000))

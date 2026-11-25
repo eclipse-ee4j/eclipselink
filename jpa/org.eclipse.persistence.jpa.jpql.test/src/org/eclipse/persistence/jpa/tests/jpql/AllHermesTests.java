@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ import org.junit.runners.Suite.SuiteClasses;
     AllJPQLParserTests.class,
     ValidateJPQLVersionTest.class,
     AllGrammarValidatorTests.class,
+    ArithmeticAssociativityTest.class,
     AllHermesTests.HermesDefaultTestSuite.class,
     AllHermesTests.HermesEclipseLinkTestSuite.class
 })
