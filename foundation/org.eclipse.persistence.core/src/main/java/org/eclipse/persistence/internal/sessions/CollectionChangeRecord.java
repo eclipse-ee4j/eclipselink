@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -375,6 +375,17 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
 
         setAddObjectList(addList);
         setRemoveObjectList(removeList);
+
+        // Attribute change tracking: the OrderedChangeObjects must reference the same
+        // ObjectChangeSet instances as the add/remove lists, which are identity maps.
+        if (this.orderedChangeObjectList != null && !this.orderedChangeObjectList.isEmpty()) {
+            List<OrderedChangeObject> orderedChangeSets = new ArrayList<>(this.orderedChangeObjectList.size());
+            for (OrderedChangeObject changeObject : this.orderedChangeObjectList) {
+                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(changeObject.getChangeSet(), mergeFromChangeSet);
+                orderedChangeSets.add(new OrderedChangeObject(changeObject.getChangeType(), changeObject.getIndex(), localChangeSet, changeObject.getAddedOrRemovedObject()));
+            }
+            setOrderedChangeObjectList(orderedChangeSets);
+        }
     }
 
     /**
