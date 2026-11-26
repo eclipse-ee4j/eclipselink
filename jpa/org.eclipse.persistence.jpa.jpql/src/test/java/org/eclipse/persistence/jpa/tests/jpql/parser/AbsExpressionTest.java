@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,15 +64,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
         ExpressionTester selectStatement = selectStatement(
             select(variable("e")),
             from("Employee", "e"),
-            where(
-                    abs(path("e.age")
-                .add(
-                        numeric("100")
-                    .subtract(
-                        avg("e.age"))
-                    )
-                )
-            )
+            where(abs(path("e.age").add(numeric("100")).subtract(avg("e.age"))))
         );
 
         testQuery(query, selectStatement);

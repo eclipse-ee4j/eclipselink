@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022,2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,6 +39,8 @@ import java.util.Map;
  * Used for parameterized expressions, such as expression defined in mapping queries.
  */
 public class ParameterExpression extends BaseExpression {
+
+    private static final long serialVersionUID = 2557286785134171861L;
 
     /** The parameter field or name. */
     protected DatabaseField field;
@@ -349,6 +351,36 @@ public class ParameterExpression extends BaseExpression {
         }
 
         return value;
+    }
+
+    /** Preserve relational or explicit type information when a parameter is null. */
+    public DatabaseField getNullValueField(AbstractRecord translationRow) {
+        if (localBase instanceof DataExpression data) {
+            DatabaseField mappedField = data.getField();
+            if (mappedField != null && (mappedField.getType() != null
+                    || mappedField.getSqlType() != DatabaseField.NULL_SQL_TYPE)) {
+                return mappedField.clone();
+            }
+        }
+        DatabaseField nullField = field.clone();
+        DatabaseField rowField = translationRow == null ? null : translationRow.getField(field);
+        if (rowField != null) {
+            // Duplicate argument names may have promoted metadata on the row.
+            if (rowField.getType() != null && rowField.getType() != Object.class) {
+                if (nullField.getType() != rowField.getType()) {
+                    nullField.setSqlType(rowField.getSqlType());
+                }
+                nullField.setType(rowField.getType());
+                nullField.setTypeName(rowField.getType().getName());
+            }
+            if (nullField.getSqlType() == DatabaseField.NULL_SQL_TYPE) {
+                nullField.setSqlType(rowField.getSqlType());
+            }
+        }
+        if ((nullField.getType() == null || nullField.getType() == Object.class) && type instanceof Class<?> javaType) {
+            nullField.setType(javaType);
+        }
+        return nullField;
     }
 
     private boolean directionUp = true;

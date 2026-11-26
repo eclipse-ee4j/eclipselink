@@ -50,6 +50,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,6 +66,8 @@ import java.util.Vector;
  */
 public class DerbyPlatform extends DB2Platform {
 
+    private static final long serialVersionUID = 1172253490549540445L;
+
     public static final int MAX_CLOB = 2147483647;  //The maximum clob/blob size is 2 gigs in Derby.
     public static final int MAX_BLOB = MAX_CLOB;
 
@@ -78,6 +81,30 @@ public class DerbyPlatform extends DB2Platform {
 
     public DerbyPlatform() {
         super();
+    }
+
+    @Override
+    public void appendNullParameter(Writer writer, DatabaseField field) throws IOException {
+        // Derby requires a type for standalone NULL values. The fallback types
+        // only this SQL null; it must not infer a Java type for later bindings.
+        String sqlType = switch (getJDBCType(field)) {
+            case Types.BIT, Types.BOOLEAN, Types.TINYINT, Types.SMALLINT -> "SMALLINT";
+            case Types.INTEGER -> "INTEGER";
+            case Types.BIGINT -> "BIGINT";
+            case Types.REAL, Types.FLOAT -> "REAL";
+            case Types.DOUBLE -> "DOUBLE";
+            case Types.NUMERIC, Types.DECIMAL -> "DECIMAL(31, 10)";
+            case Types.CHAR, Types.NCHAR -> "CHAR(1)";
+            case Types.DATE -> "DATE";
+            case Types.TIME, Types.TIME_WITH_TIMEZONE -> "TIME";
+            case Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> "TIMESTAMP";
+            case Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY, Types.BLOB -> "BLOB(1)";
+            case Types.CLOB, Types.NCLOB -> "CLOB(1)";
+            default -> "VARCHAR(1)";
+        };
+        writer.write("CAST(NULL AS ");
+        writer.write(sqlType);
+        writer.write(")");
     }
 
     /**
