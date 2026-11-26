@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -522,6 +522,14 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                     }
 
+                    if (object == null) {
+                        // Object is not in the target session. Adding null corrupts the collection,
+                        // so invalidate the parent and abort, as the remove branch does.
+                        Object key = changeRecord.getOwner().getId();
+                        targetSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(targetSession));
+                        return;
+                    }
+
                     // Assume at this point the above merge will have created a new
                     // object if required and that the object was actually added and
                     // not moved.
@@ -588,6 +596,14 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 if (object == null) {
                     // Retrieve the object to be added to the collection.
                     object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
+                }
+
+                if (object == null) {
+                    // Object is not in the target session. Adding null corrupts the collection,
+                    // so invalidate the parent and abort, as Step 1 does.
+                    Object key = changeRecord.getOwner().getId();
+                    targetSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(targetSession));
+                    return;
                 }
 
                 // Assume at this point the above merge will have created a new
