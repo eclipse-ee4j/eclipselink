@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015, 2019 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -118,9 +118,8 @@ public class TestPessimisticLocking {
             Future<LockingDog> future = executor.submit(blocked);
             cdl.countDown();
             Thread.sleep(3000);
-            // Make sure worker is blocked
-            Assert.assertFalse(future.isDone());
-            // Rolling back of tran should allow worker to complete
+            // Two PESSIMISTIC_READ holders should not block each other (FOR SHARE)
+            Assert.assertTrue(future.isDone());
             em.getTransaction().rollback();
             Assert.assertEquals(locked.getId(), future.get().getId());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -250,6 +250,14 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     @Override
     public boolean shouldPrintAliasForUpdate() {
         return true;
+    }
+
+    /**
+     * PostgreSQL uses FOR SHARE for shared/read locks.
+     */
+    @Override
+    public String getSelectForShareString() {
+        return " FOR SHARE";
     }
 
     /**

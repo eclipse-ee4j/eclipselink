@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -350,6 +350,16 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
+    }
+
+    /**
+     * MySQL and MariaDB use LOCK IN SHARE MODE for shared/read locks.
+     * MySQL 8.0+ also supports FOR SHARE, but LOCK IN SHARE MODE
+     * is compatible with both MySQL and MariaDB.
+     */
+    @Override
+    public String getSelectForShareString() {
+        return " LOCK IN SHARE MODE";
     }
 
     @Override
