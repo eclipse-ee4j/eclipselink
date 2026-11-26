@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,9 +95,10 @@ public abstract class ArithmeticExpression extends CompoundExpression {
             return true;
         }
 
-        // Addition/Subtraction will create a chain of operations
+        // Leave the next binary addition/subtraction for the enclosing left-associated chain.
+        // With no operand yet, the sign belongs to a unary arithmetic factor instead.
         if (character == '+' || character == '-') {
-            return false;
+            return (expression != null);
         }
 
         // Multiplication/Division will group the expression together to follow the order of operation

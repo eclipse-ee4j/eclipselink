@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
@@ -773,11 +774,12 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     }
 
     protected void visitCompoundExpression(CompoundExpression expression) {
+        // An arithmetic sibling supplies its whole-expression type without revisiting the target's parent.
         visitDoubleExpressions(
             expression,
             expression.getLeftExpression(),
             expression.getRightExpression(),
-            true
+            !(expression instanceof ArithmeticExpression)
         );
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -246,10 +246,10 @@ public final class SelectClauseTest extends JPQLParserTest {
                 /* Item 1 */
                     path("e.name")
                 .subtract(
-                        path("e.age")
-                    .add(
-                        numeric(18)
-                    )
+                    path("e.age")
+                )
+                .add(
+                    numeric(18)
                 ),
                 /* Item 2 */
                     path("e.age")
