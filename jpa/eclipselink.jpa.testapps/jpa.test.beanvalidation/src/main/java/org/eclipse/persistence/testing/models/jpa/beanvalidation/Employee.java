@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,10 @@ public class Employee {
     @Valid
     @Embedded
     private Address adress;
+    
+    @Valid
+    @Embedded
+    private Phone phone;
 
    // ===========================================================
    // getters and setters for the state fields
@@ -114,4 +118,11 @@ public class Employee {
         return "Employee {Id:" +  id + " name:" + name + "}";
     }
 
+    public Phone getPhone() {
+        return phone;
+    }
+
+    public void setPhone(Phone phone) {
+        this.phone = phone;
+    }
 }

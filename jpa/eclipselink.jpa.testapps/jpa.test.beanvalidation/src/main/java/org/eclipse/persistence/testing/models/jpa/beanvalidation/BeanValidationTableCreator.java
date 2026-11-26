@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,6 +137,16 @@ public class BeanValidationTableCreator extends TableCreator {
         fieldState.setUnique(false);
         fieldState.setIsIdentity(false);
         table.addField(fieldState);
+
+        FieldDefinition fieldPhone = new FieldDefinition();
+        fieldPhone.setName("PHONE");
+        fieldPhone.setTypeName("VARCHAR");
+        fieldPhone.setSize(40);
+        fieldPhone.setShouldAllowNull(true);
+        fieldPhone.setIsPrimaryKey(false);
+        fieldPhone.setUnique(false);
+        fieldPhone.setIsIdentity(false);
+        table.addField(fieldPhone);
 
         return table;
     }
