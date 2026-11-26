@@ -63,7 +63,7 @@
         <jgroups.version>5.5.7.Final</jgroups.version> <!-- Java library for reliable group communication, mainly used to build clusters of JVMs. -->
         <slf4j.version>2.0.20</slf4j.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
-        <mongodb.version>5.14.0</mongodb.version>
+        <mongodb.version>5.15.0</mongodb.version>
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
         <oracle.nosql.sdk.version>5.4.25</oracle.nosql.sdk.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version> <!-- Upgrading will miss: com.oracle.database.observability:dms:jar -->
@@ -86,11 +86,11 @@
         <!--GlassFish remote EJB client needs the gmbal implementation, gf-client-module brings only gmbal-api-only-->
         <gmbal.version>4.1.2</gmbal.version>
         <jmh.version>1.37</jmh.version>
-        <springframework.version>7.0.10</springframework.version>
-        <hibernate.version>9.1.6.Final</hibernate.version>
+        <springframework.version>7.1.0</springframework.version>
+        <hibernate.version>9.2.0.Final</hibernate.version>
         <aspectj.version>1.9.27</aspectj.version>
         <exam.version>4.14.0</exam.version>
-        <logback.version>1.6.7</logback.version>
+        <logback.version>1.6.8</logback.version>
         <osgi.version>6.0.0</osgi.version>
 
         <!--JDBC Drivers-->
