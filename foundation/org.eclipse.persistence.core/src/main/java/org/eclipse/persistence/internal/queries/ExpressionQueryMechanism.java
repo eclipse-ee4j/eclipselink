@@ -266,7 +266,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(), clonedExpressions));
         }
         boolean isHierarchicalQuery = query.isReadAllQuery() && ((ReadAllQuery)query).hasHierarchicalExpressions();
-        if (!isSubSelect && !query.isReportQuery() && !isHierarchicalQuery && query.hasJoining()) {
+        boolean isSetOperationQuery = query.hasUnionExpressions();
+        if (!isSubSelect && !query.isReportQuery() && !isHierarchicalQuery && !isSetOperationQuery && query.hasJoining()) {
             List<Expression> joinedOrderings = query.getJoinedAttributeManager().buildOrderingsOfJoinedCollections();
             if (!joinedOrderings.isEmpty()) {
                 selectStatement.setJoinedOrderByExpressions(cloneExpressions(joinedOrderings, clonedExpressions));

@@ -23,6 +23,7 @@ import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.junit.Assert;
@@ -32,10 +33,13 @@ import org.junit.Test;
 /**
  * The ordering of a fetch joined collection does not order a hierarchical query, because an order by of a hierarchical
  * query replaces the order of the hierarchy.
+ * It does not order a set operation query either, because the order by of the first operand precedes the set operator,
+ * which a database rejects.
  */
-public class HierarchicalQueryJoinedOrderByTest {
+public class JoinedOrderByExclusionTest {
 
     private static final String ORDER_BY = "ORDER BY ";
+    private static final String JOINED_ORDERING = ".TITLE DESC";
     private static final String ORDER_SIBLINGS_BY = "ORDER SIBLINGS BY ";
 
     private DatabaseSessionImpl session;
@@ -100,7 +104,23 @@ public class HierarchicalQueryJoinedOrderByTest {
     @Test
     public void testJoinedOrderingOrdersNonHierarchicalQuery() {
         String sql = buildSql(query -> {});
-        Assert.assertTrue(sql, sql.endsWith(".TITLE DESC"));
+        Assert.assertTrue(sql, sql.endsWith(JOINED_ORDERING));
+    }
+
+    @Test
+    public void testJoinedOrderingDoesNotOrderSetOperation() {
+        String sql = buildSql(query -> query.union(buildOperand()));
+        Assert.assertFalse(sql, sql.contains(ORDER_BY));
+    }
+
+    @Test
+    public void testJoinedOrderingDoesNotExtendOrderingOfSetOperation() {
+        String sql = buildSql(query -> {
+            query.union(buildOperand());
+            query.addOrdering(query.getExpressionBuilder().get("id").descending());
+        });
+        Assert.assertTrue(sql, sql.contains(ORDER_BY));
+        Assert.assertFalse(sql, sql.contains(JOINED_ORDERING));
     }
 
     private String buildSql(Consumer<ReadAllQuery> configuration) {
@@ -109,6 +129,13 @@ public class HierarchicalQueryJoinedOrderByTest {
         query.addJoinedAttribute(query.getExpressionBuilder().anyOfAllowingNone("items"));
         query.prepareCall(session, new DatabaseRecord());
         return query.getSQLString();
+    }
+
+    private static ReportQuery buildOperand() {
+        ReportQuery operand = new ReportQuery(Node.class, new ExpressionBuilder());
+        operand.addAttribute("id");
+        operand.addAttribute("name");
+        return operand;
     }
 
     private static void setHierarchy(ReadAllQuery query, List<Expression> orderSiblingsBy) {
