@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -630,6 +630,96 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
             getType(namedQuery, String.class),
             type
         );
+    }
+
+    @Test
+    public final void test_ParameterType_ArithmeticTrailingParameters() throws Exception {
+        for (String parameter : new String[] {":last", "?1"}) {
+            for (String expression : new String[] {"e.salary - 1 - ", "e.salary - e.empId - ",
+                    "e.salary - 1 - 2 - "}) {
+                assertArithmeticParameterType("SELECT e FROM Employee e WHERE " + expression + parameter + " > 0",
+                        parameter, Long.class);
+            }
+        }
+    }
+
+    @Test
+    public final void test_ParameterType_ArithmeticNumericWitnesses() throws Exception {
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE e.roomNumber - 1 - :last > 0",
+                ":last", Integer.class);
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE e.roomNumber - 2147483648 - :last > 0",
+                ":last", Long.class);
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE 2147483648 + e.roomNumber - :last > 0",
+                ":last", Long.class);
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE e.salary - 1F - :last > 0",
+                ":last", Float.class);
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE e.salary - 1.5 - :last > 0",
+                ":last", Double.class);
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE 1.5 + e.salary - :last > 0",
+                ":last", Double.class);
+        assertArithmeticParameterType("SELECT o FROM Order o WHERE o.price - 1 - :last > 0",
+                ":last", BigInteger.class);
+        assertArithmeticParameterType("SELECT o FROM Order o WHERE o.realPrice - 1 - :last > 0",
+                ":last", BigDecimal.class);
+        assertArithmeticParameterType("SELECT o FROM Order o WHERE o.price + o.realPrice - :last > 0",
+                ":last", BigDecimal.class);
+        assertArithmeticParameterType("SELECT o FROM Order o WHERE o.realPrice + o.totalPrice - :last > 0",
+                ":last", Double.class);
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE ABS(e.salary) - 1 - :last > 0",
+                ":last", Long.class);
+        assertArithmeticParameterType("SELECT e.empId FROM Employee e GROUP BY e.empId"
+                + " HAVING SUM(e.roomNumber) - 1 - :last > 0", ":last", Long.class);
+    }
+
+    @Test
+    public final void test_ParameterType_ArithmeticOperatorsAndGrouping() throws Exception {
+        for (String expression : new String[] {"e.salary + 1 - :last", "e.salary - 1 + :last",
+                "e.salary * 2 - :last", "e.salary / 2 - :last", "e.salary * 2 * :last",
+                "e.salary / 2 / :last", "(e.salary - 1 - :last)", "e.salary - 1 - -:last"}) {
+            assertArithmeticParameterType("SELECT e FROM Employee e WHERE " + expression + " > 0",
+                    ":last", Long.class);
+        }
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE e.salary - (1 - :last) > 0",
+                ":last", Integer.class);
+        // Separately wrapped siblings retain their existing unresolved inference path.
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE (e.salary - 1) - :last > 0",
+                ":last", Object.class);
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE -(e.salary - 1) - :last > 0",
+                ":last", Object.class);
+    }
+
+    @Test
+    public final void test_ParameterType_ArithmeticFallbackAndRepeatedParameters() throws Exception {
+        String multiple = "SELECT e FROM Employee e WHERE e.salary - :first - :last > 0";
+        assertArithmeticParameterType(multiple, ":first", Long.class);
+        // Tooling's existing NumericResolver retains the known numeric operand.
+        assertArithmeticParameterType(multiple, ":last", Long.class);
+        String unresolved = "SELECT e FROM Employee e WHERE (:first - :last) > 0";
+        assertArithmeticParameterType(unresolved, ":first", Object.class);
+        assertArithmeticParameterType(unresolved, ":last", Object.class);
+        for (String condition : new String[] {"e.salary > :last OR :last IS NULL",
+                ":last IS NULL OR e.salary > :last"}) {
+            assertArithmeticParameterType("SELECT e FROM Employee e WHERE e.salary - 1 - :last > 0 AND ("
+                    + condition + ")", ":last", Long.class);
+        }
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE e.salary > :last", ":last", Long.class);
+        assertArithmeticParameterType("SELECT e FROM Employee e WHERE e.name = :name AND :name IS NULL",
+                ":name", String.class);
+        assertArithmeticParameterType(multiple, ":missing", Object.class);
+        assertArithmeticParameterType(multiple, "last", Object.class);
+    }
+
+    private void assertArithmeticParameterType(String jpql, String parameter, Class<?> expectedType) throws Exception {
+        jpqlQueryHelper.dispose();
+        IQuery query = new JavaQuery(getPersistenceUnit(), jpql);
+        AbstractJPQLQueryHelper helper = buildQueryHelper(query);
+        try {
+            assertEquals(jpql + " [" + parameter + "]", getType(query, expectedType), helper.getParameterType(parameter));
+            // Repeated access must retain the same inference within this query.
+            assertEquals(jpql + " [" + parameter + "]", getType(query, expectedType), helper.getParameterType(parameter));
+        } finally {
+            helper.dispose();
+        }
     }
 
     @Test
