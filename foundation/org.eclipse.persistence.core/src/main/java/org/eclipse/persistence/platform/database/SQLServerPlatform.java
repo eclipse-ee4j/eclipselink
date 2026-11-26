@@ -1064,11 +1064,18 @@ public class SQLServerPlatform extends DatabasePlatform {
 
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        List<Expression> orderBy = statement.getOrderByExpressions();
+        if (!statement.shouldDistinctBeUsed() && !statement.hasUnionExpressions()) {
+            // Bare parameters are invalid ORDER BY terms, and unbound integers are interpreted
+            // as select-list positions. A scalar subquery preserves the original value and binding.
+            for (int i = 0; i < orderBy.size(); i++) {
+                orderBy.set(i, wrapOrderByValue(orderBy.get(i)));
+            }
+        }
         // SQL Server does not support NULLS FIRST / NULLS LAST syntax. Rewrite each such ORDER BY
         // expression to the equivalent CASE workaround before printing:
         //   col NULLS FIRST  →  (CASE WHEN col IS NULL THEN 0 ELSE 1 END), col
         //   col NULLS LAST   →  (CASE WHEN col IS NULL THEN 1 ELSE 0 END), col
-        List<Expression> orderBy = statement.getOrderByExpressions();
         for (int i = 0; i < orderBy.size(); i++) {
             Expression expr = orderBy.get(i);
             if (expr instanceof FunctionExpression funcExpr) {
@@ -1134,6 +1141,24 @@ public class SQLServerPlatform extends DatabasePlatform {
         
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
+    }
+
+    private Expression wrapOrderByValue(Expression expression) {
+        if (expression.isValueExpression()) {
+            return expression.sql("(SELECT ?)", List.of());
+        }
+        if (expression instanceof FunctionExpression function) {
+            int selector = function.getOperator().getSelector();
+            if (selector == ExpressionOperator.Ascending || selector == ExpressionOperator.Descending
+                    || selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
+                Expression base = function.getBaseExpression();
+                Expression value = wrapOrderByValue(base);
+                if (value != base) {
+                    return function.getOperator().expressionForArguments(value, List.of());
+                }
+            }
+        }
+        return expression;
     }
 
     @Override
