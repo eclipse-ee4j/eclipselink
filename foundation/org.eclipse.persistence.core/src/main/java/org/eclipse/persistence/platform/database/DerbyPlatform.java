@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -46,6 +46,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalTime;
 import java.util.Hashtable;
 import java.util.Collection;
@@ -58,6 +59,8 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
  * @since TOPLink Essentials 1.0
  */
 public class DerbyPlatform extends DB2Platform {
+
+    private static final long serialVersionUID = 5941064965969966525L;
 
     public static final int MAX_CLOB = 2147483647;  //The maximum clob/blob size is 2 gigs in Derby.
     public static final int MAX_BLOB = MAX_CLOB;
@@ -72,6 +75,85 @@ public class DerbyPlatform extends DB2Platform {
 
     public DerbyPlatform() {
         super();
+    }
+
+    @Override
+    public void appendNullParameter(Writer writer, DatabaseField field) throws IOException {
+        // A native definition may override the Java default before JDBC type discovery.
+        if (field.getSqlType() == DatabaseField.NULL_SQL_TYPE
+                && field.getColumnDefinition() != null && field.getColumnDefinition().length() > 0) {
+            writer.write("NULL");
+            return;
+        }
+        // Derby requires a type for standalone NULL values. The fallback types
+        // only this SQL null; it must not infer a Java type for later bindings.
+        String sqlType;
+        switch (getJDBCType(field)) {
+            case Types.BOOLEAN:
+                sqlType = "BOOLEAN";
+                break;
+            case Types.BIT:
+            case Types.TINYINT:
+            case Types.SMALLINT:
+                sqlType = "SMALLINT";
+                break;
+            case Types.INTEGER:
+                sqlType = "INTEGER";
+                break;
+            case Types.BIGINT:
+                sqlType = "BIGINT";
+                break;
+            case Types.REAL:
+            case Types.FLOAT:
+                sqlType = "REAL";
+                break;
+            case Types.DOUBLE:
+                sqlType = "DOUBLE";
+                break;
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+                sqlType = "DECIMAL(31, 10)";
+                break;
+            case Types.CHAR:
+            case Types.NCHAR:
+                sqlType = "CHAR(1)";
+                break;
+            case Types.DATE:
+                sqlType = "DATE";
+                break;
+            case Types.TIME:
+            case Types.TIME_WITH_TIMEZONE:
+                sqlType = "TIME";
+                break;
+            case Types.TIMESTAMP:
+            case Types.TIMESTAMP_WITH_TIMEZONE:
+                sqlType = "TIMESTAMP";
+                break;
+            case Types.BINARY:
+                sqlType = "CHAR(1) FOR BIT DATA";
+                break;
+            case Types.VARBINARY:
+                sqlType = "VARCHAR(1) FOR BIT DATA";
+                break;
+            case Types.LONGVARBINARY:
+                // Java byte arrays infer LONGVARBINARY, but Derby maps them to BLOB by default.
+                sqlType = field.getSqlType() == Types.LONGVARBINARY
+                        ? "LONG VARCHAR FOR BIT DATA" : "BLOB(1)";
+                break;
+            case Types.BLOB:
+                sqlType = "BLOB(1)";
+                break;
+            case Types.CLOB:
+            case Types.NCLOB:
+                sqlType = "CLOB(1)";
+                break;
+            default:
+                sqlType = "VARCHAR(1)";
+                break;
+        }
+        writer.write("CAST(NULL AS ");
+        writer.write(sqlType);
+        writer.write(")");
     }
 
     /**

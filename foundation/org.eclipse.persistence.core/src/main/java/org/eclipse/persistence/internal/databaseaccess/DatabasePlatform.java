@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -126,6 +126,8 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * @since TOPLink/Java 1.0
  */
 public class DatabasePlatform extends DatasourcePlatform {
+
+    private static final long serialVersionUID = 2959508377019448228L;
 
     /** Holds a map of values used to map JAVA types to database types for table creation */
     protected transient Map<Class, FieldTypeDefinition> fieldTypes;
@@ -506,6 +508,12 @@ public class DatabasePlatform extends DatasourcePlatform {
         int nBoundParameters = 0;
         DatabaseCall databaseCall = (DatabaseCall)call;
         try {
+            // A field represents a typed null when binding. Literal translation must
+            // retain that meaning instead of printing the field's identifier.
+            if (parameter instanceof DatabaseField) {
+                appendNullParameter(writer, (DatabaseField) parameter);
+                return nBoundParameters;
+            }
             // PERF: Print Calendars directly avoiding timestamp conversion,
             // Must be before conversion as you cannot bind calendars.
             if (parameter instanceof Calendar) {
@@ -585,6 +593,11 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
 
         return nBoundParameters;
+    }
+
+    /** INTERNAL: Render a null parameter when this occurrence cannot use binding. */
+    public void appendNullParameter(Writer writer, DatabaseField field) throws IOException {
+        writer.write("NULL");
     }
 
     /**

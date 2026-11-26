@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -3913,10 +3913,10 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
                                 sub(
                                         numeric(3)
                                     .add(
-                                            numeric(54).multiply(numeric(2))
-                                        .add(
-                                            numeric(-8)
-                                        )
+                                        numeric(54).multiply(numeric(2))
+                                    )
+                                    .add(
+                                        numeric(-8)
                                     )
                                 )
                             )
