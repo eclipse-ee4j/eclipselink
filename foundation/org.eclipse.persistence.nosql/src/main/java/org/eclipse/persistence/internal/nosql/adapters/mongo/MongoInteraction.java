@@ -167,17 +167,20 @@ public class MongoInteraction implements Interaction {
                 if (sort != null) {
                     iterable.sort(sort);
                 }
+                // skip/limit/batchSize must be set before the cursor is opened: FindIterable.iterator()
+                // executes the query and snapshots the current options, so calls made after it have no
+                // effect on the already-open cursor.
+                if (mongoSpec.getSkip() > 0) {
+                    iterable.skip(mongoSpec.getSkip());
+                }
+                if (mongoSpec.getLimit() != 0) {
+                    iterable.limit(mongoSpec.getLimit());
+                }
+                if (mongoSpec.getBatchSize() != 0) {
+                    iterable.batchSize(mongoSpec.getBatchSize());
+                }
                 MongoCursor<Document> cursor = iterable.iterator();
                 try {
-                    if (mongoSpec.getSkip() > 0) {
-                        iterable.skip(mongoSpec.getSkip());
-                    }
-                    if (mongoSpec.getLimit() != 0) {
-                        iterable.limit(mongoSpec.getLimit());
-                    }
-                    if (mongoSpec.getBatchSize() != 0) {
-                        iterable.batchSize(mongoSpec.getBatchSize());
-                    }
                     if (!cursor.hasNext()) {
                         return null;
                     }
