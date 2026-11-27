@@ -21,8 +21,13 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.BatchFetchPolicy;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BatchValueHolder is used by the mappings that use indirection when using query optimization (batch reading).
@@ -32,6 +37,9 @@ import org.eclipse.persistence.queries.ReadQuery;
  * executed once.  Concurrency must also be maintained across all of the value holders in the batch.
  */
 public class BatchValueHolder<T> extends QueryBasedValueHolder<T> {
+    private static final long serialVersionUID = -4955294616212586177L;
+    private static final String IN_BATCH_STATE_PROPERTY = BatchValueHolder.class.getName() + ".inBatchState";
+
     protected transient ForeignReferenceMapping mapping;
     protected transient ObjectLevelReadQuery originalQuery;
     protected transient CacheKey parentCacheKey;
@@ -89,9 +97,45 @@ public class BatchValueHolder<T> extends QueryBasedValueHolder<T> {
         ReadQuery localQuery = unitOfWork.getBatchQueries().get(this.query);
         if (localQuery == null) {
             localQuery = (ReadQuery)this.query.clone();
+            // Query cloning retains the batch results, but those objects belong to the original session.
+            localQuery.setBatchObjects(null);
+            if (this.originalQuery.getBatchFetchPolicy().isIN()) {
+                localQuery.setProperty(IN_BATCH_STATE_PROPERTY, new INBatchState(this.originalQuery));
+            }
             unitOfWork.getBatchQueries().put(this.query, localQuery);
         }
-        return (T) this.mapping.extractResultFromBatchQuery(localQuery, this.parentCacheKey, this.row, unitOfWorkValueHolder.getUnitOfWork(), this.originalQuery);
+        ObjectLevelReadQuery localOriginalQuery = this.originalQuery;
+        if (this.originalQuery.getBatchFetchPolicy().isIN()) {
+            INBatchState state = (INBatchState)localQuery.getProperty(IN_BATCH_STATE_PROPERTY);
+            state.update(this.originalQuery.getBatchFetchPolicy(), this.mapping);
+            localOriginalQuery = state.originalQuery;
+        }
+        return (T) this.mapping.extractResultFromBatchQuery(localQuery, this.parentCacheKey, this.row, unitOfWork, localOriginalQuery);
+    }
+
+    /** Keeps row consumption local while allowing a cursor to supply more source rows. */
+    private static class INBatchState implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private final ObjectLevelReadQuery originalQuery;
+        private int rowCount;
+
+        INBatchState(ObjectLevelReadQuery originalQuery) {
+            this.originalQuery = (ObjectLevelReadQuery)originalQuery.clone();
+            this.originalQuery.getBatchFetchPolicy().setDataResults(new ArrayList<>());
+        }
+
+        void update(BatchFetchPolicy sourcePolicy, ForeignReferenceMapping mapping) {
+            List<AbstractRecord> rows = sourcePolicy.getAllDataResults(mapping);
+            int size = rows.size();
+            if (size > this.rowCount) {
+                // Complete source rows retain the mapping's layout even after the original
+                // session consumes a batch. Only append rows not yet seen by this UnitOfWork.
+                this.originalQuery.getBatchFetchPolicy().getDataResults(mapping)
+                        .addAll(rows.subList(this.rowCount, size));
+                this.rowCount = size;
+            }
+        }
     }
 
     /**
