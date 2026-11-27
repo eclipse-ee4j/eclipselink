@@ -17,9 +17,14 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.lang.reflect.Constructor;
 
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.FetchParent;
 import jakarta.persistence.criteria.Selection;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.queries.ConstructorReportItem;
+import org.eclipse.persistence.queries.LoadGroup;
+import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * <p>
@@ -36,6 +41,8 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  */
 public class ConstructorSelectionImpl<X> extends CompoundSelectionImpl<X> {
 
+    private static final long serialVersionUID = -8383364112562934574L;
+
     protected transient Constructor<? extends X> constructor;
     protected Class<?>[] constructorArgTypes;
 
@@ -44,15 +51,28 @@ public class ConstructorSelectionImpl<X> extends CompoundSelectionImpl<X> {
     }
 
     public ConstructorReportItem translate(){
+        return translate(null);
+    }
+
+    /** Translate constructor leaves and retain their fetches on the owning report. */
+    public ConstructorReportItem translate(ReportQuery reportQuery){
         ConstructorReportItem item = new ConstructorReportItem(this.getAlias());
         item.setResultType(this.getJavaType());
         item.setConstructor(constructor);
         for(Selection<?> selection : this.getCompoundSelectionItems()) {
             if (selection.isCompoundSelection()){
-                item.addItem(((ConstructorSelectionImpl<?>)selection).translate());
+                item.addItem(((ConstructorSelectionImpl<?>)selection).translate(reportQuery));
             }else{
                 ReportItem reportItem = new ReportItem(item.getName()+item.getReportItems().size(),
                         BooleanExpressionImpl.selectionNode(selection));
+                if (reportQuery != null && selection instanceof FromImpl<?, ?> from) {
+                    // SQL-only joins preserve report cardinality; per-leaf loading completes the graph
+                    // before constructor/cursor consumption without losing duplicate collection values.
+                    reportItem.setLoadGroup(buildLoadGroup(from));
+                    for (Expression fetch : from.findJoinFetches()) {
+                        reportQuery.addNonFetchJoinedAttribute(fetch);
+                    }
+                }
                 //bug: 297385 - set type here because the selection already knows the type
                 reportItem.setResultType(selection.getJavaType());
                 item.addItem(reportItem);
@@ -60,6 +80,23 @@ public class ConstructorSelectionImpl<X> extends CompoundSelectionImpl<X> {
         }
         return item;
 
+    }
+
+    private static LoadGroup buildLoadGroup(FetchParent<?, ?> parent) {
+        if (parent.getFetches().isEmpty()) {
+            return null;
+        }
+        LoadGroup group = new LoadGroup();
+        addFetchPaths(group, parent, "");
+        return group;
+    }
+
+    private static void addFetchPaths(LoadGroup group, FetchParent<?, ?> parent, String prefix) {
+        for (Fetch<?, ?> fetch : parent.getFetches()) {
+            String path = prefix + fetch.getAttribute().getName();
+            group.addAttribute(path);
+            addFetchPaths(group, fetch, path + '.');
+        }
     }
 
     @Override

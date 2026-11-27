@@ -409,6 +409,9 @@ public class ReportQueryResult implements Serializable, Map {
                 }
             }
         }
+        if (value != null && item.getLoadGroup() != null) {
+            query.getSession().load(value, item.getLoadGroup(), descriptor, false);
+        }
         return value;
     }
 

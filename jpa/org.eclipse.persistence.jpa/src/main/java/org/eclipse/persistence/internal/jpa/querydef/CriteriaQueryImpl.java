@@ -567,7 +567,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 // other is also a constructor type if multi-select was called.
                 // with a type other than the query type.
                 reportQuery = new ReportQuery();
-                reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) this.selection).translate());
+                reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) this.selection).translate(reportQuery));
                 reportQuery.setShouldReturnSingleAttribute(true);
             } else {
                 if (this.queryResult.equals(ResultType.TUPLE)) {
@@ -583,7 +583,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 }
                 for (Selection nested : this.selection.getCompoundSelectionItems()) {
                     if (((SelectionImpl) nested).isConstructor()) {
-                        reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate());
+                        reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate(reportQuery));
                     } else if (nested.isCompoundSelection()) {
                         throw new IllegalStateException(ExceptionLocalization.buildMessage("NESTED_COMPOUND_SELECTION_OTHER_THAN_CONSTRUCTOR_NOT_SUPPORTED"));
                     } else {
