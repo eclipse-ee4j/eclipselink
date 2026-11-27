@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,15 +25,19 @@ import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 import java.io.Serializable;
@@ -457,6 +462,81 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             this.joinedAggregateMappings = new ArrayList<>();
         }
         return joinedAggregateMappings;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the orderings of each joined collection mapping which has orderings. The primary key of the owner of the
+     * collection precedes its orderings, so that the rows of one owner stay together. The select statement leaves out an
+     * ordering whose field it already orders by.
+     */
+    public List<Expression> buildOrderingsOfJoinedCollections() {
+        if (!hasJoinedExpressions()) {
+            return List.of();
+        }
+        List<Expression> joinedOrderings = new ArrayList<>();
+        if (hasJoinedAttributeExpressions()) {
+            addOrderingsOfJoinedCollections(getJoinedAttributeExpressions(), joinedOrderings);
+        }
+        if (hasJoinedMappingExpressions()) {
+            addOrderingsOfJoinedCollections(getJoinedMappingExpressions(), joinedOrderings);
+        }
+        return joinedOrderings;
+    }
+
+    private static void addOrderingsOfJoinedCollections(List<Expression> joinedExpressions, List<Expression> joinedOrderings) {
+        for (Expression joinedExpression : joinedExpressions) {
+            if (joinedExpression instanceof QueryKeyExpression joinedCollection
+                    && joinedCollection.getMapping() instanceof CollectionMapping mapping) {
+                List<Expression> orderings = getOrderByExpressions(mapping);
+                if (!orderings.isEmpty()) {
+                    ObjectExpression owner = getOwner(joinedCollection);
+                    for (DatabaseField primaryKey : owner.getDescriptor().getPrimaryKeyFields()) {
+                        joinedOrderings.add(owner.getField(primaryKey));
+                    }
+                    for (Expression ordering : orderings) {
+                        joinedOrderings.add(ordering.rebuildOn(joinedCollection));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Return the orderings of the given collection mapping. Those of a direct collection mapping may be added without an
+     * order by, and are returned only when a fetch join can alias each of their fields, see
+     * {@link #isAliasable(Expression, DirectCollectionMapping)}. Those of another collection mapping are the orderings of
+     * its selection query, when it has an order by.
+     */
+    private static List<Expression> getOrderByExpressions(CollectionMapping mapping) {
+        if (mapping instanceof DirectCollectionMapping directCollectionMapping) {
+            List<Expression> orderings = directCollectionMapping.getOrderByExpressions();
+            return orderings.stream().allMatch(ordering -> isAliasable(ordering, directCollectionMapping)) ? orderings : List.of();
+        }
+        return mapping.hasOrderBy() && mapping.getSelectionQuery() instanceof ReadAllQuery selectionQuery ? selectionQuery.getOrderByExpressions() : List.of();
+    }
+
+    /**
+     * Return whether each field of the given ordering of the given direct collection mapping is on its reference table,
+     * and keeps the delimiters of its direct field, which an ordering built from the name of that field loses.
+     */
+    private static boolean isAliasable(Expression ordering, DirectCollectionMapping mapping) {
+        DatabaseTable table = mapping.getReferenceTable();
+        DatabaseField directField = mapping.getDirectField();
+        List<DatabaseField> fields = ordering.getFields();
+        return !fields.isEmpty() && fields.stream().allMatch(field -> field.hasTableName() && table.equals(field.getTable())
+                && (field.shouldUseDelimiters() || !directField.shouldUseDelimiters() || !field.getName().equalsIgnoreCase(directField.getName())));
+    }
+
+    /**
+     * Return the object which owns the given joined collection: its base expression, past any embeddable.
+     */
+    private static ObjectExpression getOwner(QueryKeyExpression joinedCollection) {
+        Expression owner = joinedCollection.getBaseExpression();
+        while (!owner.isExpressionBuilder() && ((QueryKeyExpression) owner).getMapping().isAggregateMapping()) {
+            owner = ((QueryKeyExpression) owner).getBaseExpression();
+        }
+        return (ObjectExpression) owner;
     }
 
     /**

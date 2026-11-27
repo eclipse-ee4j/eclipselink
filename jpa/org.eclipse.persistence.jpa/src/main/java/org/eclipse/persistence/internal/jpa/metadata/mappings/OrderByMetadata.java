@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -151,7 +152,7 @@ public class OrderByMetadata extends ORMetadata {
                     String attributeName = referenceAccessor.getAttributeName();
 
                     if (referenceAccessor.isEmbedded()) {
-                        for (String orderByAttributeName : referenceDescriptor.getOrderByAttributeNames()) {
+                        for (String orderByAttributeName : referenceAccessor.getReferenceDescriptor().getOrderByAttributeNames()) {
                             mapping.addAggregateOrderBy(propertyOrFieldName, orderByAttributeName, ordering.equals(DESCENDING));
                         }
                     } else if (referenceAccessor.getClassAccessor().isEmbeddableAccessor()) {
