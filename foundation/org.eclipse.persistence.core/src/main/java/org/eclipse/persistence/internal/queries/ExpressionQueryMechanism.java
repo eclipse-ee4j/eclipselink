@@ -723,7 +723,12 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Vector fieldExpressions = reportQuery.getQueryExpressions();
         int itemOffset = fieldExpressions.size();
         List<ReportItem> items = reportQuery.getItems();
-        computeFieldExpressions(items, clonedExpressions, selectStatement, fieldExpressions);
+        List<Expression> joinedOrderings = !isSubSelect && !reportQuery.hasHierarchicalExpressions() && !reportQuery.hasUnionExpressions()
+                ? new ArrayList<>() : null;
+        computeFieldExpressions(items, clonedExpressions, selectStatement, fieldExpressions, joinedOrderings);
+        if (joinedOrderings != null && !joinedOrderings.isEmpty()) {
+            selectStatement.setJoinedOrderByExpressions(cloneExpressions(joinedOrderings, clonedExpressions));
+        }
 
         selectStatement.setFields(fieldExpressions);
         if (reportQuery.hasNonFetchJoinedAttributeExpressions()) {
@@ -741,18 +746,20 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         return selectStatement;
     }
 
-    private void computeFieldExpressions(List<ReportItem> items, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions) {
+    private void computeFieldExpressions(List<ReportItem> items, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions,
+            List<Expression> joinedOrderings) {
         for (ReportItem item : items) {
             if (item.isConstructorItem()) {
                 List<ReportItem> reportItems = ((ConstructorReportItem) item).getReportItems();
-                computeFieldExpressions(reportItems, clonedExpressions, selectStatement, fieldExpressions);
+                computeFieldExpressions(reportItems, clonedExpressions, selectStatement, fieldExpressions, joinedOrderings);
             } else {
-                extractStatementFromItem(item, clonedExpressions, selectStatement, fieldExpressions);
+                extractStatementFromItem(item, clonedExpressions, selectStatement, fieldExpressions, joinedOrderings);
             }
         }
     }
 
-    private void extractStatementFromItem(ReportItem item, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions){
+    private void extractStatementFromItem(ReportItem item, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions,
+            List<Expression> joinedOrderings){
         if (item.getAttributeExpression() != null) {
             // this allows us to modify the item expression without modifying the original in case of re-prepare
             Expression attributeExpression = item.getAttributeExpression();
@@ -799,6 +806,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             if (item.hasJoining()){
                 fieldExpressions.addAll(item.getJoinedAttributeManager().getJoinedAttributeExpressions());
                 fieldExpressions.addAll(item.getJoinedAttributeManager().getJoinedMappingExpressions());
+                if (joinedOrderings != null) {
+                    joinedOrderings.addAll(item.getJoinedAttributeManager().buildOrderingsOfJoinedCollections());
+                }
             }
         }
     }

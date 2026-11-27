@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,6 +22,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.LoadGroup;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -31,6 +32,8 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @since 2.0
  */
 public class ReportItem implements Cloneable, java.io.Serializable {
+
+    private static final long serialVersionUID = 2972591802840434365L;
 
     /** Expression (partial) describing the attribute wanted */
     protected Expression attributeExpression;
@@ -49,6 +52,9 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     /** Stores the Join information for this item */
     protected JoinedAttributeManager joinedAttributeManager;
 
+    /** Relationships to load after ordinary object materialization. */
+    protected LoadGroup loadGroup;
+
     /** Stores the row index for this item, given multiple results and joins */
     protected int resultIndex;
 
@@ -65,7 +71,11 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     @Override
     public Object clone(){
         try{
-            return super.clone();
+            ReportItem clone = (ReportItem) super.clone();
+            if (this.loadGroup != null) {
+                clone.loadGroup = this.loadGroup.clone();
+            }
+            return clone;
         } catch (CloneNotSupportedException e) {
             return null;
         }
@@ -97,6 +107,16 @@ public class ReportItem implements Cloneable, java.io.Serializable {
 
     public JoinedAttributeManager getJoinedAttributeManagerInternal(){
         return joinedAttributeManager;
+    }
+
+    /** INTERNAL: Return the optional graph to load before this result is consumed. */
+    public LoadGroup getLoadGroup() {
+        return this.loadGroup;
+    }
+
+    /** INTERNAL: Set the graph to load relative to this selected item. */
+    public void setLoadGroup(LoadGroup loadGroup) {
+        this.loadGroup = loadGroup;
     }
 
     /**
