@@ -2901,8 +2901,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // PERF: First check the subclass calls cache for the prepared call.
         // Must clear the translation row to avoid in-lining parameters unless not a prepared query.
         boolean shouldPrepare = query.shouldPrepare();
+        boolean shouldCacheCall = shouldPrepare && query.shouldCacheConcreteSubclassCalls();
         DatabaseCall call = null;
-        if (shouldPrepare) {
+        if (shouldCacheCall) {
             call = query.getConcreteSubclassCalls().get(query.getReferenceClass());
         }
         if (call == null) {
@@ -2913,11 +2914,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             setSQLStatement(buildConcreteSelectStatement());
             // Must also build the call.
             super.prepareSelectAllRows();
-            if (shouldPrepare) {
+            if (shouldCacheCall) {
                 if (query.hasJoining()) {
                     query.getConcreteSubclassJoinedMappingIndexes().put(query.getReferenceClass(), query.getJoinedAttributeManager().getJoinedMappingIndexes_());
                 }
                 query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)this.call);
+            }
+            if (shouldPrepare) {
                 query.setTranslationRow(translationRow);
             }
         } else {
@@ -2965,8 +2968,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // PERF: First check the subclass calls cache for the prepared call.
         // Must clear the translation row to avoid in-lining parameters unless not a prepared query.
         boolean shouldPrepare = query.shouldPrepare();
+        boolean shouldCacheCall = shouldPrepare && query.shouldCacheConcreteSubclassCalls();
         DatabaseCall call = null;
-        if (shouldPrepare) {
+        if (shouldCacheCall) {
             call = query.getConcreteSubclassCalls().get(query.getReferenceClass());
         }
         if (call == null) {
@@ -2977,11 +2981,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             setSQLStatement(buildConcreteSelectStatement());
             // Must also build the call.
             super.prepareSelectOneRow();
-            if (shouldPrepare) {
+            if (shouldCacheCall) {
                 if (query.hasJoining()) {
                     query.getConcreteSubclassJoinedMappingIndexes().put(query.getReferenceClass(), query.getJoinedAttributeManager().getJoinedMappingIndexes_());
                 }
                 query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)this.call);
+            }
+            if (shouldPrepare) {
                 query.setTranslationRow(translationRow);
             }
         } else {
