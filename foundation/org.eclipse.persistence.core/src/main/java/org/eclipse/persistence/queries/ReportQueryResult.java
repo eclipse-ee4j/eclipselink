@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2026 IBM Corporation. All rights reserved.
  *
@@ -274,7 +275,7 @@ public class ReportQueryResult implements Serializable, Map {
                         }
 
                         for (DatabaseMapping subMapping : descriptor.getMappings()) {
-                            batchFetchPolicy.setDataResults(subMapping, subRows);
+                            batchFetchPolicy.setAllDataResults(subMapping, subRows, query.getContainerPolicy().isCursorPolicy());
                         }
 
                         subRow = subRows.get(toManyData.indexOf(row));
