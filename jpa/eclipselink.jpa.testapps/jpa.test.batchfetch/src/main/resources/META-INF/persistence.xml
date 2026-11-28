@@ -1,6 +1,7 @@
 <!--
 
     Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +23,25 @@
 		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.Record</class>
 		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.Child</class>
 		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.Parent</class>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.EagerParent</class>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.EagerChild</class>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.LazyParent</class>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.LazyChild</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
+			<property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+			<property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+			<property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+		</properties>
+	</persistence-unit>
+	<!-- Eager relationships are woven to use indirection and are instantiated right after building the object -->
+	<persistence-unit name="batchfetch-weaving-eager">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.WovenEagerParent</class>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.WovenEagerChild</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="eclipselink.weaving.eager" value="true"/>
 			<property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
 			<property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
 			<property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
