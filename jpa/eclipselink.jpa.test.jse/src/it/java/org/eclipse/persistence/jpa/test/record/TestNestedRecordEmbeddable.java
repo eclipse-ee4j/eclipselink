@@ -68,4 +68,38 @@ public class TestNestedRecordEmbeddable {
             em.close();
         }
     }
+
+    @Test
+    public void testPersistLoadedToOneReference() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Persist a simple entity, then an entity whose nested record references it.
+            em.getTransaction().begin();
+            NestedRecordSimple simple = new NestedRecordSimple(200L, "value-2");
+            em.persist(simple);
+            NestedRecordChild child = new NestedRecordChild("kind-2", simple);
+            NestedRecordParent parent = new NestedRecordParent("status-2", child);
+            NestedRecordEntity entity = new NestedRecordEntity(2L, parent, "description-2");
+            em.persist(entity);
+            em.getTransaction().commit();
+            em.clear();
+
+            // Load the entity and persist the already-loaded to-one reference.
+            em.getTransaction().begin();
+            NestedRecordEntity loaded = em.find(NestedRecordEntity.class, 2L);
+            NestedRecordSimple loadedSimple = loaded.getParent().child().simple();
+            em.persist(loadedSimple);
+            em.getTransaction().commit();
+            em.clear();
+
+            NestedRecordSimple found = em.find(NestedRecordSimple.class, 200L);
+            assertNotNull("Simple should be found", found);
+            assertEquals("value-2", found.getValue());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
 }
