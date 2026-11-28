@@ -32,6 +32,7 @@ import jakarta.ws.rs.core.UriInfo;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Attribute;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Descriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
@@ -164,9 +165,22 @@ public abstract class AbstractResource {
     public static Map<String, Object> getQueryParameters(UriInfo info) {
         Map<String, Object> queryParameters = new HashMap<>();
         for (String key : info.getQueryParameters().keySet()) {
+            if (loadsClassFromHint(key)) {
+                continue;
+            }
             queryParameters.put(key, info.getQueryParameters().getFirst(key));
         }
         return queryParameters;
+    }
+
+    /**
+     * These hints call Class.forName on the value. A query string must not
+     * be able to name that class.
+     */
+    static boolean loadsClassFromHint(String key) {
+        return QueryHints.QUERY_REDIRECTOR.equals(key)
+                || QueryHints.QUERY_TYPE.equals(key)
+                || QueryHints.RESULT_COLLECTION_TYPE.equals(key);
     }
 
     /**
