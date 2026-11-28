@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +26,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * <p>
@@ -286,7 +288,12 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             }
         }
         getRemoveObjectList().putAll(changeSets);
-        //237545: merge the changes for ordered list's attribute change tracking. (still need to check if deferred changes need to be merged)
+        CollectionChangeRecord incoming = (CollectionChangeRecord)mergeFromRecord;
+        if (getOrderedChangeObjectList().isEmpty() && incoming.getOrderedChangeObjectList().isEmpty()) {
+            mergeOrderedChanges(incoming, mergeToChangeSet, mergeFromChangeSet);
+        }
+        this.orderHasBeenRepaired |= incoming.orderHasBeenRepaired;
+        // Merge ordered attribute change tracking events in their original order.
         List<OrderedChangeObject> orderedChangeSets = new ArrayList<>();
         Iterator<OrderedChangeObject> orderedChangeObjectEnum = ((CollectionChangeRecord)mergeFromRecord).getOrderedChangeObjectList().iterator();
         while (orderedChangeObjectEnum.hasNext()) {
@@ -298,6 +305,68 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             orderedChangeSets.add(orderedChangeObject);
         }
         getOrderedChangeObjectList().addAll(orderedChangeSets);
+    }
+
+    /**
+     * Compose deferred list changes. Removal indices refer to the list before
+     * each calculation, while addition indices refer to the list after it.
+     * Incoming removals must therefore be translated back to the original list,
+     * and surviving additions forward to the final list.
+     */
+    private void mergeOrderedChanges(CollectionChangeRecord incoming, UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        if ((incoming.orderedAddObjects == null || incoming.orderedAddObjects.isEmpty())
+                && (incoming.orderedRemoveObjects == null || incoming.orderedRemoveObjects.isEmpty())) {
+            return;
+        }
+        TreeMap<Integer, ObjectChangeSet> previousAdds = new TreeMap<>();
+        for (ObjectChangeSet change : getOrderedAddObjects()) {
+            previousAdds.put(getOrderedAddObjectIndex(change), change);
+        }
+        TreeMap<Integer, ObjectChangeSet> previousRemoves = new TreeMap<>(getOrderedRemoveObjects());
+        TreeMap<Integer, ObjectChangeSet> incomingRemoves = new TreeMap<>(incoming.getOrderedRemoveObjects());
+        TreeMap<Integer, ObjectChangeSet> incomingAdds = new TreeMap<>();
+        for (ObjectChangeSet change : incoming.getOrderedAddObjects()) {
+            incomingAdds.put(incoming.getOrderedAddObjectIndex(change), mergeTo.findOrIntegrateObjectChangeSet(change, mergeFrom));
+        }
+
+        for (Map.Entry<Integer, ObjectChangeSet> removal : incomingRemoves.entrySet()) {
+            int index = removal.getKey();
+            if (!previousAdds.containsKey(index)) {
+                // Undo the first delta's insertions, then its removals. An
+                // incoming removal of an earlier addition cancels that addition.
+                int originalIndex = index - previousAdds.headMap(index).size();
+                for (Integer removedIndex : previousRemoves.keySet()) {
+                    if (removedIndex > originalIndex) {
+                        break;
+                    }
+                    originalIndex++;
+                }
+                getOrderedRemoveObjects().put(originalIndex,
+                        mergeTo.findOrIntegrateObjectChangeSet(removal.getValue(), mergeFrom));
+            }
+        }
+
+        TreeMap<Integer, ObjectChangeSet> finalAdds = new TreeMap<>(incomingAdds);
+        for (Map.Entry<Integer, ObjectChangeSet> addition : previousAdds.entrySet()) {
+            int index = addition.getKey();
+            if (!incomingRemoves.containsKey(index)) {
+                index -= incomingRemoves.headMap(index).size();
+                for (Integer addedIndex : incomingAdds.keySet()) {
+                    if (addedIndex > index) {
+                        break;
+                    }
+                    index++;
+                }
+                finalAdds.put(index, addition.getValue());
+            }
+        }
+        this.orderedAddObjects = new ArrayList<>(finalAdds.values());
+        this.orderedAddObjectIndices = new IdentityHashMap<>();
+        for (Map.Entry<Integer, ObjectChangeSet> addition : finalAdds.entrySet()) {
+            this.orderedAddObjectIndices.put(addition.getValue(), addition.getKey());
+        }
+        this.orderedRemoveObjectIndices = new ArrayList<>(getOrderedRemoveObjects().keySet());
+        this.orderedRemoveObjectIndices.sort(null);
     }
 
     /**
