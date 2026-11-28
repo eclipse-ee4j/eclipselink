@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +24,7 @@ import java.io.Serializable;
  * <b>Purpose</b>: This class was designed as a superclass to all possible Change Record types.
  * These Change Records holds the changes made to the objects
  */
-public abstract class ChangeRecord implements Serializable, org.eclipse.persistence.sessions.changesets.ChangeRecord {
+public abstract class ChangeRecord implements Cloneable, Serializable, org.eclipse.persistence.sessions.changesets.ChangeRecord {
 
     /**
      * This is the attribute name that this change record represents
@@ -37,6 +38,28 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
 
     /** This is the object change set that holds this record **/
     protected ObjectChangeSet owner;
+
+    /**
+     * Copy a live record before merging it into a temporary calculation. Keep
+     * application values and mapping metadata, but detach mutable bookkeeping.
+     */
+    ChangeRecord copyForMerge(ObjectChangeSet newOwner, UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        try {
+            ChangeRecord copy = (ChangeRecord)super.clone();
+            copy.owner = newOwner;
+            copy.copyMutableState(mergeTo, mergeFrom);
+            return copy;
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception);
+        }
+    }
+
+    /**
+     * Detach a cloned record's mutable state. Subclasses with containers or
+     * nested change sets must copy them using the destination's identities.
+     */
+    protected void copyMutableState(UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+    }
 
     /**
      * ADVANCED:

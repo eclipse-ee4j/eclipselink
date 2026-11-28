@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -790,6 +791,9 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         int size = changesToMerge.size();
         for (int index = 0; index < size; ++index) {
             ChangeRecord record = (ChangeRecord)changesToMerge.get(index);
+            if (mergeToChangeSet.shouldPreserveSourceRecords()) {
+                record = record.copyForMerge(this, mergeToChangeSet, mergeFromChangeSet);
+            }
             ChangeRecord thisRecord = (ChangeRecord) getChangesForAttributeNamed(record.getAttribute());
             if (thisRecord == null) {
                 record.updateReferences(mergeToChangeSet, mergeFromChangeSet);
@@ -806,7 +810,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         this.shouldModifyVersionField = changeSetToMergeFrom.shouldModifyVersionField;
         this.hasCmpPolicyForcedUpdate = changeSetToMergeFrom.hasCmpPolicyForcedUpdate;
         this.hasChangesFromCascadeLocking = changeSetToMergeFrom.hasChangesFromCascadeLocking;
-        this.deferredSet = changeSetToMergeFrom.deferredSet;
+        this.deferredSet = mergeToChangeSet.shouldPreserveSourceRecords() && changeSetToMergeFrom.deferredSet != null
+                ? new HashSet<>(changeSetToMergeFrom.deferredSet) : changeSetToMergeFrom.deferredSet;
     }
 
     /**
