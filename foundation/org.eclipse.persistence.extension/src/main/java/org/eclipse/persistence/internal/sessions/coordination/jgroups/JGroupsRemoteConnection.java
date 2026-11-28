@@ -17,9 +17,9 @@ package org.eclipse.persistence.internal.sessions.coordination.jgroups;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.jgroups.BytesMessage;
-import org.jgroups.ObjectMessage;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.Receiver;
@@ -95,12 +95,14 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
      */
     @Override
     protected Object executeCommandInternal(Object command) throws Exception {
-        Message message = null;
-        if (command instanceof byte[]) {
-            message = new BytesMessage(null, (byte[])command);
-        } else {
-            message = new ObjectMessage(null, command);
+        if (!(command instanceof byte[])) {
+            Serializer serializer = this.rcm.getSerializer();
+            if (serializer == null) {
+                serializer = JavaSerializer.instance;
+            }
+            command = serializer.serialize(command, (AbstractSession) this.rcm.getCommandProcessor());
         }
+        Message message = new BytesMessage(null, (byte[]) command);
 
         Object[] debugInfo = null;
         if(this.rcm.shouldLogDebugMessage()) {
@@ -131,11 +133,14 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
 
         Object object = null;
         try {
-            Serializer serializer = this.rcm.getSerializer();
             if (message instanceof BytesMessage) {
-                object = serializer.deserialize(message.getArray(), (AbstractSession)this.rcm.getCommandProcessor());
+                Serializer serializer = this.rcm.getSerializer();
+                if (serializer == null) {
+                    serializer = JavaSerializer.instance;
+                }
+                object = JavaSerializer.deserializeRemote(serializer, message.getArray(), (AbstractSession)this.rcm.getCommandProcessor());
             } else {
-                object = message.getObject();
+                throw new IllegalArgumentException("JGroups ObjectMessage is not accepted");
             }
         } catch (Exception exception) {
             failDeserializeMessage(null, exception);
